@@ -110,6 +110,75 @@ function deepFind(obj, key) {
   return undefined;
 }
 
+// ─── Company name extraction ────────────────────────────────────────────────
+
+/**
+ * Best-effort extraction of company/app name from a vote result reason.body.
+ * Returns { name, snippet } or { name: null, snippet }.
+ */
+function extractCompanyName(reasonBody) {
+  if (!reasonBody) return { name: null, snippet: '' };
+  const text = reasonBody.trim();
+  const snippet = text.slice(0, 60);
+
+  // Skip generic/uninformative bodies
+  if (/^(Tokenomics has agreed|An additional featured|This application)/i.test(text)) {
+    return { name: null, snippet };
+  }
+
+  // "New partyID for {Name}. ..." or "New partyID for {Name},"
+  const newPartyMatch = text.match(/^New partyID for ([^.,]+)/i);
+  if (newPartyMatch) return { name: newPartyMatch[1].trim(), snippet };
+
+  // "{Name}'s App is approved..."
+  const possessiveMatch = text.match(/^([^']+)'s App/i);
+  if (possessiveMatch) return { name: possessiveMatch[1].trim(), snippet };
+
+  // "{Name} App is approved..."
+  const appApprovedMatch = text.match(/^(.+?) App is approved/i);
+  if (appApprovedMatch) return { name: appApprovedMatch[1].trim(), snippet };
+
+  // "{Name} is approved for..."
+  const isApprovedMatch = text.match(/^(.+?) is approved/i);
+  if (isApprovedMatch) return { name: isApprovedMatch[1].trim(), snippet };
+
+  // "{Name} is granted..."
+  const isGrantedMatch = text.match(/^(.+?) is granted/i);
+  if (isGrantedMatch) return { name: isGrantedMatch[1].trim(), snippet };
+
+  // "{Name} has been restored..."
+  const restoredMatch = text.match(/^(.+?) has been restored/i);
+  if (restoredMatch) return { name: restoredMatch[1].trim(), snippet };
+
+  // "{Name} has created..." / "{Name} has ..."
+  const hasMatch = text.match(/^(.+?) has /i);
+  if (hasMatch && hasMatch[1].length < 40) return { name: hasMatch[1].trim(), snippet };
+
+  // "{Name} would like..."
+  const wouldMatch = text.match(/^(.+?) would like/i);
+  if (wouldMatch) return { name: wouldMatch[1].trim(), snippet };
+
+  // "{Name} lets users..." / "{Name} lets ..."
+  const letsMatch = text.match(/^(.+?) lets /i);
+  if (letsMatch) return { name: letsMatch[1].trim(), snippet };
+
+  // "{Name} is a ..." (description pattern)
+  const isAMatch = text.match(/^(.+?) is a /i);
+  if (isAMatch && isAMatch[1].length < 40) return { name: isAMatch[1].trim(), snippet };
+
+  // "{Name} tokenizes..." / "{Name} enables..." / "{Name} creates..."
+  const verbMatch = text.match(/^(.+?) (?:tokenizes|enables|creates|records|manages|provides|offers|connects)/i);
+  if (verbMatch && verbMatch[1].length < 40) return { name: verbMatch[1].trim(), snippet };
+
+  // Fallback: take first sentence fragment before common delimiters
+  const fallback = text.match(/^([A-Z][A-Za-z0-9 .-]+?)(?:\s+(?:is|has|was|lets|would|App)\b|[,.])/);
+  if (fallback && fallback[1].length >= 3 && fallback[1].length < 40) {
+    return { name: fallback[1].trim(), snippet };
+  }
+
+  return { name: null, snippet };
+}
+
 // ─── Formatting helpers ─────────────────────────────────────────────────────
 
 function fmtCC(n) {
@@ -277,6 +346,7 @@ async function main() {
   }
 
   const approvalByProvider = new Map();
+  const reasonByProvider = new Map();
   let vrAccepted = 0, vrProviderFound = 0;
   for (const vr of voteResults) {
     try {
@@ -301,6 +371,11 @@ async function main() {
       const existing = approvalByProvider.get(provider);
       if (!existing || new Date(completedAt) < new Date(existing)) {
         approvalByProvider.set(provider, completedAt);
+      }
+
+      // Capture reason.body for company name extraction (prefer earliest/first grant)
+      if (!reasonByProvider.has(provider)) {
+        reasonByProvider.set(provider, vr.request?.reason?.body || '');
       }
     } catch { /* skip */ }
   }
@@ -484,6 +559,8 @@ async function main() {
       const payload = app.payload || app;
       const provider = payload.provider || app.provider || '';
       const appName = payload.appName || payload.app_name || payload.name || provider.split('::')[0] || 'Unknown';
+      const reasonBody = reasonByProvider.get(provider) || '';
+      const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody);
       const cum = rewardsByProvider.get(provider) || 0;
       const approval = approvalByProvider.get(provider) || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
@@ -503,6 +580,8 @@ async function main() {
 
       return {
         appName,
+        companyName,
+        reasonSnippet,
         provider,
         approvalDate: approval,
         daysSinceApproval,
@@ -540,11 +619,12 @@ async function main() {
   // ── Output: CSV ───────────────────────────────────────────────────────────
 
   if (wantCsv) {
-    console.log('Rank,App Name,Approval Date,Days as FA,Cumulative CC,Pre-FA CC,Post-FA CC,>=10M,>=25M,Can Lock Day1,10M Date,Days to 10M,25M Date,Days to 25M');
+    console.log('Rank,App Name,Company Name,Approval Date,Days as FA,Cumulative CC,Pre-FA CC,Post-FA CC,>=10M,>=25M,Can Lock Day1,10M Date,Days to 10M,25M Date,Days to 25M,Note');
     rows.forEach((r, i) => {
       console.log([
         i + 1,
         `"${r.appName}"`,
+        `"${r.companyName || ''}"`,
         r.approvalDate ? fmtDate(r.approvalDate) : '',
         r.daysSinceApproval ?? '',
         r.cumulativeCC.toFixed(2),
@@ -557,6 +637,7 @@ async function main() {
         r.milestone10m.daysFromApproval ?? '',
         r.milestone25m.date ? fmtDate(r.milestone25m.date) : '',
         r.milestone25m.daysFromApproval ?? '',
+        `"${r.reasonSnippet || ''}"`,
       ].join(','));
     });
     return;
@@ -564,7 +645,7 @@ async function main() {
 
   // ── Output: Text report ───────────────────────────────────────────────────
 
-  const W = 155;
+  const W = 220;
   const line = '═'.repeat(W);
   const thinLine = '─'.repeat(W);
 
@@ -599,6 +680,7 @@ async function main() {
   const hdr =
     pad('#', 5) +
     pad('App Name', 30) +
+    pad('Company Name', 25) +
     pad('FA Approved', 13) +
     pad('Days FA', 8, 'right') +
     pad('Cumul. CC', 12, 'right') +
@@ -608,7 +690,8 @@ async function main() {
     pad('Days→10M', 10, 'right') +
     pad('25M Date', 12, 'right') +
     pad('Days→25M', 10, 'right') +
-    pad('Lock?', 7, 'right');
+    pad('Lock?', 7, 'right') +
+    '  ' + pad('Note (from vote reason)', 60);
 
   console.log(`  ${hdr}`);
   console.log(`  ${'─'.repeat(hdr.length)}`);
@@ -624,6 +707,7 @@ async function main() {
     const row =
       pad(String(i + 1), 5) +
       pad(r.appName.slice(0, 28), 30) +
+      pad((r.companyName || '--').slice(0, 23), 25) +
       pad(fmtDate(r.approvalDate), 13) +
       pad(r.daysSinceApproval !== null ? `${r.daysSinceApproval}d` : '--', 8, 'right') +
       pad(fmtCC(r.cumulativeCC), 12, 'right') +
@@ -633,7 +717,8 @@ async function main() {
       pad(d10m !== null ? `${d10m}d` : (r.hasReached10m ? '~' : '--'), 10, 'right') +
       pad(dt25m ? fmtDate(dt25m) : (r.hasReached25m ? '~' : '--'), 12, 'right') +
       pad(d25m !== null ? `${d25m}d` : (r.hasReached25m ? '~' : '--'), 10, 'right') +
-      pad(lockIcon, 7, 'right');
+      pad(lockIcon, 7, 'right') +
+      '  ' + (r.reasonSnippet || '').slice(0, 60);
 
     console.log(`  ${row}`);
   });
@@ -642,6 +727,8 @@ async function main() {
   console.log(line);
   console.log('  NOTES');
   console.log(thinLine);
+  const companyNamesResolved = rows.filter(r => r.companyName).length;
+  console.log(`  * Company names: ${companyNamesResolved} of ${rows.length} extracted (best-effort) from vote result reason.body.`);
   console.log(`  * FA approval dates: ${approvalByProvider.size > 0 ? `${approvalByProvider.size} found` : 'NOT available'} from on-chain GrantFeaturedAppRight vote results.`);
   console.log(`  * Milestone timing: Binary-searched ${searches.length} milestones, resolved ${roundDateMap.size} round dates.`);
   console.log('  * "Cumulative CC" = total app rewards mined by the provider party since launch.');
