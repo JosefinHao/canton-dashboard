@@ -112,137 +112,202 @@ function deepFind(obj, key) {
 
 // ─── Company name extraction ────────────────────────────────────────────────
 
+// Fallback overrides for cases where reason.body doesn't contain the company name
+// or is too ambiguous to parse. Keyed by app name (provider prefix before ::).
+const COMPANY_OVERRIDES = {
+  '3trade_validator_admin': '3Trade',
+  'Cumberland-GasStation-1': 'Cumberland',
+  'IntellectEU-validator-1': 'IntellectEU',
+  'nodetech-mainnet-1': 'NodeTech',
+};
+
 /**
  * Best-effort extraction of company/app name from a vote result reason.body.
  * Returns { name, snippet } or { name: null, snippet }.
  */
-function extractCompanyName(reasonBody) {
+function extractCompanyName(reasonBody, appName) {
+  if (!reasonBody && !appName) return { name: null, snippet: '' };
+
+  // Check overrides first
+  if (appName && COMPANY_OVERRIDES[appName]) {
+    const text = (reasonBody || '').trim();
+    const sentenceEnd = text.search(/(?<=[.!?])\s/);
+    const snippet = sentenceEnd > 0 ? text.slice(0, sentenceEnd + 1).trim() : text;
+    return { name: COMPANY_OVERRIDES[appName], snippet };
+  }
+
   if (!reasonBody) return { name: null, snippet: '' };
   const text = reasonBody.trim();
   // Extract the first sentence for the note column
   const sentenceEnd = text.search(/(?<=[.!?])\s/);
   const snippet = sentenceEnd > 0 ? text.slice(0, sentenceEnd + 1).trim() : text;
 
-  // Skip generic/uninformative bodies
-  if (/^(Tokenomics has agreed|An additional featured)/i.test(text)) {
-    return { name: null, snippet };
-  }
-
-  // Clean up an extracted name: strip possessive suffixes, articles, etc.
+  // Clean up an extracted name: strip possessive suffixes, trailing prepositions, etc.
   function clean(raw) {
-    return raw
+    let name = raw
       .replace(/['']s\s+App$/i, '')
       .replace(/'s App$/i, '')
+      .replace(/\s+app$/i, '')
       .replace(/\s+by\s+.+$/i, '')
-      .replace(/^The\s+/i, '')
       .trim();
+    // Strip leading "The" only when followed by a multi-word phrase (article, not part of name)
+    // Keep it for short names like "The Tie"
+    if (/^The\s+/i.test(name) && name.split(/\s+/).length > 2) {
+      name = name.replace(/^The\s+/i, '');
+    }
+    return name;
   }
+
+  // ── Tokenomics reinstatement pattern ──────────────────────────────────
+  // “Tokenomics has agreed to reinstate the FA rights for the {Name} app”
+  const reinstateMatch = text.match(/reinstate the FA rights for the (.+?)(?:\s+app\b)/i);
+  if (reinstateMatch) return { name: clean(reinstateMatch[1]), snippet };
 
   // ── Indirect patterns (name is NOT at the start) ──────────────────────
 
-  // "Grant Feature App right to {Name}'s app ..." or "Grant Feature App right to {Name}'s ..."
+  // “Grant Feature App right to {Name}'s app ...”
   const grantToMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)(?:'s|['']s)\s/i);
   if (grantToMatch) return { name: clean(grantToMatch[1]), snippet };
 
-  // "Grant Feature App right to {Name} "{AppName}" per ..."
-  const grantToQuotedMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)\s*[""“]/i);
+  // “Grant Feature App right to {Name} “{AppName}” per ...”
+  const grantToQuotedMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)\s*[“””]/i);
   if (grantToQuotedMatch) return { name: clean(grantToQuotedMatch[1]), snippet };
 
-  // "Grant featured app rights to {Name} app ..."
-  const grantToAppMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)(?:\s+app\b|\s+per\b|\s*$)/i);
+  // “Grant featured app rights to {Name} app ...” / “Grant feature app right for the new {Name} app”
+  const grantToAppMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) (?:to|for the new|for) (.+?)(?:\s+app\b|\s+per\b|\s*$)/i);
   if (grantToAppMatch) return { name: clean(grantToAppMatch[1]), snippet };
 
-  // "A second PartyID has been approved for {Name}'s ..."
+  // “A second PartyID has been approved for {Name}'s ...”
   const secondPartyMatch = text.match(/PartyID (?:has been|was) approved for (.+?)(?:'s|['']s)\s/i);
   if (secondPartyMatch) return { name: clean(secondPartyMatch[1]), snippet };
 
-  // "This is the provider party for the {Name} app"
+  // “This is the provider party for the {Name} app”
   const providerPartyMatch = text.match(/provider party for (?:the )?(.+?)(?:\s+app\b|[;.,])/i);
   if (providerPartyMatch) return { name: clean(providerPartyMatch[1]), snippet };
 
-  // "This vote corrects the ... for the {Name} ..." or "...PartyID for the {Name} ..."
-  const correctsMatch = text.match(/(?:corrects|updates|fixes).*?(?:for|of) (?:the )?(.+?)(?:\s+(?:app|wallet|platform)\b|[;.,]|\s+(?:C8|FA)\b)/i);
+  // “This vote corrects the ... for the {Name} ...” or “...PartyID for the {Name} ...”
+  const correctsMatch = text.match(/(?:corrects|updates|fixes).*?(?:for|of) (?:the )?(.+?)(?:\s+(?:app|wallet|platform|Vault)\b|[;.,]|\s+(?:C8|FA)\b)/i);
   if (correctsMatch) return { name: clean(correctsMatch[1]), snippet };
 
-  // "Featuring the party for {Name} ..."
+  // “Featuring the party for {Name} ...”
   const featuringPartyMatch = text.match(/^Featuring the (?:party|decentralized party) for (.+?)(?:[;.,]|\s*$)/i);
   if (featuringPartyMatch) return { name: clean(featuringPartyMatch[1]), snippet };
 
-  // "Featuring the {Name} application from {Company}"
+  // “Featuring the {Name} application from {Company}”
   const featuringAppMatch = text.match(/^Featuring the (.+?) application/i);
   if (featuringAppMatch) return { name: clean(featuringAppMatch[1]), snippet };
 
-  // "Corrected proposal to feature {Name}'s ..."
+  // “Corrected proposal to feature {Name}'s ...”
   const correctedFeatureMatch = text.match(/proposal to feature (.+?)(?:'s|['']s)\s/i);
   if (correctedFeatureMatch) return { name: clean(correctedFeatureMatch[1]), snippet };
 
-  // "Proposal to feature the {Name} by ..."
+  // “Corrected vote provide featured app status to {Name}'s ...”
+  const correctedVoteMatch = text.match(/(?:vote|proposal)\s+provide\s+featured app status to (.+?)(?:'s|['']s)\s/i);
+  if (correctedVoteMatch) return { name: clean(correctedVoteMatch[1]), snippet };
+
+  // “Proposal to feature the {Name} by ...”
   const proposalMatch = text.match(/proposal to feature (?:the )?(.+?) by /i);
   if (proposalMatch) return { name: clean(proposalMatch[1]), snippet };
 
-  // "{Requester} requests approval to feature {Name} ..."
+  // “{Requester} requests approval to feature {Name} ...”
   const requestsApprovalMatch = text.match(/requests approval to feature (.+?)(?:\s+(?:App|on)\b|[;.,])/i);
   if (requestsApprovalMatch) return { name: clean(requestsApprovalMatch[1]), snippet };
 
-  // "feature the {Name} ..." (generic)
+  // “feature the {Name} ...” (generic)
   const featureTheMatch = text.match(/feature the (.+?)(?:\s+(?:app|per|from)\b|[;.,(\[])/i);
   if (featureTheMatch && featureTheMatch[1].length < 40) return { name: clean(featureTheMatch[1]), snippet };
 
+  // “{Thing} by {Name} are ...” (e.g., “Data by Kaiko are key...”)
+  const byNameMatch = text.match(/^\w+ by (.+?) (?:are|is|has|was)\b/i);
+  if (byNameMatch) return { name: clean(byNameMatch[1]), snippet };
+
+  // “In a meeting ... {Name} received ...”
+  const meetingReceivedMatch = text.match(/(?:meeting|committee).*?\b([A-Z][A-Za-z0-9]+(?:\s+[A-Z][A-Za-z0-9]+)*)\s+received/i);
+  if (meetingReceivedMatch) return { name: clean(meetingReceivedMatch[1]), snippet };
+
+  // “Following the review period...” — extract from later mention: “...the {Name} app...”
+  const followingMatch = text.match(/^Following\b.*?\bthe\s+(.+?)\s+(?:app|application|platform)\b/i);
+  if (followingMatch) return { name: clean(followingMatch[1]), snippet };
+
   // ── Direct patterns (name IS at the start) ────────────────────────────
 
-  // "New partyID for {Name}. ..."
+  // “New partyID for {Name}. ...”
   const newPartyMatch = text.match(/^New partyID for ([^.,]+)/i);
   if (newPartyMatch) return { name: clean(newPartyMatch[1]), snippet };
 
-  // "{Name}'s App is approved..."
-  const possessiveMatch = text.match(/^(.+?)(?:'s|['']s|s') App/i);
+  // “{Name}'s App has been...” / “{Name}'s App is approved...”
+  const possessiveAppMatch = text.match(/^(.+?)(?:'s|['']s|s') App\b/i);
+  if (possessiveAppMatch) return { name: clean(possessiveAppMatch[1]), snippet };
+
+  // “{Name}'s vision is...” / “{Name}'s app has...” (possessive + other nouns)
+  const possessiveMatch = text.match(/^(.+?)(?:'s|['']s)\s+(?:vision|app|support|wallet|platform)\b/i);
   if (possessiveMatch) return { name: clean(possessiveMatch[1]), snippet };
 
-  // "{Name} App is approved..."
+  // “{Name} App is approved...”
   const appApprovedMatch = text.match(/^(.+?) App is approved/i);
   if (appApprovedMatch) return { name: clean(appApprovedMatch[1]), snippet };
 
-  // "{Name} is approved for..."
+  // “{Name} is approved for...”
   const isApprovedMatch = text.match(/^(.+?) is approved/i);
   if (isApprovedMatch) return { name: clean(isApprovedMatch[1]), snippet };
 
-  // "{Name} is granted..."
+  // “{Name} is granted...”
   const isGrantedMatch = text.match(/^(.+?) is granted/i);
   if (isGrantedMatch) return { name: clean(isGrantedMatch[1]), snippet };
 
-  // "{Name} has been restored..."
+  // “{Name} has been restored...”
   const restoredMatch = text.match(/^(.+?) has been restored/i);
   if (restoredMatch) return { name: clean(restoredMatch[1]), snippet };
 
-  // "{Name} has been pre-approved..." / "{Name} has been approved..."
+  // “{Name} has been pre-approved...” / “{Name} has been approved...”
   const preApprovedMatch = text.match(/^(.+?) has been (?:pre-)?approved/i);
   if (preApprovedMatch && preApprovedMatch[1].length < 40) return { name: clean(preApprovedMatch[1]), snippet };
 
-  // "{Name} has created..." / "{Name} has ..."
+  // “{Name} has created...” / “{Name} has ...”
   const hasMatch = text.match(/^(.+?) has /i);
   if (hasMatch && hasMatch[1].length < 40) return { name: clean(hasMatch[1]), snippet };
 
-  // "{Name} would like..."
+  // “{Name} would like...”
   const wouldMatch = text.match(/^(.+?) would like/i);
   if (wouldMatch) return { name: clean(wouldMatch[1]), snippet };
 
-  // "{Name} lets users..." / "{Name} lets ..."
+  // “{Name} lets users...” / “{Name} lets ...”
   const letsMatch = text.match(/^(.+?) lets /i);
   if (letsMatch) return { name: clean(letsMatch[1]), snippet };
 
-  // "{Name} is a ..." (description pattern)
+  // “{Name} (by {Company})” — parenthetical company
+  const parenMatch = text.match(/^(.+?)\s*\(/i);
+  if (parenMatch && parenMatch[1].length < 40 && parenMatch[1].length >= 3) {
+    return { name: clean(parenMatch[1]), snippet };
+  }
+
+  // “{Name} is a ...” (description pattern)
   const isAMatch = text.match(/^(.+?) is a /i);
   if (isAMatch && isAMatch[1].length < 40) return { name: clean(isAMatch[1]), snippet };
 
-  // "{Name} is the ..."
+  // “{Name} is the ...”
   const isTheMatch = text.match(/^(.+?) is the /i);
   if (isTheMatch && isTheMatch[1].length < 40) return { name: clean(isTheMatch[1]), snippet };
 
-  // "{Name} tokenizes..." / "{Name} enables..." / "{Name} creates..." etc.
-  const verbMatch = text.match(/^(.+?) (?:tokenizes|enables|creates|records|manages|provides|offers|connects|partners|brings|serves|presents|operates|plans|will|calculates|acting)/i);
+  // “{Name} is expanding...” / “{Name} is ...” + gerund
+  const isGerundMatch = text.match(/^(.+?) is \w+ing\b/i);
+  if (isGerundMatch && isGerundMatch[1].length < 40) return { name: clean(isGerundMatch[1]), snippet };
+
+  // “{Name} - the ...” (dash separator, e.g., “Supanova - the consumer superapp”)
+  const dashMatch = text.match(/^(.+?)\s+[-–—]\s+/);
+  if (dashMatch && dashMatch[1].length < 40) return { name: clean(dashMatch[1]), snippet };
+
+  // “{Name} – ...” (em-dash without spaces, e.g., “PropNotary – Trusted Document”)
+  const emDashMatch = text.match(/^(.+?)\s*[–—]\s*/);
+  if (emDashMatch && emDashMatch[1].length < 40 && emDashMatch[1].length >= 3) {
+    return { name: clean(emDashMatch[1]), snippet };
+  }
+
+  // “{Name} tokenizes...” / “{Name} enables...” / etc.
+  const verbMatch = text.match(/^(.+?) (?:tokenizes|enables|creates|records|manages|provides|offers|connects|partners|brings|serves|presents|operates|plans|will|calculates|acting|acts|changes|proposes|received)/i);
   if (verbMatch && verbMatch[1].length < 40) return { name: clean(verbMatch[1]), snippet };
 
-  // "{Name} operating ..."
+  // “{Name} operating ...”
   const operatingMatch = text.match(/^(.+?) operating /i);
   if (operatingMatch && operatingMatch[1].length < 40) return { name: clean(operatingMatch[1]), snippet };
 
@@ -636,7 +701,7 @@ async function main() {
       const provider = payload.provider || app.provider || '';
       const appName = payload.appName || payload.app_name || payload.name || provider.split('::')[0] || 'Unknown';
       const reasonBody = reasonByProvider.get(provider) || '';
-      const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody);
+      const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody, appName);
       const cum = rewardsByProvider.get(provider) || 0;
       const approval = approvalByProvider.get(provider) || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
