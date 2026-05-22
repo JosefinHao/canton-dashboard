@@ -150,6 +150,7 @@ const COMPANY_OVERRIDES = {
   'OKX-VALIDATOR-2': 'OKX',
   'TRIZEGroup-cantonMainnetVali': 'T-RIZE',
   'CantonOps': 'Fairmint',
+  'onchain-transfer-agent': 'Fairmint',
 };
 
 /**
