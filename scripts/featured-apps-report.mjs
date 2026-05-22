@@ -897,7 +897,9 @@ async function main() {
   console.log('  NOTES');
   console.log(thinLine);
   const companyNamesResolved = rows.filter(r => r.companyName).length;
-  console.log(`  * Company names: ${companyNamesResolved} of ${rows.length} extracted (best-effort) from vote result reason.body.`);
+  console.log(`  * Company names: ${companyNamesResolved} of ${rows.length} resolved. The Scan API does not provide company names directly,`);
+  console.log('    so they have been individually extracted from the governance vote records (reason.body field)');
+  console.log('    for each provider party ID, using pattern matching with manual overrides for ambiguous cases.');
   console.log(`  * FA approval dates: ${approvalByProvider.size > 0 ? `${approvalByProvider.size} found` : 'NOT available'} from on-chain GrantFeaturedAppRight vote results.`);
   console.log(`  * Milestone timing: Binary-searched ${searches.length} milestones, resolved ${roundDateMap.size} round dates.`);
   console.log('  * "Cumulative CC" = total app rewards mined by the provider party since launch.');
