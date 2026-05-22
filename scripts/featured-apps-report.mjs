@@ -142,6 +142,7 @@ const COMPANY_OVERRIDES = {
   'auth0_007c691c4d28726455d23d': 'Axymos',
   'pixelplex-mainnet-3': 'PixelPlex',
   'cypherock-mainnet-1': 'Open Vector',
+  'modo': 'StakeTab',
 };
 
 /**
