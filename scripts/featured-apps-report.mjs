@@ -119,6 +119,27 @@ const COMPANY_OVERRIDES = {
   'Cumberland-GasStation-1': 'Cumberland',
   'IntellectEU-validator-1': 'IntellectEU',
   'nodetech-mainnet-1': 'NodeTech',
+  'Fairmint-validator-1': 'Fairmint',
+  'Bridge-Operator': 'USDC Bridge',
+  'dfns1': 'Dfns',
+  'handlpay-main-1': 'HandlPay',
+  'elk-Validator-2': 'TRNGLE',
+  'fulcrum-point': 'SciFeCap',
+  'SatsTerminal-main-1': 'OneSwap',
+  'CopperClearLoop': 'Copper',
+  'CopperWrappedAssets': 'Copper',
+  'CoinMetrics-validator-1': 'CoinMetrics',
+  'Tokino-validator-1': 'Tokino',
+  'Thetamarkets': 'Thetamarkets',
+  'twmain-treasury-1': 'Tradeweb',
+  'HeliosFinance-Mainnet-1': 'Helios',
+  'mexc-mainNet-01': 'MEXC',
+  'lithiumdigital-validator-1': 'Lithium Digital',
+  'Tradecraft': 'Tradecraft',
+  'blackmantacapital-primary-1': 'Black Manta Capital',
+  'TextureCapital-validator-1': 'Texture Capital',
+  '23d169c2-0909-4c70-81d1-1922': 'Copper',
+  'auth0_007c691c4d28726455d23d': 'Axymos',
 };
 
 /**
@@ -171,7 +192,10 @@ function extractCompanyName(reasonBody, appName) {
 
   // “Grant Feature App right to {Name} “{AppName}” per ...”
   const grantToQuotedMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)\s*[“””]/i);
-  if (grantToQuotedMatch) return { name: clean(grantToQuotedMatch[1]), snippet };
+  if (grantToQuotedMatch) {
+    const extracted = clean(grantToQuotedMatch[1]).replace(/\s*[“”“”].*$/, '').trim();
+    return { name: extracted, snippet };
+  }
 
   // “Grant featured app rights to {Name} app ...” / “Grant feature app right for the new {Name} app”
   const grantToAppMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) (?:to|for the new|for) (.+?)(?:\s+app\b|\s+per\b|\s*$)/i);
