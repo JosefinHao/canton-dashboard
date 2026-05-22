@@ -130,7 +130,7 @@ const COMPANY_OVERRIDES = {
   'CopperWrappedAssets': 'Copper',
   'CoinMetrics-validator-1': 'CoinMetrics',
   'Tokino-validator-1': 'Tokino',
-  'Thetamarkets': 'Thetamarkets',
+  'Thetamarkets': 'Thetanuts Finance',
   'twmain-treasury-1': 'Tradeweb',
   'HeliosFinance-Mainnet-1': 'Helios',
   'mexc-mainNet-01': 'MEXC',
