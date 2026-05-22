@@ -13,6 +13,7 @@
  *   node scripts/featured-apps-report.mjs
  *   node scripts/featured-apps-report.mjs --json
  *   node scripts/featured-apps-report.mjs --csv
+ *   node scripts/featured-apps-report.mjs --party-map
  *   node scripts/featured-apps-report.mjs --debug
  *   SCAN_URL=https://... node scripts/featured-apps-report.mjs
  *
@@ -474,6 +475,7 @@ async function main() {
   const flags = new Set(process.argv.slice(2));
   const wantJson = flags.has('--json');
   const wantCsv = flags.has('--csv');
+  const wantPartyMap = flags.has('--party-map');
   const debug = flags.has('--debug');
 
   console.error(`Scan API: ${SCAN_BASE}`);
@@ -796,6 +798,27 @@ async function main() {
       totalFeaturedApps: rows.length, totalLifetimeRewards,
       appsAbove10m: above10m, appsAbove25m: above25m, canLockDay1: lockReady,
       apps: rows,
+    }, null, 2));
+    return;
+  }
+
+  // ── Output: Party ID → Company Name map ────────────────────────────────────
+
+  if (wantPartyMap) {
+    const mapping = rows.map(r => ({
+      partyId: r.provider,
+      companyName: r.companyName || null,
+      appName: r.appName,
+      faApproved: r.approvalDate ? fmtDate(r.approvalDate) : null,
+    }));
+    console.log(JSON.stringify({
+      _metadata: {
+        description: 'Reference mapping of Canton Network Featured App provider party IDs to company names.',
+        methodology: 'The Scan API does not provide company names directly, so they have been individually extracted from the governance vote records (reason.body field) for each provider party ID, using pattern matching with manual overrides for ambiguous cases.',
+        generatedAt: now.toISOString().slice(0, 10),
+        totalApps: mapping.length,
+      },
+      apps: mapping,
     }, null, 2));
     return;
   }
