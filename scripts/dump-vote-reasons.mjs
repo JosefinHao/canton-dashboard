@@ -4,24 +4,30 @@
  * vote results to see what company/description data is available.
  */
 
-const SCAN_BASE =
-  process.env.SCAN_URL ||
-  'https://scan.sv-1.global.canton.network.sync.global/api/scan';
+const SCAN_ENDPOINTS = [
+  process.env.SCAN_URL || 'https://scan.sv-1.global.canton.network.sync.global/api/scan',
+  'https://scan.sv-1.global.canton.network.digitalasset.com/api/scan',
+  'https://scan.sv-2.global.canton.network.digitalasset.com/api/scan',
+  'https://scan.sv-1.global.canton.network.cumberland.io/api/scan',
+  'https://scan.sv-1.global.canton.network.proofgroup.xyz/api/scan',
+];
 
 async function main() {
-  const res = await fetch(`${SCAN_BASE}/v0/admin/sv/voteresults`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ actionName: 'SRARC_GrantFeaturedAppRight', accepted: true, limit: 50 }),
-    signal: AbortSignal.timeout(30_000),
-  });
-
-  if (!res.ok) {
-    console.error(`Error: ${res.status} ${await res.text()}`);
-    process.exit(1);
+  let data;
+  for (const base of SCAN_ENDPOINTS) {
+    try {
+      console.error(`Trying ${base}...`);
+      const res = await fetch(`${base}/v0/admin/sv/voteresults`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ actionName: 'SRARC_GrantFeaturedAppRight', accepted: true, limit: 50 }),
+        signal: AbortSignal.timeout(30_000),
+      });
+      if (res.ok) { data = await res.json(); break; }
+      console.error(`  → ${res.status}`);
+    } catch (e) { console.error(`  → ${e.message}`); }
   }
-
-  const data = await res.json();
+  if (!data) { console.error('All endpoints failed'); process.exit(1); }
   const results = data.dso_rules_vote_results || [];
 
   console.log(`Got ${results.length} vote results\n`);
