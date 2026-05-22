@@ -731,7 +731,7 @@ async function main() {
       const reasonBody = reasonByProvider.get(provider) || '';
       const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody, appName);
       const cum = rewardsByProvider.get(provider) || 0;
-      const approval = approvalByProvider.get(provider) || null;
+      const approval = parseTimestamp(app.created_at) || approvalByProvider.get(provider) || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
 
       const mr = milestoneRounds.get(provider) || {};
@@ -897,7 +897,9 @@ async function main() {
   console.log('  NOTES');
   console.log(thinLine);
   const companyNamesResolved = rows.filter(r => r.companyName).length;
-  console.log(`  * Company names: ${companyNamesResolved} of ${rows.length} extracted (best-effort) from vote result reason.body.`);
+  console.log(`  * Company names: ${companyNamesResolved} of ${rows.length} resolved. The Scan API does not provide company names directly,`);
+  console.log('    so they have been individually extracted from the governance vote records (reason.body field)');
+  console.log('    for each provider party ID, using pattern matching with manual overrides for ambiguous cases.');
   console.log(`  * FA approval dates: ${approvalByProvider.size > 0 ? `${approvalByProvider.size} found` : 'NOT available'} from on-chain GrantFeaturedAppRight vote results.`);
   console.log(`  * Milestone timing: Binary-searched ${searches.length} milestones, resolved ${roundDateMap.size} round dates.`);
   console.log('  * "Cumulative CC" = total app rewards mined by the provider party since launch.');
