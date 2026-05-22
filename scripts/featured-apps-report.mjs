@@ -148,6 +148,7 @@ const COMPANY_OVERRIDES = {
   'ValaWallet-FA': 'Finoa Consensus Services',
   'TRIZEGroup-RIZEScore': 'T-RIZE',
   'OKX-VALIDATOR-2': 'OKX',
+  'TRIZEGroup-cantonMainnetVali': 'T-RIZE',
 };
 
 /**
