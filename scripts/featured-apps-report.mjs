@@ -149,12 +149,16 @@ const COMPANY_OVERRIDES = {
 function extractCompanyName(reasonBody, appName) {
   if (!reasonBody && !appName) return { name: null, snippet: '' };
 
-  // Check overrides first
-  if (appName && COMPANY_OVERRIDES[appName]) {
-    const text = (reasonBody || '').trim();
-    const sentenceEnd = text.search(/(?<=[.!?])\s/);
-    const snippet = sentenceEnd > 0 ? text.slice(0, sentenceEnd + 1).trim() : text;
-    return { name: COMPANY_OVERRIDES[appName], snippet };
+  // Check overrides first (supports prefix matching for long app names)
+  if (appName) {
+    const override = COMPANY_OVERRIDES[appName] ||
+      Object.entries(COMPANY_OVERRIDES).find(([k]) => appName.startsWith(k))?.[1];
+    if (override) {
+      const text = (reasonBody || '').trim();
+      const sentenceEnd = text.search(/(?<=[.!?])\s/);
+      const snippet = sentenceEnd > 0 ? text.slice(0, sentenceEnd + 1).trim() : text;
+      return { name: override, snippet };
+    }
   }
 
   if (!reasonBody) return { name: null, snippet: '' };
