@@ -1,0 +1,964 @@
+{
+  "_metadata": {
+    "description": "Reference mapping of Canton Network Featured App provider party IDs to company names.",
+    "methodology": "The Scan API does not provide company names directly, so they have been individually extracted from the governance vote records (reason.body field) for each provider party ID, using pattern matching with manual overrides for ambiguous cases.",
+    "generatedAt": "2026-05-22",
+    "totalApps": 159
+  },
+  "apps": [
+    {
+      "partyId": "party-28dc4516-b5ca-44ff-86c7-2107e90a6807::1220b8301e18aa8a401d6e34e6c20f8b0243183c514373bca8f1b6b9270246341a9e",
+      "companyName": "Brale",
+      "appName": "party-28dc4516-b5ca-44ff-86c7-2107e90a6807",
+      "faApproved": "2024-12-11"
+    },
+    {
+      "partyId": "3trade_validator_admin::122060327be2fbbda7498a867507bf4d1cd83cd079382fa8af1d4be5cad79248c102",
+      "companyName": "3Trade",
+      "appName": "3trade_validator_admin",
+      "faApproved": "2024-06-29"
+    },
+    {
+      "partyId": "auth0_007c6643538f2eadd3e573dd05b9::12205bcc106efa0eaa7f18dc491e5c6f5fb9b0cc68dc110ae66f4ed6467475d7c78e",
+      "companyName": "DA Utility",
+      "appName": "auth0_007c6643538f2eadd3e573dd05b9",
+      "faApproved": "2025-01-16"
+    },
+    {
+      "partyId": "Cumberland-GasStation-1::1220987fe52357fc17dc0a3552a691d1e1e685152bbe467acff604503cf301780bcf",
+      "companyName": "Cumberland",
+      "appName": "Cumberland-GasStation-1",
+      "faApproved": "2024-12-09"
+    },
+    {
+      "partyId": "cantonloop-mainnet-1::12205fb70ce14897d06baec18a4b889f296c765a8325fd3d99cc084b1f980426ac12",
+      "companyName": "Canton Loop",
+      "appName": "cantonloop-mainnet-1",
+      "faApproved": "2025-08-28"
+    },
+    {
+      "partyId": "Fairmint-validator-1::122047f456985651be8ea317881a9af4f04521417ce1a449b75543541acf33aac4d2",
+      "companyName": "Fairmint",
+      "appName": "Fairmint-validator-1",
+      "faApproved": "2025-06-21"
+    },
+    {
+      "partyId": "temple-mainnet-1::1220f238bb79df3efbbac2ea964c3cd501003971a2cb59043e2dac50b06e85b8620f",
+      "companyName": "Temple",
+      "appName": "temple-mainnet-1",
+      "faApproved": "2025-09-11"
+    },
+    {
+      "partyId": "send-cantonwallet-1::1220f1b0d7a83c7eaaf6d712d95d5952ea2c801238af9c342e8d83c87dfc45c999dc",
+      "companyName": "Send",
+      "appName": "send-cantonwallet-1",
+      "faApproved": "2025-09-25"
+    },
+    {
+      "partyId": "cantor8-digik-1::12204dcfad78c016ab59babba72d4ffe9bdca8aeaf6299a3f0da59523ee3f765b053",
+      "companyName": "C8 Wallet",
+      "appName": "cantor8-digik-1",
+      "faApproved": "2025-11-05"
+    },
+    {
+      "partyId": "the_tie_validator::1220d3016091c253f526645cce3a0633837b685da083bac4459dad63e61d5c97b5fa",
+      "companyName": "The Tie",
+      "appName": "the_tie_validator",
+      "faApproved": "2025-04-22"
+    },
+    {
+      "partyId": "openvector-mainnet-1::1220ab544a2d6cfd0b8c89af3e2b460f6999030ffb067e63dddd60ea265db3c7e3a5",
+      "companyName": "OpenVector",
+      "appName": "openvector-mainnet-1",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "pixelplex-mainnet-3::12209a8ec282ec94bc941172f3052221413031f27394685693e2d83e4bfab6423ac6",
+      "companyName": "PixelPlex",
+      "appName": "pixelplex-mainnet-3",
+      "faApproved": "2025-11-14"
+    },
+    {
+      "partyId": "proofgroup-validator-1::122021b7624f77a1a095714acc74337bebb0f49cf0f8ea565d4f0b12e09bb5deb1e1",
+      "companyName": "Proof Group",
+      "appName": "proofgroup-validator-1",
+      "faApproved": "2025-04-07"
+    },
+    {
+      "partyId": "auth0_007c68129abae6733ca8b889162e::122064aab814d8d02f957120e33a970a5aca7c14097eab85ab40a36ddff26c70c44b",
+      "companyName": "Sync Insights",
+      "appName": "auth0_007c68129abae6733ca8b889162e",
+      "faApproved": "2025-05-29"
+    },
+    {
+      "partyId": "931f692d-21d7-4548-82b4-d0e1c6ec7736::1220921c9c5579f2648609d8b007793ffbe31efb311c79c53cbc68571827c1c5ebee",
+      "companyName": "HydraX",
+      "appName": "931f692d-21d7-4548-82b4-d0e1c6ec7736",
+      "faApproved": "2025-03-20"
+    },
+    {
+      "partyId": "IntellectEU-validator-1::122085181345795b9e58122cef90b8df61ddfe128cdaf9abbcb77f8cef92950c1d05",
+      "companyName": "IntellectEU",
+      "appName": "IntellectEU-validator-1",
+      "faApproved": "2025-04-22"
+    },
+    {
+      "partyId": "CantonSwap::122096fe076cc065af0cb38f94caa60e8ddfecbe8f0cfe10655ae7aa06fab99c66b7",
+      "companyName": "CantonSwap",
+      "appName": "CantonSwap",
+      "faApproved": "2025-08-21"
+    },
+    {
+      "partyId": "auth0_007c689b657291598790daabbdca::1220d3016091c253f526645cce3a0633837b685da083bac4459dad63e61d5c97b5fa",
+      "companyName": "Cantara",
+      "appName": "auth0_007c689b657291598790daabbdca",
+      "faApproved": "2025-09-02"
+    },
+    {
+      "partyId": "iBTC-validator-1::1220409a9fcc5ff6422e29ab978c22c004dde33202546b4bcbde24b25b85353366c2",
+      "companyName": "iBTC",
+      "appName": "iBTC-validator-1",
+      "faApproved": "2025-07-05"
+    },
+    {
+      "partyId": "party-8cc0af7a-8265-4c2f-984e-ef299c3c103f::1220b8301e18aa8a401d6e34e6c20f8b0243183c514373bca8f1b6b9270246341a9e",
+      "companyName": "Brale",
+      "appName": "party-8cc0af7a-8265-4c2f-984e-ef299c3c103f",
+      "faApproved": "2025-06-17"
+    },
+    {
+      "partyId": "Cantex-validator-1::122038c015864f106cfed48bb9106b7c89982368d27956ffcdfda6c38328f0909b8c",
+      "companyName": "Cantex",
+      "appName": "Cantex-validator-1",
+      "faApproved": "2026-01-28"
+    },
+    {
+      "partyId": "cypherock-mainnet-1::1220583c5b03a866fd8e5f09737cdb51818c7b4b52a8e8c9b0cc2f4d1b082e95b6d9",
+      "companyName": "Open Vector",
+      "appName": "cypherock-mainnet-1",
+      "faApproved": "2025-11-15"
+    },
+    {
+      "partyId": "Bridge-Operator::1220c8448890a70e65f6906bd48d797ee6551f094e9e6a53e329fd5b2b549334f13f",
+      "companyName": "USDC Bridge",
+      "appName": "Bridge-Operator",
+      "faApproved": "2025-10-23"
+    },
+    {
+      "partyId": "poolparty::1220f1b0d7a83c7eaaf6d712d95d5952ea2c801238af9c342e8d83c87dfc45c999dc",
+      "companyName": "Pool Party",
+      "appName": "poolparty",
+      "faApproved": "2026-01-25"
+    },
+    {
+      "partyId": "feat-unhedged-app::12208567a714a12d1ba486a9fa702a0a438b5b3b895510eca791e3ef965a24be8832",
+      "companyName": "Unhedged",
+      "appName": "feat-unhedged-app",
+      "faApproved": "2025-12-12"
+    },
+    {
+      "partyId": "auth0_007c683dbd71f9d177d5fdd09f3c::1220d3016091c253f526645cce3a0633837b685da083bac4459dad63e61d5c97b5fa",
+      "companyName": "The Tie",
+      "appName": "auth0_007c683dbd71f9d177d5fdd09f3c",
+      "faApproved": "2025-06-12"
+    },
+    {
+      "partyId": "noves-translate::1220dd5cc6e969cd7d7c11e339fbd07fab5f6fa1f999dc09339228d17299d9d68941",
+      "companyName": "Noves",
+      "appName": "noves-translate",
+      "faApproved": "2025-10-03"
+    },
+    {
+      "partyId": "kora-app::1220efef3108b73891ecb7992fadf48bf7bd99e93ad071ec95da7cc40a53a8ebe8bf",
+      "companyName": "Kora",
+      "appName": "kora-app",
+      "faApproved": "2026-03-07"
+    },
+    {
+      "partyId": "google-oauth2_007c106967619021219072829::122033209fcbadac068ae0eb263e10da799e8314a7a0af338fdd8701d98d10efc1b5",
+      "companyName": "Bitwave",
+      "appName": "google-oauth2_007c106967619021219072829",
+      "faApproved": "2025-06-01"
+    },
+    {
+      "partyId": "tenkai-main-1::122092e9dd81d0a52f38b110f6b2e6426713418cc4db363c5c9b2c8cb6e46922c671",
+      "companyName": "Cansai",
+      "appName": "tenkai-main-1",
+      "faApproved": "2026-01-13"
+    },
+    {
+      "partyId": "cantonnodes-validator-1::12202aabb1637789bf00254a7893853860d8458c7c0235b06433611d6bf41e812b10",
+      "companyName": "Canton Nodes",
+      "appName": "cantonnodes-validator-1",
+      "faApproved": "2025-09-25"
+    },
+    {
+      "partyId": "foundinalsunthy-mainnet-1::12201004202ad4f2ba69d160e148899596aa294db698917f3aaef063afcb0a412c83",
+      "companyName": "Foundinals Lab",
+      "appName": "foundinalsunthy-mainnet-1",
+      "faApproved": "2025-11-24"
+    },
+    {
+      "partyId": "23d169c2-0909-4c70-81d1-1922de6febaa::12202ba1ca9f3578e7fa2fdd1517a40d553621dbdee4227d0a37022591abae821ef3",
+      "companyName": "Copper",
+      "appName": "23d169c2-0909-4c70-81d1-1922de6febaa",
+      "faApproved": "2025-08-16"
+    },
+    {
+      "partyId": "dfns1::122035d991d57991b9ef733ac4fb475de6257f17b20254a2f3f17c5b12322ed4174c",
+      "companyName": "Dfns",
+      "appName": "dfns1",
+      "faApproved": "2025-06-15"
+    },
+    {
+      "partyId": "modulo-mainnet-2::1220bbd47c5a10d5540c420e1f8f0f1fd513464ec6110dbd5123970dbe3b538805d3",
+      "companyName": "Modulo",
+      "appName": "modulo-mainnet-2",
+      "faApproved": "2025-12-08"
+    },
+    {
+      "partyId": "silvana-orderbook::1220997446016f1e96be9215bab224eace372752853ef99175c332307489bccbb07b",
+      "companyName": "Silvana Book",
+      "appName": "silvana-orderbook",
+      "faApproved": "2026-01-13"
+    },
+    {
+      "partyId": "Supanova-validator-1::12205c9e7df3ce671bc5e285120cb6e4dfae5ee3029c04fa82f1cd828c5e7197d882",
+      "companyName": "Supanova",
+      "appName": "Supanova-validator-1",
+      "faApproved": "2026-01-16"
+    },
+    {
+      "partyId": "tradefast-mainnet-1::1220674b79cae334aa788ffa394a6bd7d10e427d9f2abd418048e5be49ceb4256ca4",
+      "companyName": "Trade.Fast",
+      "appName": "tradefast-mainnet-1",
+      "faApproved": "2026-02-05"
+    },
+    {
+      "partyId": "kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060",
+      "companyName": "Kairo",
+      "appName": "kairo-mainnet",
+      "faApproved": "2025-12-16"
+    },
+    {
+      "partyId": "handlpay-main-1::12207ac147ad3e95894e7a507da3f04a819e8996f0bdf31c084ab3b77e51746b03cf",
+      "companyName": "HandlPay",
+      "appName": "handlpay-main-1",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "rho-relay::12202d95f280fada14a100a940bb0901a08882cccc92144bc4cf9856994e192e3e73",
+      "companyName": "Rho Relay",
+      "appName": "rho-relay",
+      "faApproved": "2026-03-04"
+    },
+    {
+      "partyId": "blackmantacapital-primary-1::1220c0d1b398955a314e9662027cb3ef337b0a9390ca3346314070631d72792cee36",
+      "companyName": "Black Manta Capital",
+      "appName": "blackmantacapital-primary-1",
+      "faApproved": "2025-09-13"
+    },
+    {
+      "partyId": "modo::122014f09cb05cffc2f1c524601c4aa91d35908dc55cfe9e92849390137ccc7c0d41",
+      "companyName": "StakeTab",
+      "appName": "modo",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "palladium-validator-1::1220f66f5b1cb78abf40583917b0ea3ce18f546ea5f119de06d0ea1e7d1a250e0f3b",
+      "companyName": "Alpend",
+      "appName": "palladium-validator-1",
+      "faApproved": "2026-01-30"
+    },
+    {
+      "partyId": "nodefortress-finance-1::12203eeb4af78c37754352c3e6235f684bd125069d49cf5827c44350fa8827320ed8",
+      "companyName": "Node Fortress wallet",
+      "appName": "nodefortress-finance-1",
+      "faApproved": "2025-12-26"
+    },
+    {
+      "partyId": "RootsFi-validator-01::1220d5ad22c519120105e0fd8b8c50aa5a48c76e29e6c6768987cd7952c225246f51",
+      "companyName": "Roots",
+      "appName": "RootsFi-validator-01",
+      "faApproved": "2026-03-28"
+    },
+    {
+      "partyId": "Cygnet::1220e655341f4512555d89c14cf52c80a029b57e19d30d80721b4aae5b0a053ab397",
+      "companyName": "Cygnet",
+      "appName": "Cygnet",
+      "faApproved": "2025-10-04"
+    },
+    {
+      "partyId": "handl-issuer::12207ac147ad3e95894e7a507da3f04a819e8996f0bdf31c084ab3b77e51746b03cf",
+      "companyName": "HandlPay",
+      "appName": "handl-issuer",
+      "faApproved": "2026-03-20"
+    },
+    {
+      "partyId": "elk-Validator-2::1220ba8b8b58bcc3dec4c0f3acbe86c4d0df5d7e0ea19bb4ef7168d6bca467ed8a1d",
+      "companyName": "Falcon Capital",
+      "appName": "elk-Validator-2",
+      "faApproved": "2026-03-24"
+    },
+    {
+      "partyId": "acme-lending::1220a7daf7140e112f15a46f2daa52fe9c8651024ff8705bb23c494275dd02209596",
+      "companyName": "ACME",
+      "appName": "acme-lending",
+      "faApproved": "2025-11-28"
+    },
+    {
+      "partyId": "party-fda614d8-0b2e-4d64-9718-b4c497c56a8d::1220f67b4f1c8742d83ac7e12749d98195bf88ff120b2dab369291cf6a2ca27be9a9",
+      "companyName": "Kaiko",
+      "appName": "party-fda614d8-0b2e-4d64-9718-b4c497c56a8d",
+      "faApproved": "2025-08-01"
+    },
+    {
+      "partyId": "Tradecraft::122096fe076cc065af0cb38f94caa60e8ddfecbe8f0cfe10655ae7aa06fab99c66b7",
+      "companyName": "Tradecraft",
+      "appName": "Tradecraft",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "DStash::122016b8c36f538ee05279581ab01465feab275ebe208288c517c020b679f4ee5e9f",
+      "companyName": "DStash",
+      "appName": "DStash",
+      "faApproved": "2025-08-31"
+    },
+    {
+      "partyId": "Obligate-validator-1::1220663cfdc370c3fc447072f3731a838a2a7de757bc29ee0d34b326f317b70db4aa",
+      "companyName": "Obligate",
+      "appName": "Obligate-validator-1",
+      "faApproved": "2025-10-10"
+    },
+    {
+      "partyId": "trakx-validator-1::1220f2acce9d7491505ee5fabb548e9975bbf0f8efaae98404d7399922fb48a03aeb",
+      "companyName": "Trakx",
+      "appName": "trakx-validator-1",
+      "faApproved": "2025-09-25"
+    },
+    {
+      "partyId": "rails-cethMain-1::12200350ba6e96e3b701c3048b5aa013a8c1c08833e8ebf54339cff581055c29003a",
+      "companyName": "cETH",
+      "appName": "rails-cethMain-1",
+      "faApproved": "2026-03-14"
+    },
+    {
+      "partyId": "HeliosFinance-Mainnet-1::12209b2f98a7cf41163b67c3aa980840f83f585a5aec8d11854f8d1387b3b8a98eb0",
+      "companyName": "Helios",
+      "appName": "HeliosFinance-Mainnet-1",
+      "faApproved": "2026-04-14"
+    },
+    {
+      "partyId": "ccbrowser::1220dd5cc6e969cd7d7c11e339fbd07fab5f6fa1f999dc09339228d17299d9d68941",
+      "companyName": "CC Browser",
+      "appName": "ccbrowser",
+      "faApproved": "2025-12-12"
+    },
+    {
+      "partyId": "Modulo-Issuer::1220bbd47c5a10d5540c420e1f8f0f1fd513464ec6110dbd5123970dbe3b538805d3",
+      "companyName": "Modulo",
+      "appName": "Modulo-Issuer",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "M1-validator-1::12207b40944692e083593819697e1cd87a94026afca2564253d16ff8696b233a6637",
+      "companyName": "USDM1",
+      "appName": "M1-validator-1",
+      "faApproved": "2025-10-10"
+    },
+    {
+      "partyId": "c7trust::12202e2325b04b0f0ee30685088289293b3e7a28d8b26470b39435502912e2876cba",
+      "companyName": "7Trust",
+      "appName": "c7trust",
+      "faApproved": "2025-09-04"
+    },
+    {
+      "partyId": "mandalo-mainnet-2::122012969f2b0e67f443e0563e34d1468a7353bc3f125a02ea0cc100d934e298f98b",
+      "companyName": "Mandalo",
+      "appName": "mandalo-mainnet-2",
+      "faApproved": "2025-12-25"
+    },
+    {
+      "partyId": "auth0_007c68b849ffb53dbcab06ecd2a1::1220bca0d4ed76bda5da0bcbbd8ea91f047d0b8f4bc332084a735c936196d24c0cf3",
+      "companyName": "Chainbridge",
+      "appName": "auth0_007c68b849ffb53dbcab06ecd2a1",
+      "faApproved": "2025-10-31"
+    },
+    {
+      "partyId": "walley::1220a0a64bd45fee105f5c80474842a4337bb09323ca748d7ea6dacc07fc6237572c",
+      "companyName": "Walley",
+      "appName": "walley",
+      "faApproved": "2026-02-28"
+    },
+    {
+      "partyId": "auth0_007c68d19a845c180f92912bcaca::12203eeb4af78c37754352c3e6235f684bd125069d49cf5827c44350fa8827320ed8",
+      "companyName": "Canton Network Explorer",
+      "appName": "auth0_007c68d19a845c180f92912bcaca",
+      "faApproved": "2025-10-11"
+    },
+    {
+      "partyId": "unitedapp-cc::12203179cc5cae0452dbc233403a6a66f6d87988615d0e64defdd77abb133bdc40a9",
+      "companyName": "Noders",
+      "appName": "unitedapp-cc",
+      "faApproved": "2025-11-27"
+    },
+    {
+      "partyId": "ValaWallet-FA::122093ce879ca5d08db274937f9a2ec1eb7821d41ccfdce521d68a61ef3bf1b63463",
+      "companyName": "Finoa Consensus Services",
+      "appName": "ValaWallet-FA",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "openvector-wallet-1::1220ab544a2d6cfd0b8c89af3e2b460f6999030ffb067e63dddd60ea265db3c7e3a5",
+      "companyName": "OpenVector",
+      "appName": "openvector-wallet-1",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "brikly-asterizm::122007725fa01ff8d201e87afc2a3c04b8dd67fd65660e9acb68a72ca54a59b5f610",
+      "companyName": "Brikly CNCB",
+      "appName": "brikly-asterizm",
+      "faApproved": "2025-10-30"
+    },
+    {
+      "partyId": "ByBit-MainNetValidator-1::12202c9fc5180723f14e87c88d316355817dd565afc2a897706a789086c33cd6a095",
+      "companyName": "ByBit",
+      "appName": "ByBit-MainNetValidator-1",
+      "faApproved": "2025-11-02"
+    },
+    {
+      "partyId": "ByBit-MainNetValidator-1::12202c9fc5180723f14e87c88d316355817dd565afc2a897706a789086c33cd6a095",
+      "companyName": "ByBit",
+      "appName": "ByBit-MainNetValidator-1",
+      "faApproved": "2025-11-02"
+    },
+    {
+      "partyId": "TRIZEGroup-RIZEScore::12206ab3bf15b14410220357d6a6375eb1015f2e7fade1deb449463c2f2a25304889",
+      "companyName": "T-RIZE",
+      "appName": "TRIZEGroup-RIZEScore",
+      "faApproved": "2025-12-02"
+    },
+    {
+      "partyId": "Redstone-validator-1::1220a6f7c2315ed7ba230397a459b036bfe9f36763a0e848dad741c4e9d20d85687c",
+      "companyName": "RedStone",
+      "appName": "Redstone-validator-1",
+      "faApproved": "2026-03-04"
+    },
+    {
+      "partyId": "obligate-issuance::1220663cfdc370c3fc447072f3731a838a2a7de757bc29ee0d34b326f317b70db4aa",
+      "companyName": "Obligate AG",
+      "appName": "obligate-issuance",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "google-oauth2_007c108879997188710703622::1220f66f5b1cb78abf40583917b0ea3ce18f546ea5f119de06d0ea1e7d1a250e0f3b",
+      "companyName": "Alpend",
+      "appName": "google-oauth2_007c108879997188710703622",
+      "faApproved": "2026-05-15"
+    },
+    {
+      "partyId": "cantrack::12208287f2b9baebe6499af23d60481a6b91a2edf587f0203e68b8706348cc8776cb",
+      "companyName": "Can Track",
+      "appName": "cantrack",
+      "faApproved": "2025-11-10"
+    },
+    {
+      "partyId": "SatsTerminal-main-1::122043df1a3b6ae04288cbcd1899434a945a75b849859f20b124e8ba07ebb812a047",
+      "companyName": "OneSwap",
+      "appName": "SatsTerminal-main-1",
+      "faApproved": "2026-03-28"
+    },
+    {
+      "partyId": "fulcrum-point::1220b75e7270e4e28e72b1ae678a3cd64194d32593924d2f76daebd5bc7024249064",
+      "companyName": "SciFeCap",
+      "appName": "fulcrum-point",
+      "faApproved": "2026-03-04"
+    },
+    {
+      "partyId": "LoopID::1220940ccaf484be99fc67387ce461bd358aa6c76e43224e959a4bd20fe30a0b11c6",
+      "companyName": "5N ID",
+      "appName": "LoopID",
+      "faApproved": "2025-11-02"
+    },
+    {
+      "partyId": "FTP-validator-1::1220c065ad977ae4e480b6ea5bcd96d6d73025a91ad27fa60d1385010ca01cdd39f9",
+      "companyName": "CanTrustAi",
+      "appName": "FTP-validator-1",
+      "faApproved": "2026-03-20"
+    },
+    {
+      "partyId": "Thetamarkets::12201cf4d44f54d386b382ae3deabec790d477bbc7e1857b94b5a44f04c286840353",
+      "companyName": "Thetanuts Finance",
+      "appName": "Thetamarkets",
+      "faApproved": "2025-11-28"
+    },
+    {
+      "partyId": "mexc-mainNet-01::12200e0228fa4b2652d5364068ed4e518bfb20e8be9ca062397bd068c8b2817fc5c7",
+      "companyName": "MEXC",
+      "appName": "mexc-mainNet-01",
+      "faApproved": "2025-11-10"
+    },
+    {
+      "partyId": "8a72dd81-b8a4-425a-9061-31ed663d4450::1220d572036d26e3f8ef2fe127184d812a00e0b1b36e129acf990a82a06651e735a1",
+      "companyName": "Validity.id",
+      "appName": "8a72dd81-b8a4-425a-9061-31ed663d4450",
+      "faApproved": "2026-01-30"
+    },
+    {
+      "partyId": "Cancore-mainnet-1::1220076a94e0a7f0256a32ffab227db7788d8075677d8afcdaa8386df8f2fa659906",
+      "companyName": "Cancore",
+      "appName": "Cancore-mainnet-1",
+      "faApproved": "2026-04-04"
+    },
+    {
+      "partyId": "auth0_007c691c4d28726455d23d1aa6dd::122046d30acaaa01b3a0aae069cbfb5983660360af866dd76b335570acacb2b31c3a",
+      "companyName": "Axymos",
+      "appName": "auth0_007c691c4d28726455d23d1aa6dd",
+      "faApproved": "2025-12-23"
+    },
+    {
+      "partyId": "auth0_007c68c00c8f13d9cd1ff3a0f951::1220d1e3a653420a5d606c6b88b94e9e5f8361f5313f44d5bcbf2b8835ceb86a8aa7",
+      "companyName": "McShane Consulting LLC",
+      "appName": "auth0_007c68c00c8f13d9cd1ff3a0f951",
+      "faApproved": "2025-11-15"
+    },
+    {
+      "partyId": "kucoin-node-01::1220a9f52878b918c523d04b7b77fde73b39ba9842292e88bf2e7ce3b86eb25a3978",
+      "companyName": "KuCoin",
+      "appName": "kucoin-node-01",
+      "faApproved": "2025-11-12"
+    },
+    {
+      "partyId": "peertrust-validator-2::1220cd630120e6e78e2c2bb5b1a60b6ed8f3f00bce63b29c0114e6bbd50a9722864f",
+      "companyName": "PeerTrust",
+      "appName": "peertrust-validator-2",
+      "faApproved": "2026-03-20"
+    },
+    {
+      "partyId": "Hashrupt-Verity::1220a92bde4d13d685e03c797e3a33891b64bfa7d93d80f2a0744fc21c9976492321",
+      "companyName": "Verity",
+      "appName": "Hashrupt-Verity",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "arcane-mainnet-1::1220c4ca7ab377f587e6009a732823c61c291559384edbd57c118f311fdc35ec729e",
+      "companyName": "Hundred Exchange",
+      "appName": "arcane-mainnet-1",
+      "faApproved": "2026-04-03"
+    },
+    {
+      "partyId": "aevumWallet::122002cb5bad0f12132febb896a511d40b7d542e0b9cde83b415b5c7148a9d2419c3",
+      "companyName": "Aevum Extension Wallet",
+      "appName": "aevumWallet",
+      "faApproved": "2026-04-20"
+    },
+    {
+      "partyId": "nodetech-mainnet-1::122091e990ffc729fcd266b4dd5b03320daba234c7d1c5470f50f21a7720a6d1c278",
+      "companyName": "NodeTech",
+      "appName": "nodetech-mainnet-1",
+      "faApproved": "2026-04-20"
+    },
+    {
+      "partyId": "kraken-validator-01::12201a93a967d6aa33310fb8b15a5b92a69ff48b7f326f20a26622a56a0ccea4168a",
+      "companyName": "Kraken",
+      "appName": "kraken-validator-01",
+      "faApproved": "2025-11-10"
+    },
+    {
+      "partyId": "daml-autopilot::122043f0b94e28125e4c65aa7e0f0ded912472731695f01cc83aa41ad3f03965a19b",
+      "companyName": "DAML Copilot",
+      "appName": "daml-autopilot",
+      "faApproved": "2026-02-05"
+    },
+    {
+      "partyId": "sunthycloud-mainnet-1::1220dc2c99151dbe0ca0ff322dbdcf0f511c181e9277799640287c37f26c7a993773",
+      "companyName": "Verigift",
+      "appName": "sunthycloud-mainnet-1",
+      "faApproved": "2026-01-09"
+    },
+    {
+      "partyId": "cantory::1220a0a64bd45fee105f5c80474842a4337bb09323ca748d7ea6dacc07fc6237572c",
+      "companyName": "Cantory",
+      "appName": "cantory",
+      "faApproved": "2025-12-26"
+    },
+    {
+      "partyId": "poolparty-operator::1220f1b0d7a83c7eaaf6d712d95d5952ea2c801238af9c342e8d83c87dfc45c999dc",
+      "companyName": "Pool Party",
+      "appName": "poolparty-operator",
+      "faApproved": "2026-05-19"
+    },
+    {
+      "partyId": "yuce::1220ad880a4c22d92d1c10efff2c1800e1d12a2cfe02ba14380aa56b4438b7bff0dd",
+      "companyName": "YUCE",
+      "appName": "yuce",
+      "faApproved": "2026-01-31"
+    },
+    {
+      "partyId": "ppbpffauvo::1220e9f5090242641b7a4aaad97e5d56ad40b4a65b69522fb9cd1b2443f6bfefb744",
+      "companyName": "CCTag",
+      "appName": "ppbpffauvo",
+      "faApproved": "2026-05-20"
+    },
+    {
+      "partyId": "dteamtech-validator-1::12206a390f4088321a251280cd20c44f2ae02d54b4d29a8327d3523e7b03a7e98464",
+      "companyName": "Transparent Scan",
+      "appName": "dteamtech-validator-1",
+      "faApproved": "2026-01-30"
+    },
+    {
+      "partyId": "OKX-VALIDATOR-2::1220cee0952e1990834afe7d07ad60c02bb55f0b389b82f14753d76e283d3610577d",
+      "companyName": "OKX",
+      "appName": "OKX-VALIDATOR-2",
+      "faApproved": "2026-04-03"
+    },
+    {
+      "partyId": "Bitgo-mainnetValidator-1::1220339ffe631ef7d0296d957d467186b6693e89b8fa654e9acfaa2b4f53437310ff",
+      "companyName": "BitGo",
+      "appName": "Bitgo-mainnetValidator-1",
+      "faApproved": "2026-01-16"
+    },
+    {
+      "partyId": "TextureCapital-validator-1::12206f711aa1c1017053f53a069279518584074c0b0348f522b020d1fcc311e01988",
+      "companyName": "Texture Capital",
+      "appName": "TextureCapital-validator-1",
+      "faApproved": "2025-11-06"
+    },
+    {
+      "partyId": "Tokino-validator-1::1220c4e630e0281e7e1487863dd56078106433c35e4bc013f7d3fc8e22464bc78e28",
+      "companyName": "Tokino",
+      "appName": "Tokino-validator-1",
+      "faApproved": "2026-02-11"
+    },
+    {
+      "partyId": "send-safe::1220f1b0d7a83c7eaaf6d712d95d5952ea2c801238af9c342e8d83c87dfc45c999dc",
+      "companyName": "Send Foundation",
+      "appName": "send-safe",
+      "faApproved": "2025-12-12"
+    },
+    {
+      "partyId": "CopperClearLoop::12203dc704b90128007718fd27a38dcf7ad1b1eaa9910b9eb831fe25ee4214ed98cd",
+      "companyName": "Copper",
+      "appName": "CopperClearLoop",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "TRIZEGroup-cantonMainnetValidator-1::12206ab3bf15b14410220357d6a6375eb1015f2e7fade1deb449463c2f2a25304889",
+      "companyName": "T-RIZE",
+      "appName": "TRIZEGroup-cantonMainnetValidator-1",
+      "faApproved": "2025-09-24"
+    },
+    {
+      "partyId": "ZodiaCustody-validator-1::122048dee6ac5d575890024dbf6847d1ca4026c96e8d4c6df07bb5b96a10ae180030",
+      "companyName": "Zodia Custody",
+      "appName": "ZodiaCustody-validator-1",
+      "faApproved": "2025-12-02"
+    },
+    {
+      "partyId": "opus28-opusaccess-1::122085428bbc45cd9e8e457fa643d98f41bce1d7e5113248e637c611b9de1ddef684",
+      "companyName": "OpusAccess",
+      "appName": "opus28-opusaccess-1",
+      "faApproved": "2025-12-11"
+    },
+    {
+      "partyId": "opus28-opusaccess-1::122085428bbc45cd9e8e457fa643d98f41bce1d7e5113248e637c611b9de1ddef684",
+      "companyName": "OpusAccess",
+      "appName": "opus28-opusaccess-1",
+      "faApproved": "2025-12-11"
+    },
+    {
+      "partyId": "binance-dp-1::12206a8a77e900f10dbaa57e4741f2d50d9318dd87e40f8dbf28f7ec4da657bb27b4",
+      "companyName": "Binance",
+      "appName": "binance-dp-1",
+      "faApproved": "2025-11-10"
+    },
+    {
+      "partyId": "CoinMetrics-validator-1::1220b6cf34a2c8937dc72403e7a8b57c80049be8aff3e5e2d992063460bdc8636466",
+      "companyName": "CoinMetrics",
+      "appName": "CoinMetrics-validator-1",
+      "faApproved": "2025-07-18"
+    },
+    {
+      "partyId": "auth0_007c6944217743c3f0b43f0a8285::122058647c52460fb30fadca42a66f992909c633577ab80a5b71bb9600cbca39c0f9",
+      "companyName": "MPCH",
+      "appName": "auth0_007c6944217743c3f0b43f0a8285",
+      "faApproved": "2026-02-11"
+    },
+    {
+      "partyId": "auth0_007c68f92e9e93fbd6f5a89b0a0c::12208d1aaf40a035e46b5076e41b84acc17a7cfb9c5b6d0848b2203cc2e5eceaee43",
+      "companyName": "Profitr",
+      "appName": "auth0_007c68f92e9e93fbd6f5a89b0a0c",
+      "faApproved": "2025-11-05"
+    },
+    {
+      "partyId": "lithiumdigital-validator-1::1220e852a0cb4372f91dd2b7b93c71d4580600b0f2c045e6cbebd9f510e88c0ba29b",
+      "companyName": "Lithium Digital",
+      "appName": "lithiumdigital-validator-1",
+      "faApproved": "2025-11-30"
+    },
+    {
+      "partyId": "cauri-wallet-provider1::1220e852a0cb4372f91dd2b7b93c71d4580600b0f2c045e6cbebd9f510e88c0ba29b",
+      "companyName": "Cauri",
+      "appName": "cauri-wallet-provider1",
+      "faApproved": "2026-04-29"
+    },
+    {
+      "partyId": "flipside-validator-1::1220bf4169a874284cb202f33426a8cb0ef2cd6c506ece144d3b3bacae773bf479c0",
+      "companyName": "Flipside Crypto",
+      "appName": "flipside-validator-1",
+      "faApproved": "2025-11-25"
+    },
+    {
+      "partyId": "wuselfabrik::1220ee66a0ce0fff355e9122679c20e2f8d74170f1a96de0c785f076c7c718c79290",
+      "companyName": "Wuselcookie",
+      "appName": "wuselfabrik",
+      "faApproved": "2026-03-14"
+    },
+    {
+      "partyId": "bitdynamicsab-mainnet-1::1220ea322b53b7f031e5e2e99796d02cb84e3fef257c63e89204622dc174f552c1d6",
+      "companyName": "Bit Dynamics",
+      "appName": "bitdynamicsab-mainnet-1",
+      "faApproved": "2026-04-03"
+    },
+    {
+      "partyId": "FlowRyd-validator-1::1220953c2240437bdf86867bb8540bc060f8db4e94f4ef3d00be48c98c2728a79c8d",
+      "companyName": "Flowryd",
+      "appName": "FlowRyd-validator-1",
+      "faApproved": "2025-12-06"
+    },
+    {
+      "partyId": "Ubyx-validator-1::12204cfc7847273bd046b70b5c5549627294a024fb2ab86f58755ee6aebeed9cc1c4",
+      "companyName": "Ubyx Clearing",
+      "appName": "Ubyx-validator-1",
+      "faApproved": "2025-12-26"
+    },
+    {
+      "partyId": "ledger-ledgerops-2::12207a4859ad414f4f47c2d773ddf4ea88de8c3a1aab19abaa197e504acdbf679d3c",
+      "companyName": "Ledger",
+      "appName": "ledger-ledgerops-2",
+      "faApproved": "2026-02-14"
+    },
+    {
+      "partyId": "zkpc-cantor8-1::1220faa06474101d63481154876239b77159a26e7301cfb45a0d540c1a675041f4ed",
+      "companyName": "Yogen",
+      "appName": "zkpc-cantor8-1",
+      "faApproved": "2026-03-04"
+    },
+    {
+      "partyId": "HIFI-validator-1::1220c44096409d3244021ae82992ccae3a1208fa79cacf450760b6f2cd9dfee2daa6",
+      "companyName": "HIFI",
+      "appName": "HIFI-validator-1",
+      "faApproved": "2026-01-30"
+    },
+    {
+      "partyId": "confimarket-main-1::12209d805b470cce6b0ffbdf926c7ba4283cba20e74d03d74b4b786b7209de11a234",
+      "companyName": "WebWise Capital",
+      "appName": "confimarket-main-1",
+      "faApproved": "2026-04-02"
+    },
+    {
+      "partyId": "canton-sign::122092e9dd81d0a52f38b110f6b2e6426713418cc4db363c5c9b2c8cb6e46922c671",
+      "companyName": "CantonSign",
+      "appName": "canton-sign",
+      "faApproved": "2025-09-12"
+    },
+    {
+      "partyId": "PropNotary-app::122050e459c7de23f3bca5b9f59218e68502b2412c5d8ea9fb38604be20b0265f374",
+      "companyName": "PropNotary",
+      "appName": "PropNotary-app",
+      "faApproved": "2025-11-22"
+    },
+    {
+      "partyId": "twmain-treasury-1::12200954e2b4596dfad67f92cd333602efa4ebcdc3860437884136817fa5c9f54a0e",
+      "companyName": "Tradeweb",
+      "appName": "twmain-treasury-1",
+      "faApproved": "2025-09-06"
+    },
+    {
+      "partyId": "CantonOps::12204a039322c01e9f714b56259c3e68b69058bf5dfe1debbe956c698f905ceba9d7",
+      "companyName": "Fairmint",
+      "appName": "CantonOps",
+      "faApproved": "2025-10-19"
+    },
+    {
+      "partyId": "3b348904-a81e-403c-a48e-13fa14aa6e97::12204dcfad78c016ab59babba72d4ffe9bdca8aeaf6299a3f0da59523ee3f765b053",
+      "companyName": "Cantor8",
+      "appName": "3b348904-a81e-403c-a48e-13fa14aa6e97",
+      "faApproved": "2025-11-16"
+    },
+    {
+      "partyId": "cbtc-network::12205af3b949a04776fc48cdcc05a060f6bda2e470632935f375d1049a8546a3b262",
+      "companyName": "Bitsfafe CBTC",
+      "appName": "cbtc-network",
+      "faApproved": "2025-10-25"
+    },
+    {
+      "partyId": "f932f175-75f1-45e9-9dce-8b8c77f1328b::12204dcfad78c016ab59babba72d4ffe9bdca8aeaf6299a3f0da59523ee3f765b053",
+      "companyName": "Cantor8",
+      "appName": "f932f175-75f1-45e9-9dce-8b8c77f1328b",
+      "faApproved": "2025-11-27"
+    },
+    {
+      "partyId": "auth0_007c68dab25ebb6582a0cbe2861c::12206476325416d7a9bcab23a22f75d2dd015c2bdcca6173428930e14e7405e78e35",
+      "companyName": "Otoclick",
+      "appName": "auth0_007c68dab25ebb6582a0cbe2861c",
+      "faApproved": "2025-12-24"
+    },
+    {
+      "partyId": "roundbeat-mainnet-01::12208d7f582445ccc77de75088b2ad9b545e8e977f5d3e32662564409ce63a787981",
+      "companyName": "RoundBeat",
+      "appName": "roundbeat-mainnet-01",
+      "faApproved": "2026-01-30"
+    },
+    {
+      "partyId": "onchain-transfer-agent::12204a039322c01e9f714b56259c3e68b69058bf5dfe1debbe956c698f905ceba9d7",
+      "companyName": "Fairmint",
+      "appName": "onchain-transfer-agent",
+      "faApproved": "2026-02-07"
+    },
+    {
+      "partyId": "haven-lp::122036a7877810c578708cb1e8e7db2a8eb586adf7f57d7ba7a78654304ac446bc7c",
+      "companyName": "Haven Digital",
+      "appName": "haven-lp",
+      "faApproved": "2026-02-07"
+    },
+    {
+      "partyId": "lseg-finance-1::1220a67824951a056e4b366bc1a663a7a4839aadb3f0cef02b591933bfc77a474170",
+      "companyName": "LSEG PTS",
+      "appName": "lseg-finance-1",
+      "faApproved": "2026-02-14"
+    },
+    {
+      "partyId": "auth0_007c698461d72f5237c52b2b5b36::12209da6cec56d4dbb057b0d658fbbf48c29ca0dcd11be7de6c6751cdcec00b873d4",
+      "companyName": "FlowP2P",
+      "appName": "auth0_007c698461d72f5237c52b2b5b36",
+      "faApproved": "2026-02-28"
+    },
+    {
+      "partyId": "GlobalSettlement-mainnet-1::1220aae9df566656d20f75190349dbc096ce28871f914d81d0a03dfe5750af817573",
+      "companyName": "Global Settlement",
+      "appName": "GlobalSettlement-mainnet-1",
+      "faApproved": "2026-03-14"
+    },
+    {
+      "partyId": "enzobtc-app::1220e1a53ef64c3d75b39d88371b92b7a4f24307c9f620ded027e9e32997be794283",
+      "companyName": "enzoBTC",
+      "appName": "enzobtc-app",
+      "faApproved": "2026-03-28"
+    },
+    {
+      "partyId": "Tiva::1220ad880a4c22d92d1c10efff2c1800e1d12a2cfe02ba14380aa56b4438b7bff0dd",
+      "companyName": "Tiva.one",
+      "appName": "Tiva",
+      "faApproved": "2026-03-28"
+    },
+    {
+      "partyId": "edx-validator-1::1220a195571be41cc06440b9ea0ca30a137636d824fc1bd37ea62376ccc5a80e6a83",
+      "companyName": "EDX Markets LLC",
+      "appName": "edx-validator-1",
+      "faApproved": "2026-04-03"
+    },
+    {
+      "partyId": "edel-various-1::122085b19d439b7e68abf7c94c3d9949f9e23aef3f1d4835ccbcb0993ed96fb53432",
+      "companyName": "Edel",
+      "appName": "edel-various-1",
+      "faApproved": "2026-04-20"
+    },
+    {
+      "partyId": "coinaegis::122002cb5bad0f12132febb896a511d40b7d542e0b9cde83b415b5c7148a9d2419c3",
+      "companyName": "CoinAegis",
+      "appName": "coinaegis",
+      "faApproved": "2026-04-20"
+    },
+    {
+      "partyId": "auth0_007c69cd2129f7ce4fb0bd5f93fe::12204032efbfbd9bb5d0b8e94d475849563bcdf6a8a48ee5882610e8ec52ebbe1883",
+      "companyName": "TradeChain",
+      "appName": "auth0_007c69cd2129f7ce4fb0bd5f93fe",
+      "faApproved": "2026-04-29"
+    },
+    {
+      "partyId": "auth0_007c696a4894dd7826985302d3b9::12204032efbfbd9bb5d0b8e94d475849563bcdf6a8a48ee5882610e8ec52ebbe1883",
+      "companyName": "TradeChain",
+      "appName": "auth0_007c696a4894dd7826985302d3b9",
+      "faApproved": "2026-04-29"
+    },
+    {
+      "partyId": "temple-vaults-xx::1220f238bb79df3efbbac2ea964c3cd501003971a2cb59043e2dac50b06e85b8620f",
+      "companyName": "Temple",
+      "appName": "temple-vaults-xx",
+      "faApproved": "2026-04-29"
+    },
+    {
+      "partyId": "CopperWrappedAssets::1220c283aa461c4a72626804a615e930d0f6432511464603eb6e40a955f958f98847",
+      "companyName": "Copper",
+      "appName": "CopperWrappedAssets",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "coinaegisVault::122002cb5bad0f12132febb896a511d40b7d542e0b9cde83b415b5c7148a9d2419c3",
+      "companyName": "Coinaegis",
+      "appName": "coinaegisVault",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "Mod-Vault::1220bbd47c5a10d5540c420e1f8f0f1fd513464ec6110dbd5123970dbe3b538805d3",
+      "companyName": "Modulo",
+      "appName": "Mod-Vault",
+      "faApproved": "2026-05-01"
+    },
+    {
+      "partyId": "onrails-core::12200350ba6e96e3b701c3048b5aa013a8c1c08833e8ebf54339cff581055c29003a",
+      "companyName": "Rails Tech Ltd",
+      "appName": "onrails-core",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "CopperClearLoop::1220b25aa0a73f9f34925b62591da332693bef3a71e3d235c19e5546dafca2dda9ef",
+      "companyName": "Copper",
+      "appName": "CopperClearLoop",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "onrails-reserve::12200350ba6e96e3b701c3048b5aa013a8c1c08833e8ebf54339cff581055c29003a",
+      "companyName": "Rails Tech Ltd",
+      "appName": "onrails-reserve",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "onrails-stable::12200350ba6e96e3b701c3048b5aa013a8c1c08833e8ebf54339cff581055c29003a",
+      "companyName": "Rails Tech Ltd",
+      "appName": "onrails-stable",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "onrails-yield::12200350ba6e96e3b701c3048b5aa013a8c1c08833e8ebf54339cff581055c29003a",
+      "companyName": "Rails Tech Ltd",
+      "appName": "onrails-yield",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "auth0_007c69eb81fb9b5cfe37fbc593a3::1220cf5c0358766265d8b67b3269d0ab15eba018449585fa9810481842f6ceeffc44",
+      "companyName": "Republic",
+      "appName": "auth0_007c69eb81fb9b5cfe37fbc593a3",
+      "faApproved": "2026-05-08"
+    },
+    {
+      "partyId": "tradefast-provider-1::1220674b79cae334aa788ffa394a6bd7d10e427d9f2abd418048e5be49ceb4256ca4",
+      "companyName": "Trade.Fast",
+      "appName": "tradefast-provider-1",
+      "faApproved": "2026-05-15"
+    },
+    {
+      "partyId": "tradefast-mainnet-2::122000713294041cc0f6341f952586a04e029826a80b13369b06e8455611fb3a116b",
+      "companyName": "Trade.Fast",
+      "appName": "tradefast-mainnet-2",
+      "faApproved": "2026-05-19"
+    },
+    {
+      "partyId": "576413da77524b51afd26dc5356b6959::122051b225c4d162a3fe77fbe1bdcf782ad1ed34eaa899fd8e5f79c97f465e259f1d",
+      "companyName": "Cantor8",
+      "appName": "576413da77524b51afd26dc5356b6959",
+      "faApproved": "2026-05-19"
+    }
+  ]
+}
