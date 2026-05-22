@@ -147,6 +147,7 @@ const COMPANY_OVERRIDES = {
   'unitedapp-cc': 'Noders',
   'ValaWallet-FA': 'Finoa Consensus Services',
   'TRIZEGroup-RIZEScore': 'T-RIZE',
+  'OKX-VALIDATOR-2': 'OKX',
 };
 
 /**
