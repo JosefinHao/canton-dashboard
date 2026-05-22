@@ -731,9 +731,7 @@ async function main() {
       const reasonBody = reasonByProvider.get(provider) || '';
       const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody, appName);
       const cum = rewardsByProvider.get(provider) || 0;
-      const approval = approvalByProvider.get(provider)
-        || parseTimestamp(app.created_at)
-        || null;
+      const approval = parseTimestamp(app.created_at) || approvalByProvider.get(provider) || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
 
       const mr = milestoneRounds.get(provider) || {};
