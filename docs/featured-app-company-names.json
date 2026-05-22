@@ -69,7 +69,7 @@
     { "appName": "M1-validator-1", "companyName": "USDM1", "faApproved": "2025-10-10" },
     { "appName": "c7trust", "companyName": "7Trust", "faApproved": "2025-09-04" },
     { "appName": "mandalo-mainnet-2", "companyName": "Mandalo", "faApproved": "2025-12-25" },
-    { "appName": "auth0_007c68b849ffb53dbcab06", "companyName": "Chainbridge Accounting", "faApproved": "2025-10-31" },
+    { "appName": "auth0_007c68b849ffb53dbcab06", "companyName": "Chainbridge", "faApproved": "2025-10-31" },
     { "appName": "walley", "companyName": "Walley", "faApproved": "2026-02-28" },
     { "appName": "auth0_007c68d19a845c180f9291", "companyName": "Canton Network Explorer", "faApproved": "2025-10-11" },
     { "appName": "unitedapp-cc", "companyName": "UnitedApp", "faApproved": "2025-11-27" },

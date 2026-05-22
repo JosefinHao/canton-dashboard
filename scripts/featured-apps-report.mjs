@@ -143,6 +143,7 @@ const COMPANY_OVERRIDES = {
   'pixelplex-mainnet-3': 'PixelPlex',
   'cypherock-mainnet-1': 'Open Vector',
   'modo': 'StakeTab',
+  'auth0_007c68b849ffb53dbcab06': 'Chainbridge',
 };
 
 /**
