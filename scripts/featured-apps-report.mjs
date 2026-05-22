@@ -145,6 +145,7 @@ const COMPANY_OVERRIDES = {
   'modo': 'StakeTab',
   'auth0_007c68b849ffb53dbcab06': 'Chainbridge',
   'unitedapp-cc': 'Noders',
+  'ValaWallet-FA': 'Finoa Consensus Services',
 };
 
 /**
