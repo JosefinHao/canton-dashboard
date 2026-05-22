@@ -233,7 +233,7 @@ async function main() {
 
   // ── Phase 1: Fetch core data sources in parallel ──────────────────────────
 
-  const [featuredAppsData, latestRoundData, voteResultsData, topProvidersRaw, ansEntriesData] =
+  const [featuredAppsData, latestRoundData, voteResultsData, topProvidersRaw] =
     await Promise.all([
       scanGet('v0/featured-apps').catch(e => { console.error(`  ⚠ featured-apps: ${e.message}`); return { featured_apps: [] }; }),
       scanGet('v0/round-of-latest-data').catch(e => { console.error(`  ⚠ latest-round: ${e.message}`); return { round: 0 }; }),
@@ -245,27 +245,38 @@ async function main() {
           return scanGet(`v0/top-providers-by-app-rewards?round=${latest.round}&limit=1000`);
         } catch (e) { console.error(`  ⚠ top-providers: ${e.message}`); return { providersAndRewards: [] }; }
       })(),
-      scanGet('v0/ans-entries?page_size=10000').catch(e => { console.error(`  ⚠ ans-entries: ${e.message}`); return { entries: [] }; }),
     ]);
 
   const featuredApps = featuredAppsData.featured_apps || [];
   const voteResults = voteResultsData.dso_rules_vote_results || [];
   const topProviders = topProvidersRaw.providersAndRewards || [];
   const latestRound = latestRoundData.round || 0;
-  const ansEntries = ansEntriesData.entries || [];
 
-  // Build party ID → ANS name lookup
+  // Resolve ANS names for each featured app provider
   const ansNameByParty = new Map();
-  for (const entry of ansEntries) {
-    if (entry.user && entry.name) {
-      ansNameByParty.set(entry.user, entry.name);
+  const faProviderIds = featuredApps
+    .map(a => (a.payload || a).provider || a.provider)
+    .filter(Boolean);
+
+  const ANS_CONCURRENCY = 5;
+  for (let i = 0; i < faProviderIds.length; i += ANS_CONCURRENCY) {
+    const batch = faProviderIds.slice(i, i + ANS_CONCURRENCY);
+    const results = await Promise.all(
+      batch.map(provider =>
+        scanGet(`v0/ans-entries/by-party/${encodeURIComponent(provider)}`)
+          .then(res => ({ provider, name: res.entry?.name || null }))
+          .catch(() => ({ provider, name: null }))
+      )
+    );
+    for (const r of results) {
+      if (r.name) ansNameByParty.set(r.provider, r.name);
     }
   }
 
   console.error(`  Featured Apps: ${featuredApps.length}`);
   console.error(`  Vote results (GrantFeaturedAppRight): ${voteResults.length}`);
   console.error(`  Top providers: ${topProviders.length}`);
-  console.error(`  ANS entries: ${ansEntries.length} (${ansNameByParty.size} unique parties)`);
+  console.error(`  ANS names resolved: ${ansNameByParty.size} of ${faProviderIds.length} providers`);
   console.error(`  Latest round: ${latestRound}\n`);
 
   // ── Build provider → cumulative rewards map ───────────────────────────────
