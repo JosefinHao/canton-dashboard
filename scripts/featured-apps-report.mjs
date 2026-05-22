@@ -123,7 +123,7 @@ const COMPANY_OVERRIDES = {
   'Bridge-Operator': 'USDC Bridge',
   'dfns1': 'Dfns',
   'handlpay-main-1': 'HandlPay',
-  'elk-Validator-2': 'TRNGLE',
+  'elk-Validator-2': 'Falcon Capital',
   'fulcrum-point': 'SciFeCap',
   'SatsTerminal-main-1': 'OneSwap',
   'CopperClearLoop': 'Copper',
