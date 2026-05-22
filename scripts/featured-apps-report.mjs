@@ -20,7 +20,6 @@
  *   GET  /v0/featured-apps                      → current on-chain FAs
  *   GET  /v0/round-of-latest-data               → latest round number
  *   GET  /v0/top-providers-by-app-rewards       → cumulative CC per provider
- *   GET  /v0/ans-entries                        → ANS names (company name lookup)
  *   POST /v0/admin/sv/voteresults               → FA approval dates
  *   POST /v0/round-totals                       → round timestamps (date mapping)
  *   POST /v0/round-party-totals                 → per-party cumulative CC at a round
@@ -252,31 +251,9 @@ async function main() {
   const topProviders = topProvidersRaw.providersAndRewards || [];
   const latestRound = latestRoundData.round || 0;
 
-  // Resolve ANS names for each featured app provider
-  const ansNameByParty = new Map();
-  const faProviderIds = featuredApps
-    .map(a => (a.payload || a).provider || a.provider)
-    .filter(Boolean);
-
-  const ANS_CONCURRENCY = 5;
-  for (let i = 0; i < faProviderIds.length; i += ANS_CONCURRENCY) {
-    const batch = faProviderIds.slice(i, i + ANS_CONCURRENCY);
-    const results = await Promise.all(
-      batch.map(provider =>
-        scanGet(`v0/ans-entries/by-party/${encodeURIComponent(provider)}`)
-          .then(res => ({ provider, name: res.entry?.name || null }))
-          .catch(() => ({ provider, name: null }))
-      )
-    );
-    for (const r of results) {
-      if (r.name) ansNameByParty.set(r.provider, r.name);
-    }
-  }
-
   console.error(`  Featured Apps: ${featuredApps.length}`);
   console.error(`  Vote results (GrantFeaturedAppRight): ${voteResults.length}`);
   console.error(`  Top providers: ${topProviders.length}`);
-  console.error(`  ANS names resolved: ${ansNameByParty.size} of ${faProviderIds.length} providers`);
   console.error(`  Latest round: ${latestRound}\n`);
 
   // ── Build provider → cumulative rewards map ───────────────────────────────
@@ -507,7 +484,6 @@ async function main() {
       const payload = app.payload || app;
       const provider = payload.provider || app.provider || '';
       const appName = payload.appName || payload.app_name || payload.name || provider.split('::')[0] || 'Unknown';
-      const companyName = ansNameByParty.get(provider) || null;
       const cum = rewardsByProvider.get(provider) || 0;
       const approval = approvalByProvider.get(provider) || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
@@ -527,7 +503,6 @@ async function main() {
 
       return {
         appName,
-        companyName,
         provider,
         approvalDate: approval,
         daysSinceApproval,
@@ -565,12 +540,11 @@ async function main() {
   // ── Output: CSV ───────────────────────────────────────────────────────────
 
   if (wantCsv) {
-    console.log('Rank,App Name,Company Name,Approval Date,Days as FA,Cumulative CC,Pre-FA CC,Post-FA CC,>=10M,>=25M,Can Lock Day1,10M Date,Days to 10M,25M Date,Days to 25M');
+    console.log('Rank,App Name,Approval Date,Days as FA,Cumulative CC,Pre-FA CC,Post-FA CC,>=10M,>=25M,Can Lock Day1,10M Date,Days to 10M,25M Date,Days to 25M');
     rows.forEach((r, i) => {
       console.log([
         i + 1,
         `"${r.appName}"`,
-        `"${r.companyName || ''}"`,
         r.approvalDate ? fmtDate(r.approvalDate) : '',
         r.daysSinceApproval ?? '',
         r.cumulativeCC.toFixed(2),
@@ -590,7 +564,7 @@ async function main() {
 
   // ── Output: Text report ───────────────────────────────────────────────────
 
-  const W = 180;
+  const W = 155;
   const line = '═'.repeat(W);
   const thinLine = '─'.repeat(W);
 
@@ -625,7 +599,6 @@ async function main() {
   const hdr =
     pad('#', 5) +
     pad('App Name', 30) +
-    pad('Company Name', 25) +
     pad('FA Approved', 13) +
     pad('Days FA', 8, 'right') +
     pad('Cumul. CC', 12, 'right') +
@@ -651,7 +624,6 @@ async function main() {
     const row =
       pad(String(i + 1), 5) +
       pad(r.appName.slice(0, 28), 30) +
-      pad((r.companyName || '--').slice(0, 23), 25) +
       pad(fmtDate(r.approvalDate), 13) +
       pad(r.daysSinceApproval !== null ? `${r.daysSinceApproval}d` : '--', 8, 'right') +
       pad(fmtCC(r.cumulativeCC), 12, 'right') +
@@ -670,7 +642,6 @@ async function main() {
   console.log(line);
   console.log('  NOTES');
   console.log(thinLine);
-  console.log(`  * Company names: ${ansNameByParty.size > 0 ? `${ansNameByParty.size} resolved` : 'NOT available'} from ANS (Amulet Name Service) entries.`);
   console.log(`  * FA approval dates: ${approvalByProvider.size > 0 ? `${approvalByProvider.size} found` : 'NOT available'} from on-chain GrantFeaturedAppRight vote results.`);
   console.log(`  * Milestone timing: Binary-searched ${searches.length} milestones, resolved ${roundDateMap.size} round dates.`);
   console.log('  * "Cumulative CC" = total app rewards mined by the provider party since launch.');
@@ -691,8 +662,6 @@ async function main() {
   console.log('     (max 50 rounds/request)                  → used for binary search of milestone crossing rounds');
   console.log('  5. POST /v0/round-totals                   — Aggregate round data with closed_round_effective_at');
   console.log('     (max 50 rounds/request)                  → converts milestone round numbers to calendar dates');
-  console.log('  6. GET  /v0/ans-entries                     — ANS (Amulet Name Service) entries for company name lookup');
-  console.log('     (matched by user party ID)                → provides human-readable company/entity names');
   console.log(line);
   console.log();
 }
