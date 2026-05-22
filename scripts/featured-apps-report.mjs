@@ -141,6 +141,7 @@ const COMPANY_OVERRIDES = {
   '23d169c2-0909-4c70-81d1-1922': 'Copper',
   'auth0_007c691c4d28726455d23d': 'Axymos',
   'pixelplex-mainnet-3': 'PixelPlex',
+  'cypherock-mainnet-1': 'Open Vector',
 };
 
 /**
