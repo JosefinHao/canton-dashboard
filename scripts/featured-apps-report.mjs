@@ -149,6 +149,7 @@ const COMPANY_OVERRIDES = {
   'TRIZEGroup-RIZEScore': 'T-RIZE',
   'OKX-VALIDATOR-2': 'OKX',
   'TRIZEGroup-cantonMainnetVali': 'T-RIZE',
+  'CantonOps': 'Fairmint',
 };
 
 /**
