@@ -731,7 +731,11 @@ async function main() {
       const reasonBody = reasonByProvider.get(provider) || '';
       const { name: companyName, snippet: reasonSnippet } = extractCompanyName(reasonBody, appName);
       const cum = rewardsByProvider.get(provider) || 0;
-      const approval = parseTimestamp(app.created_at) || approvalByProvider.get(provider) || null;
+      const contractDate = parseTimestamp(app.created_at);
+      const voteDate = approvalByProvider.get(provider);
+      const approval = (contractDate && voteDate)
+        ? (new Date(contractDate) < new Date(voteDate) ? contractDate : voteDate)
+        : contractDate || voteDate || null;
       const daysSinceApproval = approval ? Math.floor((now - new Date(approval)) / 86_400_000) : null;
 
       const mr = milestoneRounds.get(provider) || {};
