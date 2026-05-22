@@ -119,61 +119,137 @@ function deepFind(obj, key) {
 function extractCompanyName(reasonBody) {
   if (!reasonBody) return { name: null, snippet: '' };
   const text = reasonBody.trim();
-  const snippet = text.slice(0, 60);
+  // Extract the first sentence for the note column
+  const sentenceEnd = text.search(/(?<=[.!?])\s/);
+  const snippet = sentenceEnd > 0 ? text.slice(0, sentenceEnd + 1).trim() : text;
 
   // Skip generic/uninformative bodies
-  if (/^(Tokenomics has agreed|An additional featured|This application)/i.test(text)) {
+  if (/^(Tokenomics has agreed|An additional featured)/i.test(text)) {
     return { name: null, snippet };
   }
 
-  // "New partyID for {Name}. ..." or "New partyID for {Name},"
+  // Clean up an extracted name: strip possessive suffixes, articles, etc.
+  function clean(raw) {
+    return raw
+      .replace(/['']s\s+App$/i, '')
+      .replace(/'s App$/i, '')
+      .replace(/\s+by\s+.+$/i, '')
+      .replace(/^The\s+/i, '')
+      .trim();
+  }
+
+  // ── Indirect patterns (name is NOT at the start) ──────────────────────
+
+  // "Grant Feature App right to {Name}'s app ..." or "Grant Feature App right to {Name}'s ..."
+  const grantToMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)(?:'s|['']s)\s/i);
+  if (grantToMatch) return { name: clean(grantToMatch[1]), snippet };
+
+  // "Grant Feature App right to {Name} "{AppName}" per ..."
+  const grantToQuotedMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)\s*[""“]/i);
+  if (grantToQuotedMatch) return { name: clean(grantToQuotedMatch[1]), snippet };
+
+  // "Grant featured app rights to {Name} app ..."
+  const grantToAppMatch = text.match(/^Grant (?:Feature|featured)(?: App)? (?:right|rights) to (.+?)(?:\s+app\b|\s+per\b|\s*$)/i);
+  if (grantToAppMatch) return { name: clean(grantToAppMatch[1]), snippet };
+
+  // "A second PartyID has been approved for {Name}'s ..."
+  const secondPartyMatch = text.match(/PartyID (?:has been|was) approved for (.+?)(?:'s|['']s)\s/i);
+  if (secondPartyMatch) return { name: clean(secondPartyMatch[1]), snippet };
+
+  // "This is the provider party for the {Name} app"
+  const providerPartyMatch = text.match(/provider party for (?:the )?(.+?)(?:\s+app\b|[;.,])/i);
+  if (providerPartyMatch) return { name: clean(providerPartyMatch[1]), snippet };
+
+  // "This vote corrects the ... for the {Name} ..." or "...PartyID for the {Name} ..."
+  const correctsMatch = text.match(/(?:corrects|updates|fixes).*?(?:for|of) (?:the )?(.+?)(?:\s+(?:app|wallet|platform)\b|[;.,]|\s+(?:C8|FA)\b)/i);
+  if (correctsMatch) return { name: clean(correctsMatch[1]), snippet };
+
+  // "Featuring the party for {Name} ..."
+  const featuringPartyMatch = text.match(/^Featuring the (?:party|decentralized party) for (.+?)(?:[;.,]|\s*$)/i);
+  if (featuringPartyMatch) return { name: clean(featuringPartyMatch[1]), snippet };
+
+  // "Featuring the {Name} application from {Company}"
+  const featuringAppMatch = text.match(/^Featuring the (.+?) application/i);
+  if (featuringAppMatch) return { name: clean(featuringAppMatch[1]), snippet };
+
+  // "Corrected proposal to feature {Name}'s ..."
+  const correctedFeatureMatch = text.match(/proposal to feature (.+?)(?:'s|['']s)\s/i);
+  if (correctedFeatureMatch) return { name: clean(correctedFeatureMatch[1]), snippet };
+
+  // "Proposal to feature the {Name} by ..."
+  const proposalMatch = text.match(/proposal to feature (?:the )?(.+?) by /i);
+  if (proposalMatch) return { name: clean(proposalMatch[1]), snippet };
+
+  // "{Requester} requests approval to feature {Name} ..."
+  const requestsApprovalMatch = text.match(/requests approval to feature (.+?)(?:\s+(?:App|on)\b|[;.,])/i);
+  if (requestsApprovalMatch) return { name: clean(requestsApprovalMatch[1]), snippet };
+
+  // "feature the {Name} ..." (generic)
+  const featureTheMatch = text.match(/feature the (.+?)(?:\s+(?:app|per|from)\b|[;.,(\[])/i);
+  if (featureTheMatch && featureTheMatch[1].length < 40) return { name: clean(featureTheMatch[1]), snippet };
+
+  // ── Direct patterns (name IS at the start) ────────────────────────────
+
+  // "New partyID for {Name}. ..."
   const newPartyMatch = text.match(/^New partyID for ([^.,]+)/i);
-  if (newPartyMatch) return { name: newPartyMatch[1].trim(), snippet };
+  if (newPartyMatch) return { name: clean(newPartyMatch[1]), snippet };
 
   // "{Name}'s App is approved..."
-  const possessiveMatch = text.match(/^([^']+)'s App/i);
-  if (possessiveMatch) return { name: possessiveMatch[1].trim(), snippet };
+  const possessiveMatch = text.match(/^(.+?)(?:'s|['']s|s') App/i);
+  if (possessiveMatch) return { name: clean(possessiveMatch[1]), snippet };
 
   // "{Name} App is approved..."
   const appApprovedMatch = text.match(/^(.+?) App is approved/i);
-  if (appApprovedMatch) return { name: appApprovedMatch[1].trim(), snippet };
+  if (appApprovedMatch) return { name: clean(appApprovedMatch[1]), snippet };
 
   // "{Name} is approved for..."
   const isApprovedMatch = text.match(/^(.+?) is approved/i);
-  if (isApprovedMatch) return { name: isApprovedMatch[1].trim(), snippet };
+  if (isApprovedMatch) return { name: clean(isApprovedMatch[1]), snippet };
 
   // "{Name} is granted..."
   const isGrantedMatch = text.match(/^(.+?) is granted/i);
-  if (isGrantedMatch) return { name: isGrantedMatch[1].trim(), snippet };
+  if (isGrantedMatch) return { name: clean(isGrantedMatch[1]), snippet };
 
   // "{Name} has been restored..."
   const restoredMatch = text.match(/^(.+?) has been restored/i);
-  if (restoredMatch) return { name: restoredMatch[1].trim(), snippet };
+  if (restoredMatch) return { name: clean(restoredMatch[1]), snippet };
+
+  // "{Name} has been pre-approved..." / "{Name} has been approved..."
+  const preApprovedMatch = text.match(/^(.+?) has been (?:pre-)?approved/i);
+  if (preApprovedMatch && preApprovedMatch[1].length < 40) return { name: clean(preApprovedMatch[1]), snippet };
 
   // "{Name} has created..." / "{Name} has ..."
   const hasMatch = text.match(/^(.+?) has /i);
-  if (hasMatch && hasMatch[1].length < 40) return { name: hasMatch[1].trim(), snippet };
+  if (hasMatch && hasMatch[1].length < 40) return { name: clean(hasMatch[1]), snippet };
 
   // "{Name} would like..."
   const wouldMatch = text.match(/^(.+?) would like/i);
-  if (wouldMatch) return { name: wouldMatch[1].trim(), snippet };
+  if (wouldMatch) return { name: clean(wouldMatch[1]), snippet };
 
   // "{Name} lets users..." / "{Name} lets ..."
   const letsMatch = text.match(/^(.+?) lets /i);
-  if (letsMatch) return { name: letsMatch[1].trim(), snippet };
+  if (letsMatch) return { name: clean(letsMatch[1]), snippet };
 
   // "{Name} is a ..." (description pattern)
   const isAMatch = text.match(/^(.+?) is a /i);
-  if (isAMatch && isAMatch[1].length < 40) return { name: isAMatch[1].trim(), snippet };
+  if (isAMatch && isAMatch[1].length < 40) return { name: clean(isAMatch[1]), snippet };
 
-  // "{Name} tokenizes..." / "{Name} enables..." / "{Name} creates..."
-  const verbMatch = text.match(/^(.+?) (?:tokenizes|enables|creates|records|manages|provides|offers|connects)/i);
-  if (verbMatch && verbMatch[1].length < 40) return { name: verbMatch[1].trim(), snippet };
+  // "{Name} is the ..."
+  const isTheMatch = text.match(/^(.+?) is the /i);
+  if (isTheMatch && isTheMatch[1].length < 40) return { name: clean(isTheMatch[1]), snippet };
+
+  // "{Name} tokenizes..." / "{Name} enables..." / "{Name} creates..." etc.
+  const verbMatch = text.match(/^(.+?) (?:tokenizes|enables|creates|records|manages|provides|offers|connects|partners|brings|serves|presents|operates|plans|will|calculates|acting)/i);
+  if (verbMatch && verbMatch[1].length < 40) return { name: clean(verbMatch[1]), snippet };
+
+  // "{Name} operating ..."
+  const operatingMatch = text.match(/^(.+?) operating /i);
+  if (operatingMatch && operatingMatch[1].length < 40) return { name: clean(operatingMatch[1]), snippet };
 
   // Fallback: take first sentence fragment before common delimiters
   const fallback = text.match(/^([A-Z][A-Za-z0-9 .-]+?)(?:\s+(?:is|has|was|lets|would|App)\b|[,.])/);
   if (fallback && fallback[1].length >= 3 && fallback[1].length < 40) {
-    return { name: fallback[1].trim(), snippet };
+    return { name: clean(fallback[1]), snippet };
   }
 
   return { name: null, snippet };
@@ -691,7 +767,7 @@ async function main() {
     pad('25M Date', 12, 'right') +
     pad('Days→25M', 10, 'right') +
     pad('Lock?', 7, 'right') +
-    '  ' + pad('Note (from vote reason)', 60);
+    '  ' + 'Note (from vote reason)';
 
   console.log(`  ${hdr}`);
   console.log(`  ${'─'.repeat(hdr.length)}`);
@@ -718,7 +794,7 @@ async function main() {
       pad(dt25m ? fmtDate(dt25m) : (r.hasReached25m ? '~' : '--'), 12, 'right') +
       pad(d25m !== null ? `${d25m}d` : (r.hasReached25m ? '~' : '--'), 10, 'right') +
       pad(lockIcon, 7, 'right') +
-      '  ' + (r.reasonSnippet || '').slice(0, 60);
+      '  ' + (r.reasonSnippet || '');
 
     console.log(`  ${row}`);
   });
