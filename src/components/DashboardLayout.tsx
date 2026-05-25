@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useCDNDashboards } from "@/hooks/use-cdn-dashboards";
+import { useDashboards } from "@/hooks/use-dashboards";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -137,14 +137,14 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
                 key={item.name}
                 to={item.href}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-smooth ${
+                className={`flex items-start gap-2 px-3 py-2 rounded-md text-sm transition-smooth ${
                   isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 }`}
               >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                <span>{item.name}</span>
+                <Icon className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <span className="break-words min-w-0">{item.name}</span>
               </Link>
             );
           })}
@@ -155,47 +155,38 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
 };
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { data: cdnDashboards = [], error: cdnError } = useCDNDashboards();
-  
-  if (cdnError) {
-    console.warn("⚠️ Error loading CDN dashboards:", cdnError);
+  const { data: dashboards = [], error: dashboardsError } = useDashboards();
+
+  if (dashboardsError) {
+    console.warn("⚠️ Error loading dashboards:", dashboardsError);
   }
 
-  // Build navigation groups with dashboards appended to Overview
   const navigationGroups = useMemo(() => {
-    // Create deep copies of navigation groups to avoid mutating the base array
     const groups = baseNavigationGroups.map(group => ({
       ...group,
       items: [...group.items],
     }));
-    
-    // Find Overview group and append dashboards
+
     const overviewGroup = groups.find(g => g.label === "Overview");
-    if (overviewGroup && cdnDashboards.length > 0) {
-      // Create dashboard items and deduplicate by name
+    if (overviewGroup && dashboards.length > 0) {
       const seenNames = new Set<string>();
-      const dashboardItems: NavItem[] = cdnDashboards
-        .map((dashboard) => {
-          const name = dashboard.title || dashboard.name.replace(/\.aqldash$/, "").replace(/_/g, " ");
-          return {
-            name,
-            href: `/dashboard/${encodeURIComponent(dashboard.name)}`,
-            icon: SyncInsightsIcon as LucideIcon,
-          };
-        })
+      const dashboardItems: NavItem[] = dashboards
+        .map((dashboard) => ({
+          name: dashboard.dashboard.title,
+          href: `/dashboard/${encodeURIComponent(dashboard.id)}`,
+          icon: SyncInsightsIcon as LucideIcon,
+        }))
         .filter((item) => {
-          if (seenNames.has(item.name)) {
-            return false;
-          }
+          if (seenNames.has(item.name)) return false;
           seenNames.add(item.name);
           return true;
         });
-      
+
       overviewGroup.items = [...overviewGroup.items, ...dashboardItems];
     }
-    
+
     return groups;
-  }, [cdnDashboards]);
+  }, [dashboards]);
 
   return (
     <div className="min-h-screen">
