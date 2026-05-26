@@ -8,11 +8,25 @@ import { useDashboards } from "@/hooks/use-dashboards";
 let Dashboard: any = null;
 let configureTheme: any = null;
 let isAutoQLLoaded = false;
-import type { RawDashboard } from "@/utils/dashboardService";
-import { fetchTileData } from "@/utils/dashboardService";
+import type { RawDashboard, RawDashboardTile } from "@/utils/dashboardService";
+import { fetchTileData, fetchDashboards } from "@/utils/dashboardService";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+const loadTiles = (dashboardId: string, rawTiles: RawDashboardTile[]) =>
+  Promise.allSettled(
+    rawTiles.map(async (tile) => {
+      const queryIndex: 0 | 1 = tile.index ?? 0;
+      const response = await fetchTileData(dashboardId, tile.key, queryIndex);
+      const prop = queryIndex === 0 ? "queryResponse" : "secondQueryResponse";
+      return { ...tile, [prop]: response };
+    })
+  ).then((results) =>
+    results.map((result, idx) =>
+      result.status === "fulfilled" ? result.value : rawTiles[idx]
+    )
+  );
+
 function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const [dashboardLoaded, setDashboardLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -73,9 +87,6 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
     };
   }, []);
   
-  // Memoize tiles to prevent unnecessary re-renders
-  const memoizedTiles = useMemo(() => tiles, [tiles.map(t => t.i || t.key).join('-')]);
-  
   if (loadError) {
     return (
       <div className="p-4">
@@ -113,7 +124,7 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
         ref={(ref) => {
           dashboardRef.current = ref;
         }}
-        tiles={memoizedTiles}
+        tiles={tiles}
         notExecutedText="Queries will not execute in view-only mode"
         offline
         isEditable={false}
@@ -135,6 +146,13 @@ export default function DashboardViewer() {
 
   const [tiles, setTiles] = useState<any[]>([]);
   const [isLoadingTiles, setIsLoadingTiles] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [exportDate, setExportDate] = useState<string | null>(null);
+
+  // Keep exportDate in sync when dashboardData loads or its exportDate changes
+  useEffect(() => {
+    setExportDate(dashboardData?.exportDate ?? null);
+  }, [dashboardData?.exportDate]);
 
   useEffect(() => {
     const rawTiles = dashboardData?.dashboard?.tiles;
@@ -150,20 +168,10 @@ export default function DashboardViewer() {
 
     const dashboardId = dashboardData!.id;
 
-    Promise.allSettled(
-      rawTiles.map(async (tile) => {
-        const queryIndex: 0 | 1 = tile.index ?? 0;
-        const response = await fetchTileData(dashboardId, tile.key, queryIndex);
-        const prop = queryIndex === 0 ? "queryResponse" : "secondQueryResponse";
-        return { ...tile, [prop]: response };
-      })
-    ).then((results) => {
+    loadTiles(dashboardId, rawTiles).then((resolved) => {
       if (cancelled) return;
-      setTiles(
-        results.map((result, idx) =>
-          result.status === "fulfilled" ? result.value : rawTiles[idx]
-        )
-      );
+      setTiles(resolved);
+      setRefreshKey((k) => k + 1);
       setIsLoadingTiles(false);
     });
 
@@ -172,7 +180,7 @@ export default function DashboardViewer() {
     };
   }, [dashboardData]);
 
-  // Silent background refresh — fires at 3 minutes past each hour
+  // Silent background refresh — fires every 30 minutes
   useEffect(() => {
     const rawTiles = dashboardData?.dashboard?.tiles;
     if (!rawTiles?.length) return;
@@ -180,35 +188,34 @@ export default function DashboardViewer() {
     let cancelled = false;
     let timeoutId: ReturnType<typeof setTimeout>;
 
-    const msUntilNextRefresh = () => {
-      const now = new Date();
-      const next = new Date(now);
-      next.setMinutes(3, 0, 0);
-      if (next <= now) next.setHours(next.getHours() + 1);
-      return next.getTime() - now.getTime();
-    };
+    const dashboardId = dashboardData!.id;
 
     const refresh = () => {
-      Promise.allSettled(
-        rawTiles.map(async (tile) => {
-          const queryIndex: 0 | 1 = tile.index ?? 0;
-          const response = await fetchTileData(dashboardData!.id, tile.key, queryIndex);
-          const prop = queryIndex === 0 ? "queryResponse" : "secondQueryResponse";
-          return { ...tile, [prop]: response };
+      // Refresh exportDate independently — fetching the dashboard list won't affect
+      // dashboardData's object identity so it won't retrigger the tile-fetch effect.
+      fetchDashboards()
+        .then((list) => {
+          if (cancelled) return;
+          const updated = list.find((d) => d.id === dashboardId);
+          if (updated?.exportDate) setExportDate(updated.exportDate);
         })
-      ).then((results) => {
-        if (cancelled) return;
-        setTiles(
-          results.map((result, idx) =>
-            result.status === "fulfilled" ? result.value : rawTiles[idx]
-          )
-        );
-        schedule();
-      });
+        .catch((err) => { console.warn("Failed to refresh export date:", err); });
+
+      loadTiles(dashboardId, rawTiles)
+        .then((resolved) => {
+          if (cancelled) return;
+          setTiles(resolved);
+          setRefreshKey((k) => k + 1);
+          schedule();
+        })
+        .catch((err) => {
+          console.warn("Failed to refresh tile data:", err);
+          if (!cancelled) schedule();
+        });
     };
 
     const schedule = () => {
-      timeoutId = setTimeout(refresh, msUntilNextRefresh());
+      timeoutId = setTimeout(refresh, 30 * 60 * 1000);
     };
 
     schedule();
@@ -261,26 +268,24 @@ export default function DashboardViewer() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{dashboardData.dashboard.title}</h1>
-            {dashboardData.exportDate && (
+            {/* TODO: wire up refreshed_at from the API response once available
+            {refreshedAt && (
               <p className="text-sm text-muted-foreground mt-1">
-                Exported: {(() => {
-                  try {
-                    const date = new Date(dashboardData.exportDate);
-                    const options: Intl.DateTimeFormatOptions = {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                      timeZoneName: "short",
-                    };
-                    return date.toLocaleDateString("en-US", options);
-                  } catch {
-                    return new Date(dashboardData.exportDate).toLocaleString();
-                  }
+                Last updated: {(() => {
+                  const date = new Date(refreshedAt);
+                  if (isNaN(date.getTime())) return refreshedAt;
+                  return date.toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    timeZoneName: "short",
+                  });
                 })()}
               </p>
             )}
+            */}
           </div>
           <a
             href="https://syncinsights.io/"
@@ -300,7 +305,7 @@ export default function DashboardViewer() {
         {tiles.length > 0 ? (
           shouldRenderDashboard ? (
             <ErrorBoundary title="Dashboard rendering error">
-              <DashboardWrapper tiles={tiles} />
+              <DashboardWrapper tiles={tiles.map(t => ({ ...t, i: `${t.i}-${refreshKey}`, key: `${t.key}-${refreshKey}` }))} />
             </ErrorBoundary>
           ) : (
             <div className="flex items-center justify-center min-h-[400px]">
