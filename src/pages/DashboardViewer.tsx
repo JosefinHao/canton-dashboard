@@ -268,11 +268,12 @@ export default function DashboardViewer() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">{dashboardData.dashboard.title}</h1>
-            {exportDate && (
+            {/* TODO: wire up refreshed_at from the API response once available
+            {refreshedAt && (
               <p className="text-sm text-muted-foreground mt-1">
-                Exported: {(() => {
-                  const date = new Date(exportDate);
-                  if (isNaN(date.getTime())) return exportDate;
+                Last updated: {(() => {
+                  const date = new Date(refreshedAt);
+                  if (isNaN(date.getTime())) return refreshedAt;
                   return date.toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
@@ -284,6 +285,7 @@ export default function DashboardViewer() {
                 })()}
               </p>
             )}
+            */}
           </div>
           <a
             href="https://syncinsights.io/"
