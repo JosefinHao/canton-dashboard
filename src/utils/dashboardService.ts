@@ -19,7 +19,7 @@ export interface RawDashboard {
   id: string;
   source: string;
   version: string;
-  exportDate: string;
+  exportDate?: string;
   dashboard: {
     title: string;
     props: Record<string, any>;
