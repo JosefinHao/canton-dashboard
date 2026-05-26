@@ -1,15 +1,15 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { useCDNDashboards } from "@/hooks/use-cdn-dashboards";
+import { useDashboards } from "@/hooks/use-dashboards";
 
 // Don't import react-autoql at module level - it's causing bundling issues
 // We'll load it dynamically when needed
 let Dashboard: any = null;
 let configureTheme: any = null;
 let isAutoQLLoaded = false;
-import { processDashboardFileFromUrl } from "@/utils/dashboardFileUtils";
-import type { DashboardData } from "@/utils/dashboardFileUtils";
+import type { RawDashboard } from "@/utils/dashboardService";
+import { fetchTileData } from "@/utils/dashboardService";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -125,101 +125,122 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
 export default function DashboardViewer() {
   const { name } = useParams<{ name: string }>();
   
-  const { data: cdnDashboards = [], isLoading: isLoadingDashboards } = useCDNDashboards();
-  
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [shouldRenderDashboard, setShouldRenderDashboard] = useState(false);
+  const { data: dashboards = [], isLoading: isLoadingDashboards } = useDashboards();
 
-  // Memoize dashboard URL to prevent refetching when cdnDashboards array reference changes
-  const dashboardUrl = useMemo(() => {
-    if (!name || isLoadingDashboards || cdnDashboards.length === 0) return null;
-    const decodedName = decodeURIComponent(name);
-    const dashboard = cdnDashboards.find((d) => d.name === decodedName);
-    return dashboard?.url || null;
-  }, [name, isLoadingDashboards, cdnDashboards.length, cdnDashboards.map(d => `${d.name}:${d.url}`).join('|')]);
+  const dashboardData = useMemo<RawDashboard | null>(() => {
+    if (!name || isLoadingDashboards) return null;
+    const decodedId = decodeURIComponent(name);
+    return dashboards.find((d) => d.id === decodedId) ?? null;
+  }, [name, isLoadingDashboards, dashboards]);
 
-  // Delay rendering Dashboard component to ensure everything else is mounted first
+  const [tiles, setTiles] = useState<any[]>([]);
+  const [isLoadingTiles, setIsLoadingTiles] = useState(false);
+
   useEffect(() => {
-    if (dashboardData && dashboardData.dashboard.tiles?.length > 0) {
-      const timer = setTimeout(() => {
-        setShouldRenderDashboard(true);
-      }, 100);
-      return () => {
-        clearTimeout(timer);
-      };
-    } else {
-      setShouldRenderDashboard(false);
+    const rawTiles = dashboardData?.dashboard?.tiles;
+    if (!rawTiles?.length) {
+      setTiles([]);
+      setIsLoadingTiles(false);
+      return;
     }
-  }, [dashboardData]);
 
-  useEffect(() => {
     let cancelled = false;
-    
-    const loadDashboard = async () => {
-      if (!name) {
-        if (!cancelled) {
-          setError("Dashboard name is required");
-          setIsLoading(false);
-        }
-        return;
-      }
+    setTiles([]);
+    setIsLoadingTiles(true);
 
-      if (isLoadingDashboards || !dashboardUrl) {
-        return;
-      }
+    const dashboardId = dashboardData!.id;
 
-      const decodedName = decodeURIComponent(name);
+    Promise.allSettled(
+      rawTiles.map(async (tile) => {
+        const queryIndex: 0 | 1 = tile.index ?? 0;
+        const response = await fetchTileData(dashboardId, tile.key, queryIndex);
+        const prop = queryIndex === 0 ? "queryResponse" : "secondQueryResponse";
+        return { ...tile, [prop]: response };
+      })
+    ).then((results) => {
+      if (cancelled) return;
+      setTiles(
+        results.map((result, idx) =>
+          result.status === "fulfilled" ? result.value : rawTiles[idx]
+        )
+      );
+      setIsLoadingTiles(false);
+    });
 
-      try {
-        if (!cancelled) {
-          setIsLoading(true);
-          setError(null);
-        }
-        const data = await processDashboardFileFromUrl(dashboardUrl);
-        if (!cancelled) {
-          setDashboardData(data);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Failed to load dashboard");
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadDashboard();
-    
     return () => {
       cancelled = true;
     };
-  }, [name, dashboardUrl, isLoadingDashboards]);
+  }, [dashboardData]);
 
-  if (isLoadingDashboards || isLoading) {
+  // Silent background refresh — fires at 3 minutes past each hour
+  useEffect(() => {
+    const rawTiles = dashboardData?.dashboard?.tiles;
+    if (!rawTiles?.length) return;
+
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const msUntilNextRefresh = () => {
+      const now = new Date();
+      const next = new Date(now);
+      next.setMinutes(3, 0, 0);
+      if (next <= now) next.setHours(next.getHours() + 1);
+      return next.getTime() - now.getTime();
+    };
+
+    const refresh = () => {
+      Promise.allSettled(
+        rawTiles.map(async (tile) => {
+          const queryIndex: 0 | 1 = tile.index ?? 0;
+          const response = await fetchTileData(dashboardData!.id, tile.key, queryIndex);
+          const prop = queryIndex === 0 ? "queryResponse" : "secondQueryResponse";
+          return { ...tile, [prop]: response };
+        })
+      ).then((results) => {
+        if (cancelled) return;
+        setTiles(
+          results.map((result, idx) =>
+            result.status === "fulfilled" ? result.value : rawTiles[idx]
+          )
+        );
+        schedule();
+      });
+    };
+
+    const schedule = () => {
+      timeoutId = setTimeout(refresh, msUntilNextRefresh());
+    };
+
+    schedule();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [dashboardData]);
+
+  const [shouldRenderDashboard, setShouldRenderDashboard] = useState(false);
+
+  useEffect(() => {
+    if (!isLoadingTiles && tiles.length > 0) {
+      const timer = setTimeout(() => setShouldRenderDashboard(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setShouldRenderDashboard(false);
+    }
+  }, [isLoadingTiles, tiles]);
+
+  if (isLoadingDashboards || isLoadingTiles) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <p className="text-muted-foreground">
-              {isLoadingDashboards ? "Loading dashboard list..." : "Loading dashboard..."}
+              {isLoadingDashboards ? "Loading dashboards..." : "Loading dashboard data..."}
             </p>
           </div>
         </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <DashboardLayout>
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
       </DashboardLayout>
     );
   }
@@ -254,7 +275,7 @@ export default function DashboardViewer() {
                       timeZoneName: "short",
                     };
                     return date.toLocaleDateString("en-US", options);
-                  } catch (error) {
+                  } catch {
                     return new Date(dashboardData.exportDate).toLocaleString();
                   }
                 })()}
@@ -276,10 +297,10 @@ export default function DashboardViewer() {
           </a>
         </div>
 
-        {dashboardData.dashboard.tiles && dashboardData.dashboard.tiles.length > 0 ? (
+        {tiles.length > 0 ? (
           shouldRenderDashboard ? (
             <ErrorBoundary title="Dashboard rendering error">
-              <DashboardWrapper tiles={dashboardData.dashboard.tiles} />
+              <DashboardWrapper tiles={tiles} />
             </ErrorBoundary>
           ) : (
             <div className="flex items-center justify-center min-h-[400px]">
