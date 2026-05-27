@@ -185,7 +185,9 @@ export async function scanGCSDatePartitions(bucketName, migPrefix, migrationId, 
 
 /**
  * List files in a GCS day partition and extract the latest record_time
- * from Parquet filenames. Falls back to end-of-day-minus-5-minutes.
+ * from Parquet filenames. Falls back to end-of-day-minus-5-minutes,
+ * clamped to current time to prevent future timestamps when a partition
+ * exists but only has data for part of the day.
  */
 export async function extractTimestampFromGCSFiles(bucketName, dayPrefix, dateStr) {
   try {
@@ -211,7 +213,12 @@ export async function extractTimestampFromGCSFiles(bucketName, dayPrefix, dateSt
 
   const endOfDay = new Date(`${dateStr}T23:59:59.999Z`);
   endOfDay.setMinutes(endOfDay.getMinutes() - 5);
-  return endOfDay.toISOString();
+
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - 5);
+  const clamped = endOfDay < now ? endOfDay : now;
+
+  return clamped.toISOString();
 }
 
 // Kept for backwards compatibility with any callers using these parse helpers

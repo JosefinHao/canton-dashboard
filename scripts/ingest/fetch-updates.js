@@ -739,6 +739,17 @@ async function findLatestTimestamp() {
   }
 
   if (best.source !== 'live-cursor' && best.source !== 'backfill-cursor') {
+    const bestTime = new Date(best.time);
+    const now = new Date();
+    if (bestTime > now) {
+      console.log(`  ⚠️ REFUSING auto-sync: ${best.source} timestamp ${best.time} is in the future — using cursor instead`);
+      const cursorCandidate = candidates.find(c => c.source === 'live-cursor' || c.source === 'backfill-cursor');
+      if (cursorCandidate) {
+        lastMigrationId = cursorCandidate.migration;
+        return cursorCandidate.time;
+      }
+      return null;
+    }
     console.log(`  🔄 Auto-syncing cursor: ${best.source} is ahead of cursors`);
     // FIX #2: await the now-async saveLiveCursor
     await saveLiveCursor(best.migration, best.time);
@@ -906,7 +917,11 @@ async function findLatestFromRawData(rawDir) {
             // cursor to skip real data between the actual last record and midnight.
             const endOfDay = new Date(`${dateStr}T23:59:59.999Z`);
             endOfDay.setMinutes(endOfDay.getMinutes() - 5);
-            timestamp = endOfDay.toISOString();
+            // Clamp to now-5min to prevent future timestamps on partially-filled days
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - 5);
+            const clamped = endOfDay < now ? endOfDay : now;
+            timestamp = clamped.toISOString();
           }
 
           latestResult = {
