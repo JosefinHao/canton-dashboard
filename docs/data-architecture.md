@@ -348,6 +348,34 @@ The full archive (2024-06-24 → 2026-05-17) was re-ingested via
 | gsutil reauth failures | Replaced all gsutil with `@google-cloud/storage` SDK |
 | DuckDB timeout on large days | Configurable via `VSC_DUCKDB_TIMEOUT_MS` |
 | Live ingest file proliferation | `BATCH_SIZE` 100 → 1000 |
+| GCS scanner cursor jump on restart | Clamp inferred timestamp to now; refuse future auto-sync |
+
+### May 20 Cursor Jump Incident
+
+On 2026-05-20 at 00:18 UTC, a `systemctl restart` triggered the GCS scanner
+to infer a future timestamp (`T23:54:59.999Z`) from the Hive partition path
+`day=20`. The scanner's fallback uses end-of-day-minus-5-min when Parquet
+filenames lack timestamps (live ingest files use hex IDs, not timestamps).
+The auto-sync logic then advanced the cursor ~23 hours ahead, skipping 97%
+of May 20's data.
+
+**Root cause**: `gcs-scanner.js` `extractTimestampFromGCSFiles()` returned
+a future timestamp from the partition date, and `fetch-updates.js` auto-synced
+the cursor to it without checking if the time was in the future.
+
+**Fix** (commit `fd7f2b4`):
+1. `gcs-scanner.js`: Clamp fallback timestamp to `now - 5min`
+2. `fetch-updates.js`: Refuse auto-sync when inferred time is in the future
+3. `fetch-updates.js`: Same clamp in local `findLatestFromRawData()`
+
+**Recovery**: May 20 and 21 re-ingested from Scan API via `reingest-updates.js`,
+verified against Scan API (508,576 and 453,970 updates respectively), BigQuery
+backfilled manually. All 26 days in May verified: 100% match between GCS and
+BigQuery transformed tables.
+
+**Lesson**: Reingest `--clean` with multi-day ranges can spill boundary records
+into adjacent partitions (records with `effective_at` on day N-1 but `record_time`
+on day N). After any reingest, check adjacent day partitions for `*-ri-*` files.
 
 ---
 
