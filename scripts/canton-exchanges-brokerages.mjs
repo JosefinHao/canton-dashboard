@@ -104,6 +104,49 @@ const CATEGORY_LABELS = {
   CL:  'Clearing / Settlement',
 };
 
+// ─── Company → validator party prefix search patterns ───────────────────────
+// Maps company names to arrays of lowercase substrings that should match
+// validator party prefixes. This catches nodes run under different party IDs
+// than the featured app provider (e.g. "kucoin-validator-2" vs "kucoin-node-01").
+// Entries here supplement the automatic featured-app prefix match.
+const COMPANY_VALIDATOR_PATTERNS = {
+  'Binance':              ['binance'],
+  'Kraken':               ['kraken'],
+  'OKX':                  ['okx'],
+  'ByBit':                ['bybit'],
+  'KuCoin':               ['kucoin'],
+  'MEXC':                 ['mexc'],
+  'EDX Markets LLC':      ['edx'],
+  'Hundred Exchange':     ['arcane', 'hundred'],
+  'Cantex':               ['cantex'],
+  'CantonSwap':           ['cantonswap'],
+  'Tradecraft':           ['tradecraft'],
+  'OneSwap':              ['oneswap', 'satsterminal'],
+  'Silvana Book':         ['silvana'],
+  'Temple':               ['temple'],
+  'Thetanuts Finance':    ['thetamarket', 'thetanut'],
+  'Cumberland':           ['cumberland'],
+  'Copper':               ['copper'],
+  'BitGo':                ['bitgo'],
+  'Republic':             ['republic'],
+  'Texture Capital':      ['texturecapital', 'texture-capital'],
+  'Tradeweb':             ['tradeweb', 'twmain'],
+  'LSEG PTS':             ['lseg'],
+  'Black Manta Capital':  ['blackmanta'],
+  'HydraX':               ['hydrax'],
+  'Trakx':                ['trakx'],
+  'Falcon Capital':       ['elk-validator', 'falconcap'],
+  'SciFeCap':             ['scifecap', 'fulcrum'],
+  'Trade.Fast':           ['tradefast'],
+  'TradeChain':           ['tradechain'],
+  'Zodia Custody':        ['zodiacustody', 'zodia'],
+  'Finoa Consensus Services': ['finoa', 'valawallet'],
+  'Dfns':                 ['dfns'],
+  'Ledger':               ['ledger'],
+  'Ubyx Clearing':        ['ubyx'],
+  'Global Settlement':    ['globalsettlement'],
+};
+
 // ─── HTTP helpers ───────────────────────────────────────────────────────────
 
 async function scanRequest(method, path, body = null) {
@@ -208,6 +251,7 @@ function normalizeParty(partyId) {
 
 async function main() {
   const jsonMode = process.argv.includes('--json');
+  const debugMode = process.argv.includes('--debug');
 
   console.error('Canton Network — Exchanges & Brokerages with Featured Apps\n');
   console.error('Querying live Scan API...\n');
@@ -223,31 +267,24 @@ async function main() {
     fetchDsoInfo(),
   ]);
 
-  // 3. Build validator-party → license-count index
-  //    Each ValidatorLicense has payload.validator (the party running the node)
-  //    and payload.sponsor (who sponsored it)
-  const validatorCountByPrefix = new Map();  // partyPrefix → count of licenses
-  const validatorDetailsByPrefix = new Map(); // partyPrefix → [{ validator, sponsor, ... }]
+  // 3. Index every validator license by party prefix and sponsor prefix
+  const licensesByValidatorPrefix = new Map(); // prefix → [license, ...]
+  const licensesBySponsorPrefix = new Map();   // sponsor prefix → [license, ...]
 
   for (const lic of validatorLicenses) {
     const validator = lic.payload?.validator || '';
-    const prefix = extractPartyPrefix(validator);
-    if (!prefix) continue;
-    validatorCountByPrefix.set(prefix, (validatorCountByPrefix.get(prefix) || 0) + 1);
-    if (!validatorDetailsByPrefix.has(prefix)) validatorDetailsByPrefix.set(prefix, []);
-    validatorDetailsByPrefix.get(prefix).push({
-      validator,
-      sponsor: lic.payload?.sponsor || '',
-      faucetState: lic.payload?.faucetState,
-    });
-  }
+    const sponsor = lic.payload?.sponsor || '';
+    const vPrefix = extractPartyPrefix(validator);
+    const sPrefix = extractPartyPrefix(sponsor);
 
-  // Also index by full party ID (lowercase) for exact matching
-  const validatorCountByFull = new Map();
-  for (const lic of validatorLicenses) {
-    const validator = normalizeParty(lic.payload?.validator);
-    if (!validator) continue;
-    validatorCountByFull.set(validator, (validatorCountByFull.get(validator) || 0) + 1);
+    if (vPrefix) {
+      if (!licensesByValidatorPrefix.has(vPrefix)) licensesByValidatorPrefix.set(vPrefix, []);
+      licensesByValidatorPrefix.get(vPrefix).push(lic);
+    }
+    if (sPrefix) {
+      if (!licensesBySponsorPrefix.has(sPrefix)) licensesBySponsorPrefix.set(sPrefix, []);
+      licensesBySponsorPrefix.get(sPrefix).push(lic);
+    }
   }
 
   // 4. Build SV node states index (Super Validators)
@@ -258,16 +295,12 @@ async function main() {
     const svParty = payload.sv || '';
     const prefix = extractPartyPrefix(svParty);
     if (prefix) {
-      svByPrefix.set(prefix, {
-        svName,
-        svParty,
-        svRewardWeight: payload.svRewardWeight,
-      });
+      svByPrefix.set(prefix, { svName, svParty, svRewardWeight: payload.svRewardWeight });
     }
   }
 
-  // 5. Map featured apps → company → classification, and match validator licenses
-  const results = [];
+  // 5. Map featured apps → company → classification
+  const companyNodeSummary = new Map();
 
   for (const fa of featuredApps) {
     const providerParty = fa.payload?.provider || '';
@@ -278,14 +311,12 @@ async function main() {
     let appName = null;
     let faApproved = null;
 
-    // Try exact party ID match first
     const mapEntry = companyMap.get(providerParty);
     if (mapEntry) {
       companyName = mapEntry.companyName;
       appName = mapEntry.appName;
       faApproved = mapEntry.faApproved;
     } else {
-      // Try prefix match
       for (const [pid, info] of companyMap) {
         if (extractPartyPrefix(pid) === providerPrefix) {
           companyName = info.companyName;
@@ -301,82 +332,91 @@ async function main() {
       companyName = providerPrefix;
     }
 
-    // Check if this company is an exchange or brokerage
     const classification = EXCHANGE_BROKERAGE_CLASSIFICATION[companyName];
     if (!classification) continue;
 
-    // Count validator licenses matching this provider's party prefix
-    const nodeCount = validatorCountByPrefix.get(providerPrefix) || 0;
-
-    // Check if this provider prefix matches an SV
-    const svInfo = svByPrefix.get(providerPrefix);
-
-    results.push({
-      companyName,
-      appName: appName || providerPrefix,
-      category: classification.category,
-      categoryLabel: CATEGORY_LABELS[classification.category],
-      description: classification.description,
-      providerParty,
-      providerPrefix,
-      faApproved: faApproved || fa.created_at?.slice(0, 10) || 'Unknown',
-      validatorLicenses: nodeCount,
-      isSuperValidator: !!svInfo,
-      svName: svInfo?.svName || null,
-    });
-  }
-
-  // 6. Also check: do any of these companies have validator nodes under DIFFERENT
-  //    party prefixes? (e.g., company runs nodes with a different party ID than the FA)
-  //    We do a fuzzy search by company name against all validator prefixes.
-  const companyNodeSummary = new Map();
-  for (const r of results) {
-    if (!companyNodeSummary.has(r.companyName)) {
-      companyNodeSummary.set(r.companyName, {
-        companyName: r.companyName,
-        category: r.category,
-        categoryLabel: r.categoryLabel,
-        description: r.description,
+    if (!companyNodeSummary.has(companyName)) {
+      companyNodeSummary.set(companyName, {
+        companyName,
+        category: classification.category,
+        categoryLabel: CATEGORY_LABELS[classification.category],
+        description: classification.description,
         featuredApps: [],
-        validatorLicenses: 0,
+        matchedPrefixes: new Set(),
+        matchedPartyIds: new Set(),
         isSuperValidator: false,
         svName: null,
-        prefixes: new Set(),
       });
     }
-    const summary = companyNodeSummary.get(r.companyName);
+
+    const summary = companyNodeSummary.get(companyName);
     summary.featuredApps.push({
-      appName: r.appName,
-      providerParty: r.providerParty,
-      faApproved: r.faApproved,
+      appName: appName || providerPrefix,
+      providerParty,
+      faApproved: faApproved || fa.created_at?.slice(0, 10) || 'Unknown',
     });
-    if (r.validatorLicenses > summary.validatorLicenses) {
-      summary.validatorLicenses = r.validatorLicenses;
-    }
-    if (r.isSuperValidator) {
+    summary.matchedPrefixes.add(providerPrefix);
+
+    const svInfo = svByPrefix.get(providerPrefix);
+    if (svInfo) {
       summary.isSuperValidator = true;
-      summary.svName = r.svName;
+      summary.svName = svInfo.svName;
     }
-    summary.prefixes.add(r.providerPrefix);
   }
 
-  // Search for additional validator licenses by scanning all license prefixes
-  // for known company name substrings
-  for (const [prefix, count] of validatorCountByPrefix) {
-    const prefixLower = prefix.toLowerCase();
-    for (const [company, summary] of companyNodeSummary) {
-      const companyLower = company.toLowerCase().replace(/\s+/g, '');
-      if (
-        summary.prefixes.has(prefix) ||
-        summary.validatorLicenses >= count
-      ) continue;
-      // Check if prefix contains company name or vice versa
-      if (
-        prefixLower.includes(companyLower) ||
-        (companyLower.length > 4 && prefixLower.includes(companyLower.slice(0, 6)))
-      ) {
-        summary.validatorLicenses = Math.max(summary.validatorLicenses, count);
-        summary.prefixes.add(prefix);
+  // 6. Comprehensive node search: for each exchange/brokerage, scan ALL validator
+  //    licenses to find every node they operate, using three strategies:
+  //
+  //    Strategy A: Direct prefix match (featured app provider prefix = validator prefix)
+  //    Strategy B: Pattern match (search all validator prefixes for company name patterns)
+  //    Strategy C: Sponsor match (if a company's known party sponsors other validators)
+
+  console.error('\n  Cross-referencing validator licenses...');
+
+  for (const [company, summary] of companyNodeSummary) {
+    const patterns = COMPANY_VALIDATOR_PATTERNS[company] || [];
+    const knownPrefixes = new Set(summary.matchedPrefixes);
+
+    // Strategy A: already have the FA provider prefixes in knownPrefixes
+
+    // Strategy B: scan all validator prefixes for pattern matches
+    for (const [vPrefix] of licensesByValidatorPrefix) {
+      const prefixLower = vPrefix.toLowerCase();
+      for (const pattern of patterns) {
+        if (prefixLower.includes(pattern)) {
+          knownPrefixes.add(vPrefix);
+          break;
+        }
+      }
+    }
+
+    // Strategy C: check if any known prefix appears as a sponsor of other validators
+    for (const knownPrefix of [...knownPrefixes]) {
+      const sponsored = licensesBySponsorPrefix.get(knownPrefix);
+      if (sponsored) {
+        for (const lic of sponsored) {
+          const sponsoredPrefix = extractPartyPrefix(lic.payload?.validator || '');
+          if (sponsoredPrefix) knownPrefixes.add(sponsoredPrefix);
+        }
+      }
+    }
+
+    // Collect all unique validator party IDs across all matched prefixes
+    for (const prefix of knownPrefixes) {
+      const lics = licensesByValidatorPrefix.get(prefix) || [];
+      for (const lic of lics) {
+        const fullId = lic.payload?.validator || '';
+        if (fullId) summary.matchedPartyIds.add(fullId);
+      }
+    }
+
+    summary.matchedPrefixes = knownPrefixes;
+
+    if (debugMode && summary.matchedPartyIds.size > 0) {
+      console.error(`    ${company}: ${summary.matchedPartyIds.size} node(s) across ${knownPrefixes.size} prefix(es)`);
+      for (const prefix of knownPrefixes) {
+        const count = (licensesByValidatorPrefix.get(prefix) || []).length;
+        if (count > 0) console.error(`      • ${prefix} → ${count} license(s)`);
       }
     }
   }
@@ -399,7 +439,9 @@ async function main() {
       description: s.description,
       featuredAppCount: s.featuredApps.length,
       featuredApps: s.featuredApps,
-      validatorLicenses: s.validatorLicenses,
+      totalValidatorNodes: s.matchedPartyIds.size,
+      matchedPrefixes: [...s.matchedPrefixes],
+      matchedPartyIds: [...s.matchedPartyIds],
       isSuperValidator: s.isSuperValidator,
       svName: s.svName,
     }));
@@ -408,14 +450,19 @@ async function main() {
   }
 
   // Table output
-  console.log('\n══════════════════════════════════════════════════════════════════════════════════════');
-  console.log('  CANTON NETWORK — EXCHANGES & BROKERAGES WITH FEATURED APPS');
-  console.log('══════════════════════════════════════════════════════════════════════════════════════\n');
+  console.log('\n══════════════════════════════════════════════════════════════════════════════════════════');
+  console.log('  CANTON NETWORK — EXCHANGES & BROKERAGES WITH FEATURED APPS (FULL NODE COUNT)');
+  console.log('══════════════════════════════════════════════════════════════════════════════════════════\n');
 
   console.log(`  Data sourced from live Canton Scan API at ${new Date().toISOString()}`);
   console.log(`  Total featured apps on-chain: ${featuredApps.length}`);
   console.log(`  Total validator licenses on-chain: ${validatorLicenses.length}`);
   console.log(`  Super Validators: ${(dsoInfo.sv_node_states || []).length}`);
+  console.log('');
+  console.log('  Node matching strategies:');
+  console.log('    A) Featured app provider party prefix matches validator party prefix');
+  console.log('    B) Company name pattern found in any validator party prefix');
+  console.log('    C) Known company party appears as sponsor of other validator licenses');
   console.log('');
 
   let currentCategory = '';
@@ -432,35 +479,43 @@ async function main() {
         pad('Company', 25) +
         pad('FAs', 5) +
         pad('Nodes', 7) +
+        pad('Prefixes', 10) +
         pad('SV?', 5) +
         pad('Description', 50)
       );
-      console.log('  ' + '─'.repeat(90));
+      console.log('  ' + '─'.repeat(100));
     }
 
+    const nodeCount = s.matchedPartyIds.size;
+    const prefixCount = s.matchedPrefixes.size;
     const svFlag = s.isSuperValidator ? ' ✓' : '';
     console.log(
       '  ' +
       pad(s.companyName, 25) +
       pad(String(s.featuredApps.length), 5) +
-      pad(String(s.validatorLicenses), 7) +
+      pad(String(nodeCount), 7) +
+      pad(String(prefixCount), 10) +
       pad(svFlag, 5) +
       s.description
     );
 
-    // Show individual featured apps
     for (const fa of s.featuredApps) {
-      console.log(`      └─ ${fa.appName}  (approved: ${fa.faApproved})`);
+      console.log(`      └─ FA: ${fa.appName}  (approved: ${fa.faApproved})`);
+    }
+    for (const prefix of s.matchedPrefixes) {
+      const lics = licensesByValidatorPrefix.get(prefix) || [];
+      if (lics.length > 0) {
+        console.log(`      └─ validator prefix: ${prefix}  (${lics.length} license${lics.length > 1 ? 's' : ''})`);
+      }
     }
 
     totalFAs += s.featuredApps.length;
-    totalNodes += s.validatorLicenses;
+    totalNodes += nodeCount;
   }
 
-  console.log('\n══════════════════════════════════════════════════════════════════════════════════════');
-  console.log(`  SUMMARY: ${sorted.length} companies | ${totalFAs} featured apps | ${totalNodes} validator licenses matched`);
+  console.log('\n══════════════════════════════════════════════════════════════════════════════════════════');
+  console.log(`  SUMMARY: ${sorted.length} companies | ${totalFAs} featured apps | ${totalNodes} total validator nodes`);
 
-  // Category breakdown
   const catCounts = {};
   for (const s of sorted) {
     catCounts[s.category] = (catCounts[s.category] || 0) + 1;
@@ -472,10 +527,10 @@ async function main() {
     }
   }
 
-  console.log('\n  NOTE: "Nodes" = validator licenses whose party prefix matches the');
-  console.log('  featured app provider party. A company may operate additional nodes');
-  console.log('  under different party IDs not linked to their featured apps.');
-  console.log('══════════════════════════════════════════════════════════════════════════════════════\n');
+  console.log('\n  "Nodes" = unique validator party IDs matched via prefix patterns,');
+  console.log('  featured app provider parties, and sponsor chain analysis.');
+  console.log('  "Prefixes" = distinct party prefixes (before ::) attributed to the company.');
+  console.log('══════════════════════════════════════════════════════════════════════════════════════════\n');
 }
 
 function pad(s, len) {
