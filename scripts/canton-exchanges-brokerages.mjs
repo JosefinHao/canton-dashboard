@@ -105,46 +105,49 @@ const CATEGORY_LABELS = {
 };
 
 // ─── Company → validator party prefix search patterns ───────────────────────
-// Maps company names to arrays of lowercase substrings that should match
-// validator party prefixes. This catches nodes run under different party IDs
-// than the featured app provider (e.g. "kucoin-validator-2" vs "kucoin-node-01").
+// Maps company names to regex patterns that match validator party prefixes.
+// Uses word-boundary-aware matching: patterns must match at the START of a
+// prefix or after a separator (-, _, digit boundary) to avoid false positives
+// like "temple" matching "franklintempleton" or "ledger" matching "GlobalLedger".
+//
+// Each pattern is compiled as: /^pattern|[-_]pattern/i (anchored or after separator)
 // Entries here supplement the automatic featured-app prefix match.
 const COMPANY_VALIDATOR_PATTERNS = {
-  'Binance':              ['binance'],
-  'Kraken':               ['kraken'],
-  'OKX':                  ['okx'],
-  'ByBit':                ['bybit'],
-  'KuCoin':               ['kucoin'],
-  'MEXC':                 ['mexc'],
-  'EDX Markets LLC':      ['edx'],
-  'Hundred Exchange':     ['arcane', 'hundred'],
-  'Cantex':               ['cantex'],
-  'CantonSwap':           ['cantonswap'],
-  'Tradecraft':           ['tradecraft'],
-  'OneSwap':              ['oneswap', 'satsterminal'],
-  'Silvana Book':         ['silvana'],
-  'Temple':               ['temple'],
-  'Thetanuts Finance':    ['thetamarket', 'thetanut'],
-  'Cumberland':           ['cumberland'],
-  'Copper':               ['copper'],
-  'BitGo':                ['bitgo'],
-  'Republic':             ['republic'],
-  'Texture Capital':      ['texturecapital', 'texture-capital'],
-  'Tradeweb':             ['tradeweb', 'twmain'],
-  'LSEG PTS':             ['lseg'],
-  'Black Manta Capital':  ['blackmanta'],
-  'HydraX':               ['hydrax'],
-  'Trakx':                ['trakx'],
-  'Falcon Capital':       ['elk-validator', 'falconcap'],
-  'SciFeCap':             ['scifecap', 'fulcrum'],
-  'Trade.Fast':           ['tradefast'],
-  'TradeChain':           ['tradechain'],
-  'Zodia Custody':        ['zodiacustody', 'zodia'],
-  'Finoa Consensus Services': ['finoa', 'valawallet'],
-  'Dfns':                 ['dfns'],
-  'Ledger':               ['ledger'],
-  'Ubyx Clearing':        ['ubyx'],
-  'Global Settlement':    ['globalsettlement'],
+  'Binance':              [/^binance/i],
+  'Kraken':               [/^kraken/i],
+  'OKX':                  [/^okx/i],
+  'ByBit':                [/^bybit/i],
+  'KuCoin':               [/^kucoin/i],
+  'MEXC':                 [/^mexc/i],
+  'EDX Markets LLC':      [/^edx[-_]/i],
+  'Hundred Exchange':     [/^arcane[-_]/i, /^hundred[-_]?exchange/i],
+  'Cantex':               [/^cantex[-_]/i],
+  'CantonSwap':           [/^cantonswap/i],
+  'Tradecraft':           [/^tradecraft/i],
+  'OneSwap':              [/^oneswap/i, /^satsterminal/i],
+  'Silvana Book':         [/^silvana/i],
+  'Temple':               [/^temple[-_]/i],
+  'Thetanuts Finance':    [/^thetanut/i, /^thetamarket/i],
+  'Cumberland':           [/^cumberland/i],
+  'Copper':               [/^copper/i, /^newcopper/i],
+  'BitGo':                [/^bitgo/i],
+  'Republic':             [/^republic[-_]/i],
+  'Texture Capital':      [/^texture[-_]?capital/i],
+  'Tradeweb':             [/^tradeweb/i, /^twmain[-_]/i, /^tw[-_]/i],
+  'LSEG PTS':             [/^lseg[-_]/i],
+  'Black Manta Capital':  [/^blackmanta/i],
+  'HydraX':               [/^hydrax/i],
+  'Trakx':                [/^trakx/i],
+  'Falcon Capital':       [/^elk[-_]validator/i],
+  'SciFeCap':             [/^scifecap/i, /^fulcrum[-_]/i],
+  'Trade.Fast':           [/^tradefast/i],
+  'TradeChain':           [/^tradechain/i],
+  'Zodia Custody':        [/^zodia/i],
+  'Finoa Consensus Services': [/^finoa/i, /^valawallet/i],
+  'Dfns':                 [/^dfns/i, /^validator_dfns$/i],
+  'Ledger':               [/^ledger[-_]/i],
+  'Ubyx Clearing':        [/^ubyx/i],
+  'Global Settlement':    [/^globalsettlement/i],
 };
 
 // ─── HTTP helpers ───────────────────────────────────────────────────────────
@@ -243,10 +246,6 @@ function extractPartyPrefix(partyId) {
   return idx >= 0 ? partyId.slice(0, idx) : partyId;
 }
 
-function normalizeParty(partyId) {
-  return (partyId || '').trim().toLowerCase();
-}
-
 // ─── Main ───────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -267,23 +266,16 @@ async function main() {
     fetchDsoInfo(),
   ]);
 
-  // 3. Index every validator license by party prefix and sponsor prefix
+  // 3. Index every validator license by party prefix
   const licensesByValidatorPrefix = new Map(); // prefix → [license, ...]
-  const licensesBySponsorPrefix = new Map();   // sponsor prefix → [license, ...]
 
   for (const lic of validatorLicenses) {
     const validator = lic.payload?.validator || '';
-    const sponsor = lic.payload?.sponsor || '';
     const vPrefix = extractPartyPrefix(validator);
-    const sPrefix = extractPartyPrefix(sponsor);
 
     if (vPrefix) {
       if (!licensesByValidatorPrefix.has(vPrefix)) licensesByValidatorPrefix.set(vPrefix, []);
       licensesByValidatorPrefix.get(vPrefix).push(lic);
-    }
-    if (sPrefix) {
-      if (!licensesBySponsorPrefix.has(sPrefix)) licensesBySponsorPrefix.set(sPrefix, []);
-      licensesBySponsorPrefix.get(sPrefix).push(lic);
     }
   }
 
@@ -365,11 +357,12 @@ async function main() {
   }
 
   // 6. Comprehensive node search: for each exchange/brokerage, scan ALL validator
-  //    licenses to find every node they operate, using three strategies:
+  //    licenses to find every node they operate, using two strategies:
   //
   //    Strategy A: Direct prefix match (featured app provider prefix = validator prefix)
-  //    Strategy B: Pattern match (search all validator prefixes for company name patterns)
-  //    Strategy C: Sponsor match (if a company's known party sponsors other validators)
+  //    Strategy B: Regex pattern match (search all validator prefixes for company
+  //               name patterns, anchored to start or after separators to avoid
+  //               false positives like "temple" in "franklintempleton")
 
   console.error('\n  Cross-referencing validator licenses...');
 
@@ -379,24 +372,12 @@ async function main() {
 
     // Strategy A: already have the FA provider prefixes in knownPrefixes
 
-    // Strategy B: scan all validator prefixes for pattern matches
+    // Strategy B: scan all validator prefixes for regex pattern matches
     for (const [vPrefix] of licensesByValidatorPrefix) {
-      const prefixLower = vPrefix.toLowerCase();
-      for (const pattern of patterns) {
-        if (prefixLower.includes(pattern)) {
+      for (const regex of patterns) {
+        if (regex.test(vPrefix)) {
           knownPrefixes.add(vPrefix);
           break;
-        }
-      }
-    }
-
-    // Strategy C: check if any known prefix appears as a sponsor of other validators
-    for (const knownPrefix of [...knownPrefixes]) {
-      const sponsored = licensesBySponsorPrefix.get(knownPrefix);
-      if (sponsored) {
-        for (const lic of sponsored) {
-          const sponsoredPrefix = extractPartyPrefix(lic.payload?.validator || '');
-          if (sponsoredPrefix) knownPrefixes.add(sponsoredPrefix);
         }
       }
     }
@@ -461,8 +442,8 @@ async function main() {
   console.log('');
   console.log('  Node matching strategies:');
   console.log('    A) Featured app provider party prefix matches validator party prefix');
-  console.log('    B) Company name pattern found in any validator party prefix');
-  console.log('    C) Known company party appears as sponsor of other validator licenses');
+  console.log('    B) Company name regex pattern matched against all validator prefixes');
+  console.log('       (anchored to start of prefix to avoid substring false positives)');
   console.log('');
 
   let currentCategory = '';
@@ -527,8 +508,8 @@ async function main() {
     }
   }
 
-  console.log('\n  "Nodes" = unique validator party IDs matched via prefix patterns,');
-  console.log('  featured app provider parties, and sponsor chain analysis.');
+  console.log('\n  "Nodes" = unique validator party IDs matched via featured app provider');
+  console.log('  prefixes and company name regex patterns (anchored to prefix start).');
   console.log('  "Prefixes" = distinct party prefixes (before ::) attributed to the company.');
   console.log('══════════════════════════════════════════════════════════════════════════════════════════\n');
 }
