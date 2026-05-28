@@ -7,94 +7,43 @@
 
 35 exchanges and brokerages hold featured apps on Canton Network, accounting for 43 of the 160 on-chain featured app entries and operating 133 validator nodes across the network.
 
-### Centralized Exchange
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Binance | Major crypto exchange | 1 | 4 | binance-dp-1 | binance-dp-1, binance-dq-1, binance-wuat-1, binanceUS-mainnetValidator-1 |
-| ByBit | Major crypto exchange | 2 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1 thru 6, ByBitEU-MainNetValidator-1, ByBitEU-MainNetValidator-2 |
-| EDX Markets LLC | Institutional crypto exchange (Citadel/Fidelity-backed) | 1 | 1 | edx-validator-1 | edx-validator-1 |
-| Kraken | Major crypto exchange | 1 | 2 | kraken-validator-01 | kraken-validator-01, kraken-validator-02 |
-| KuCoin | Major crypto exchange | 1 | 5 | kucoin-node-01 | kucoin-node-01 (2 licenses), kucoin-node-02 (3 licenses) |
-| MEXC | Major crypto exchange | 1 | 4 | mexc-mainNet-01 | mexc-mainNet-01, mexc-mainNetPrimary-01 (2 licenses), mexc-mainNetPrimary-02 |
-| OKX | Major crypto exchange | 1 | 9 | OKX-VALIDATOR-2 | OKX-VALIDATOR-1 thru 7, okx-PreValidator-1, OKXRD-VALIDATOR-1 |
-
-### On-Chain Exchange / DEX
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Cantex | Canton-native on-chain exchange by CaviarNine | 1 | 1 | Cantex-validator-1 | Cantex-validator-1 |
-| CantonSwap | First DEX on Canton Network | 1 | 0 | CantonSwap | — |
-| Hundred Exchange | Canton-native equity perpetuals exchange | 1 | 1 | arcane-mainnet-1 | arcane-mainnet-1 |
-| OneSwap | Decentralized exchange on Canton | 1 | 1 | SatsTerminal-main-1 | SatsTerminal-main-1 |
-| Silvana Book | Private agentic trading orderbook | 1 | 1 | silvana-orderbook | Silvana-mainnet-1 |
-| Temple | Central limit orderbook on Canton | 2 | 2 | temple-mainnet-1, temple-vaults-xx | temple-mainnet-1, temple-mainnet-2 |
-| Thetanuts Finance | Decentralized options exchange | 1 | 2 | Thetamarkets | Thetanuts-Options-1, Thetanuts-Options-2 |
-| Tradecraft | Canton-native DEX (AMM, privacy by default) | 1 | 0 | Tradecraft | — |
-
-### Prime Brokerage
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| BitGo | Prime brokerage + qualified custody | 1 | 1 | Bitgo-mainnetValidator-1 | Bitgo-mainnetValidator-1 |
-| Copper | Prime brokerage + custody (ClearLoop) | 4 | 32 | 23d169c2-..., CopperWrappedAssets, CopperClearLoop (x2) | copper-mainnet-validator, CopperClearLoop-validator-1/2, copperclearloop1/2-validator-1, CopperWrapping-validator-1, copperwrapping2-validator-1, NewCopperWrapping-validator-1, NewCopperWrapping2-validator-1, CopperWrappingDR-validator-1, CopperClientRef-validator-1 thru 22 |
-| Cumberland | OTC crypto liquidity provider (DRW subsidiary) | 1 | 15 | Cumberland-GasStation-1 | Cumberland-1, Cumberland-2, Cumberland-Home-1 thru 6, Cumberland-GasStation-1, Cumberland-Hashnote-1, Cumberland-Property-1, Cumberland-DRWS-1, Cumberland-DenexSweep-1, Cumberland-Oracle-1, cumberlandlabs-validator-1 |
-
-### Broker-Dealer / Trading Venue
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Black Manta Capital | BaFin-regulated tokenization / investment banking | 1 | 1 | blackmantacapital-primary-1 | blackmantacapital-primary-1 |
-| HydraX | MAS-regulated exchange technology / digital exchange | 1 | 2 | 931f692d-... | hydrax-validator-1, hydrax-validator-2 |
-| Republic | Investment platform, licensed broker-dealer | 1 | 6 | auth0_007c69eb... | Republic-validator-1, Republic-multiparty-2 thru 6 |
-| Texture Capital | FINRA broker-dealer, SEC-registered ATS | 1 | 1 | TextureCapital-validator-1 | TextureCapital-validator-1 |
-| Trakx | AMF-registered crypto index trading platform | 1 | 1 | trakx-validator-1 | trakx-validator-1 |
-
-### Electronic Trading Venue
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| LSEG PTS | London Stock Exchange Group post-trade services | 1 | 1 | lseg-finance-1 | lseg-finance-1 |
-| Tradeweb | Electronic trading venue ($65T+ monthly volume) | 1 | 7 | twmain-treasury-1 | twmain-treasury-1, twmain-kms-01, twmain-novaprime-01, twmain-virtu-1, Tradeweb-Markets-1, tw-canton-main1, tw-3tradeMainnet-1 |
-
-### Trading Firm / Market Maker
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Falcon Capital | Trading firm / market maker | 1 | 2 | elk-Validator-2 | elk-Validator-1, elk-Validator-2 |
-| SciFeCap | Quant trading firm (AI/ML strategies) | 1 | 1 | fulcrum-point | scifecap-validator-1 |
-| Trade.Fast | Trading platform on Canton | 3 | 2 | tradefast-mainnet-1, tradefast-provider-1, tradefast-mainnet-2 | tradefast-mainnet-1, tradefast-mainnet-2 |
-| TradeChain | Trading platform | 2 | 0 | auth0_007c69cd..., auth0_007c696a... | — |
-
-### Custody Provider
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Dfns | Wallet-as-a-service / custody infrastructure | 1 | 2 | dfns1 | dfns1, validator_DFNS |
-| Finoa Consensus Services | Institutional custody + staking | 1 | 3 | ValaWallet-FA | ValaWallet-validator-1, FinoaConsensusServices-validator-1, Finoa-validator-1 |
-| Ledger | Hardware wallet + enterprise custody | 1 | 5 | ledger-ledgerops-2 | ledger-ledgerops-2, ledger-mainnetValidator-0, ledger-mainnetValidator-1, Ledger-Kiln-1, Ledger-validator-2 |
-| Zodia Custody | Institutional custody (Standard Chartered) | 1 | 8 | ZodiaCustody-validator-1 | ZodiaCustody-validator-1, zodiacustody-interchangevalidator-1, zodia-interchange-1, ZodiaClientRef-validator-1 thru 5 |
-
-### Clearing / Settlement
-
-| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes |
-|---|---|---:|---:|---|---|
-| Global Settlement | On-chain compliance / settlement infrastructure | 1 | 1 | GlobalSettlement-mainnet-1 | GlobalSettlement-mainnet-1 |
-| Ubyx Clearing | Stablecoin clearing network (Barclays-backed) | 1 | 1 | Ubyx-validator-1 | Ubyx-validator-1 |
-
-## Category Summary
-
-| Category | Companies | Total FAs | Total Nodes |
-|---|---:|---:|---:|
-| Centralized Exchange | 7 | 8 | 33 |
-| On-Chain Exchange / DEX | 8 | 9 | 8 |
-| Prime Brokerage | 3 | 6 | 48 |
-| Broker-Dealer / Trading Venue | 5 | 5 | 11 |
-| Electronic Trading Venue | 2 | 2 | 8 |
-| Trading Firm / Market Maker | 4 | 7 | 5 |
-| Custody Provider | 4 | 4 | 18 |
-| Clearing / Settlement | 2 | 2 | 2 |
-| **Total** | **35** | **43** | **133** |
+| Company | Description | FAs | Nodes | Featured App Prefixes | Validator Prefixes | Category |
+|---|---|---:|---:|---|---|---|
+| Binance | Major crypto exchange | 1 | 4 | binance-dp-1 | binance-dp-1<br>binance-dq-1<br>binance-wuat-1<br>binanceUS-mainnetValidator-1 | Centralized Exchange |
+| ByBit | Major crypto exchange | 2 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1<br>ByBit-MainNetValidator-2<br>ByBit-MainNetValidator-3<br>ByBit-MainNetValidator-4<br>ByBit-MainNetValidator-5<br>ByBit-MainNetValidator-6<br>ByBitEU-MainNetValidator-1<br>ByBitEU-MainNetValidator-2 | Centralized Exchange |
+| EDX Markets LLC | Institutional crypto exchange (Citadel/Fidelity-backed) | 1 | 1 | edx-validator-1 | edx-validator-1 | Centralized Exchange |
+| Kraken | Major crypto exchange | 1 | 2 | kraken-validator-01 | kraken-validator-01<br>kraken-validator-02 | Centralized Exchange |
+| KuCoin | Major crypto exchange | 1 | 5 | kucoin-node-01 | kucoin-node-01 (2 licenses)<br>kucoin-node-02 (3 licenses) | Centralized Exchange |
+| MEXC | Major crypto exchange | 1 | 4 | mexc-mainNet-01 | mexc-mainNet-01<br>mexc-mainNetPrimary-01 (2 licenses)<br>mexc-mainNetPrimary-02 | Centralized Exchange |
+| OKX | Major crypto exchange | 1 | 9 | OKX-VALIDATOR-2 | OKX-VALIDATOR-1<br>OKX-VALIDATOR-2<br>OKX-VALIDATOR-3<br>OKX-VALIDATOR-4<br>OKX-VALIDATOR-5<br>OKX-VALIDATOR-6<br>OKX-VALIDATOR-7<br>okx-PreValidator-1<br>OKXRD-VALIDATOR-1 | Centralized Exchange |
+| Cantex | Canton-native on-chain exchange by CaviarNine | 1 | 1 | Cantex-validator-1 | Cantex-validator-1 | On-Chain Exchange / DEX |
+| CantonSwap | First DEX on Canton Network | 1 | 0 | CantonSwap | — | On-Chain Exchange / DEX |
+| Hundred Exchange | Canton-native equity perpetuals exchange | 1 | 1 | arcane-mainnet-1 | arcane-mainnet-1 | On-Chain Exchange / DEX |
+| OneSwap | Decentralized exchange on Canton | 1 | 1 | SatsTerminal-main-1 | SatsTerminal-main-1 | On-Chain Exchange / DEX |
+| Silvana Book | Private agentic trading orderbook | 1 | 1 | silvana-orderbook | Silvana-mainnet-1 | On-Chain Exchange / DEX |
+| Temple | Central limit orderbook on Canton | 2 | 2 | temple-mainnet-1<br>temple-vaults-xx | temple-mainnet-1<br>temple-mainnet-2 | On-Chain Exchange / DEX |
+| Thetanuts Finance | Decentralized options exchange | 1 | 2 | Thetamarkets | Thetanuts-Options-1<br>Thetanuts-Options-2 | On-Chain Exchange / DEX |
+| Tradecraft | Canton-native DEX (AMM, privacy by default) | 1 | 0 | Tradecraft | — | On-Chain Exchange / DEX |
+| BitGo | Prime brokerage + qualified custody | 1 | 1 | Bitgo-mainnetValidator-1 | Bitgo-mainnetValidator-1 | Prime Brokerage |
+| Copper | Prime brokerage + custody (ClearLoop) | 4 | 32 | 23d169c2-...<br>CopperWrappedAssets<br>CopperClearLoop<br>CopperClearLoop | copper-mainnet-validator<br>CopperClearLoop-validator-1<br>CopperClearLoop-validator-2<br>copperclearloop1-validator-1<br>copperclearloop2-validator-1<br>CopperWrapping-validator-1<br>copperwrapping2-validator-1<br>NewCopperWrapping-validator-1<br>NewCopperWrapping2-validator-1<br>CopperWrappingDR-validator-1<br>CopperClientRef-validator-1<br>CopperClientRef-validator-2<br>CopperClientRef-validator-3<br>CopperClientRef-validator-4<br>CopperClientRef-validator-5<br>CopperClientRef-validator-6<br>CopperClientRef-validator-7<br>CopperClientRef-validator-8<br>CopperClientRef-validator-9<br>CopperClientRef-validator-10<br>CopperClientRef-validator-11<br>CopperClientRef-validator-12<br>CopperClientRef-validator-13<br>CopperClientRef-validator-14<br>CopperClientRef-validator-15<br>CopperClientRef-validator-16<br>CopperClientRef-validator-17<br>CopperClientRef-validator-18<br>CopperClientRef-validator-19<br>CopperClientRef-validator-20<br>CopperClientRef-validator-21<br>CopperClientRef-validator-22 | Prime Brokerage |
+| Cumberland | OTC crypto liquidity provider (DRW subsidiary) | 1 | 15 | Cumberland-GasStation-1 | Cumberland-1<br>Cumberland-2<br>Cumberland-GasStation-1<br>Cumberland-Home-1<br>Cumberland-Home-2<br>Cumberland-Home-3<br>Cumberland-Home-4<br>Cumberland-Home-5<br>Cumberland-Home-6<br>Cumberland-Hashnote-1<br>Cumberland-Property-1<br>Cumberland-DRWS-1<br>Cumberland-DenexSweep-1<br>Cumberland-Oracle-1<br>cumberlandlabs-validator-1 | Prime Brokerage |
+| Black Manta Capital | BaFin-regulated tokenization / investment banking | 1 | 1 | blackmantacapital-primary-1 | blackmantacapital-primary-1 | Broker-Dealer / Trading Venue |
+| HydraX | MAS-regulated exchange technology / digital exchange | 1 | 2 | 931f692d-... | hydrax-validator-1<br>hydrax-validator-2 | Broker-Dealer / Trading Venue |
+| Republic | Investment platform, licensed broker-dealer | 1 | 6 | auth0_007c69eb... | Republic-validator-1<br>Republic-multiparty-2<br>Republic-multiparty-3<br>Republic-multiparty-4<br>Republic-multiparty-5<br>Republic-multiparty-6 | Broker-Dealer / Trading Venue |
+| Texture Capital | FINRA broker-dealer, SEC-registered ATS | 1 | 1 | TextureCapital-validator-1 | TextureCapital-validator-1 | Broker-Dealer / Trading Venue |
+| Trakx | AMF-registered crypto index trading platform | 1 | 1 | trakx-validator-1 | trakx-validator-1 | Broker-Dealer / Trading Venue |
+| LSEG PTS | London Stock Exchange Group post-trade services | 1 | 1 | lseg-finance-1 | lseg-finance-1 | Electronic Trading Venue |
+| Tradeweb | Electronic trading venue ($65T+ monthly volume) | 1 | 7 | twmain-treasury-1 | twmain-treasury-1<br>twmain-kms-01<br>twmain-novaprime-01<br>twmain-virtu-1<br>Tradeweb-Markets-1<br>tw-canton-main1<br>tw-3tradeMainnet-1 | Electronic Trading Venue |
+| Falcon Capital | Trading firm / market maker | 1 | 2 | elk-Validator-2 | elk-Validator-1<br>elk-Validator-2 | Trading Firm / Market Maker |
+| SciFeCap | Quant trading firm (AI/ML strategies) | 1 | 1 | fulcrum-point | scifecap-validator-1 | Trading Firm / Market Maker |
+| Trade.Fast | Trading platform on Canton | 3 | 2 | tradefast-mainnet-1<br>tradefast-provider-1<br>tradefast-mainnet-2 | tradefast-mainnet-1<br>tradefast-mainnet-2 | Trading Firm / Market Maker |
+| TradeChain | Trading platform | 2 | 0 | auth0_007c69cd...<br>auth0_007c696a... | — | Trading Firm / Market Maker |
+| Dfns | Wallet-as-a-service / custody infrastructure | 1 | 2 | dfns1 | dfns1<br>validator_DFNS | Custody Provider |
+| Finoa Consensus Services | Institutional custody + staking | 1 | 3 | ValaWallet-FA | ValaWallet-validator-1<br>FinoaConsensusServices-validator-1<br>Finoa-validator-1 | Custody Provider |
+| Ledger | Hardware wallet + enterprise custody | 1 | 5 | ledger-ledgerops-2 | ledger-ledgerops-2<br>ledger-mainnetValidator-0<br>ledger-mainnetValidator-1<br>Ledger-Kiln-1<br>Ledger-validator-2 | Custody Provider |
+| Zodia Custody | Institutional custody (Standard Chartered) | 1 | 8 | ZodiaCustody-validator-1 | ZodiaCustody-validator-1<br>zodiacustody-interchangevalidator-1<br>zodia-interchange-1<br>ZodiaClientRef-validator-1<br>ZodiaClientRef-validator-2<br>ZodiaClientRef-validator-3<br>ZodiaClientRef-validator-4<br>ZodiaClientRef-validator-5 | Custody Provider |
+| Global Settlement | On-chain compliance / settlement infrastructure | 1 | 1 | GlobalSettlement-mainnet-1 | GlobalSettlement-mainnet-1 | Clearing / Settlement |
+| Ubyx Clearing | Stablecoin clearing network (Barclays-backed) | 1 | 1 | Ubyx-validator-1 | Ubyx-validator-1 | Clearing / Settlement |
 
 ## Notes
 
