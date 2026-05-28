@@ -5,12 +5,12 @@
 
 ## Summary
 
-35 exchanges and brokerages hold featured apps on Canton Network, accounting for 43 of the 160 on-chain featured app entries and operating 133 validator nodes across the network.
+35 exchanges and brokerages hold featured apps on Canton Network, accounting for 42 of the 160 on-chain featured app entries and operating 133 validator nodes across the network.
 
 | Company | FAs | Nodes | Featured App Prefixes | Validator Prefixes | Category |
 |---|---:|---:|---|---|---|
 | Binance | 1 | 4 | binance-dp-1 | binance-dp-1<br>binance-dq-1<br>binance-wuat-1<br>binanceUS-mainnetValidator-1 | Centralized Exchange |
-| ByBit | 2 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1<br>ByBit-MainNetValidator-2<br>ByBit-MainNetValidator-3<br>ByBit-MainNetValidator-4<br>ByBit-MainNetValidator-5<br>ByBit-MainNetValidator-6<br>ByBitEU-MainNetValidator-1<br>ByBitEU-MainNetValidator-2 | Centralized Exchange |
+| ByBit | 1 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1<br>ByBit-MainNetValidator-2<br>ByBit-MainNetValidator-3<br>ByBit-MainNetValidator-4<br>ByBit-MainNetValidator-5<br>ByBit-MainNetValidator-6<br>ByBitEU-MainNetValidator-1<br>ByBitEU-MainNetValidator-2 | Centralized Exchange |
 | EDX Markets LLC | 1 | 1 | edx-validator-1 | edx-validator-1 | Centralized Exchange |
 | Kraken | 1 | 2 | kraken-validator-01 | kraken-validator-01<br>kraken-validator-02 | Centralized Exchange |
 | KuCoin | 1 | 5 | kucoin-node-01 | kucoin-node-01 (2 licenses)<br>kucoin-node-02 (3 licenses) | Centralized Exchange |
