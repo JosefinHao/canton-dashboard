@@ -5,12 +5,12 @@
 
 ## Summary
 
-35 exchanges and brokerages hold featured apps on Canton Network, accounting for 43 of the 160 on-chain featured app entries and operating 133 validator nodes across the network.
+35 exchanges and brokerages hold featured apps on Canton Network, accounting for 42 of the 160 on-chain featured app entries and operating 133 validator nodes across the network.
 
 | Company | FAs | Nodes | Featured App Prefixes | Validator Prefixes | Category |
 |---|---:|---:|---|---|---|
 | Binance | 1 | 4 | binance-dp-1 | binance-dp-1<br>binance-dq-1<br>binance-wuat-1<br>binanceUS-mainnetValidator-1 | Centralized Exchange |
-| ByBit | 2 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1<br>ByBit-MainNetValidator-2<br>ByBit-MainNetValidator-3<br>ByBit-MainNetValidator-4<br>ByBit-MainNetValidator-5<br>ByBit-MainNetValidator-6<br>ByBitEU-MainNetValidator-1<br>ByBitEU-MainNetValidator-2 | Centralized Exchange |
+| ByBit | 1 | 8 | ByBit-MainNetValidator-1 | ByBit-MainNetValidator-1<br>ByBit-MainNetValidator-2<br>ByBit-MainNetValidator-3<br>ByBit-MainNetValidator-4<br>ByBit-MainNetValidator-5<br>ByBit-MainNetValidator-6<br>ByBitEU-MainNetValidator-1<br>ByBitEU-MainNetValidator-2 | Centralized Exchange |
 | EDX Markets LLC | 1 | 1 | edx-validator-1 | edx-validator-1 | Centralized Exchange |
 | Kraken | 1 | 2 | kraken-validator-01 | kraken-validator-01<br>kraken-validator-02 | Centralized Exchange |
 | KuCoin | 1 | 5 | kucoin-node-01 | kucoin-node-01 (2 licenses)<br>kucoin-node-02 (3 licenses) | Centralized Exchange |
@@ -25,11 +25,11 @@
 | Thetanuts Finance | 1 | 2 | Thetamarkets | Thetanuts-Options-1<br>Thetanuts-Options-2 | On-Chain Exchange / DEX |
 | Tradecraft | 1 | 0 | Tradecraft | — | On-Chain Exchange / DEX |
 | BitGo | 1 | 1 | Bitgo-mainnetValidator-1 | Bitgo-mainnetValidator-1 | Prime Brokerage |
-| Copper | 4 | 32 | 23d169c2-...<br>CopperWrappedAssets<br>CopperClearLoop<br>CopperClearLoop | copper-mainnet-validator<br>CopperClearLoop-validator-1<br>CopperClearLoop-validator-2<br>copperclearloop1-validator-1<br>copperclearloop2-validator-1<br>CopperWrapping-validator-1<br>copperwrapping2-validator-1<br>NewCopperWrapping-validator-1<br>NewCopperWrapping2-validator-1<br>CopperWrappingDR-validator-1<br>CopperClientRef-validator-1<br>CopperClientRef-validator-2<br>CopperClientRef-validator-3<br>CopperClientRef-validator-4<br>CopperClientRef-validator-5<br>CopperClientRef-validator-6<br>CopperClientRef-validator-7<br>CopperClientRef-validator-8<br>CopperClientRef-validator-9<br>CopperClientRef-validator-10<br>CopperClientRef-validator-11<br>CopperClientRef-validator-12<br>CopperClientRef-validator-13<br>CopperClientRef-validator-14<br>CopperClientRef-validator-15<br>CopperClientRef-validator-16<br>CopperClientRef-validator-17<br>CopperClientRef-validator-18<br>CopperClientRef-validator-19<br>CopperClientRef-validator-20<br>CopperClientRef-validator-21<br>CopperClientRef-validator-22 | Prime Brokerage |
+| Copper | 4 | 32 | 23d169c2-0909-4c70-81d1-1922de6febaa<br>CopperWrappedAssets<br>CopperClearLoop<br>CopperClearLoop | copper-mainnet-validator<br>CopperClearLoop-validator-1<br>CopperClearLoop-validator-2<br>copperclearloop1-validator-1<br>copperclearloop2-validator-1<br>CopperWrapping-validator-1<br>copperwrapping2-validator-1<br>NewCopperWrapping-validator-1<br>NewCopperWrapping2-validator-1<br>CopperWrappingDR-validator-1<br>CopperClientRef-validator-1<br>CopperClientRef-validator-2<br>CopperClientRef-validator-3<br>CopperClientRef-validator-4<br>CopperClientRef-validator-5<br>CopperClientRef-validator-6<br>CopperClientRef-validator-7<br>CopperClientRef-validator-8<br>CopperClientRef-validator-9<br>CopperClientRef-validator-10<br>CopperClientRef-validator-11<br>CopperClientRef-validator-12<br>CopperClientRef-validator-13<br>CopperClientRef-validator-14<br>CopperClientRef-validator-15<br>CopperClientRef-validator-16<br>CopperClientRef-validator-17<br>CopperClientRef-validator-18<br>CopperClientRef-validator-19<br>CopperClientRef-validator-20<br>CopperClientRef-validator-21<br>CopperClientRef-validator-22 | Prime Brokerage |
 | Cumberland | 1 | 15 | Cumberland-GasStation-1 | Cumberland-1<br>Cumberland-2<br>Cumberland-GasStation-1<br>Cumberland-Home-1<br>Cumberland-Home-2<br>Cumberland-Home-3<br>Cumberland-Home-4<br>Cumberland-Home-5<br>Cumberland-Home-6<br>Cumberland-Hashnote-1<br>Cumberland-Property-1<br>Cumberland-DRWS-1<br>Cumberland-DenexSweep-1<br>Cumberland-Oracle-1<br>cumberlandlabs-validator-1 | Prime Brokerage |
 | Black Manta Capital | 1 | 1 | blackmantacapital-primary-1 | blackmantacapital-primary-1 | Broker-Dealer / Trading Venue |
-| HydraX | 1 | 2 | 931f692d-... | hydrax-validator-1<br>hydrax-validator-2 | Broker-Dealer / Trading Venue |
-| Republic | 1 | 6 | auth0_007c69eb... | Republic-validator-1<br>Republic-multiparty-2<br>Republic-multiparty-3<br>Republic-multiparty-4<br>Republic-multiparty-5<br>Republic-multiparty-6 | Broker-Dealer / Trading Venue |
+| HydraX | 1 | 2 | 931f692d-21d7-4548-82b4-d0e1c6ec7736 | hydrax-validator-1<br>hydrax-validator-2 | Broker-Dealer / Trading Venue |
+| Republic | 1 | 6 | auth0_007c69eb81fb9b5cfe37fbc593a3 | Republic-validator-1<br>Republic-multiparty-2<br>Republic-multiparty-3<br>Republic-multiparty-4<br>Republic-multiparty-5<br>Republic-multiparty-6 | Broker-Dealer / Trading Venue |
 | Texture Capital | 1 | 1 | TextureCapital-validator-1 | TextureCapital-validator-1 | Broker-Dealer / Trading Venue |
 | Trakx | 1 | 1 | trakx-validator-1 | trakx-validator-1 | Broker-Dealer / Trading Venue |
 | LSEG PTS | 1 | 1 | lseg-finance-1 | lseg-finance-1 | Electronic Trading Venue |
@@ -37,7 +37,7 @@
 | Falcon Capital | 1 | 2 | elk-Validator-2 | elk-Validator-1<br>elk-Validator-2 | Trading Firm / Market Maker |
 | SciFeCap | 1 | 1 | fulcrum-point | scifecap-validator-1 | Trading Firm / Market Maker |
 | Trade.Fast | 3 | 2 | tradefast-mainnet-1<br>tradefast-provider-1<br>tradefast-mainnet-2 | tradefast-mainnet-1<br>tradefast-mainnet-2 | Trading Firm / Market Maker |
-| TradeChain | 2 | 0 | auth0_007c69cd...<br>auth0_007c696a... | — | Trading Firm / Market Maker |
+| TradeChain | 2 | 0 | auth0_007c69cd2129f7ce4fb0bd5f93fe<br>auth0_007c696a4894dd7826985302d3b9 | — | Trading Firm / Market Maker |
 | Dfns | 1 | 2 | dfns1 | dfns1<br>validator_DFNS | Custody Provider |
 | Finoa Consensus Services | 1 | 3 | ValaWallet-FA | ValaWallet-validator-1<br>FinoaConsensusServices-validator-1<br>Finoa-validator-1 | Custody Provider |
 | Ledger | 1 | 5 | ledger-ledgerops-2 | ledger-ledgerops-2<br>ledger-mainnetValidator-0<br>ledger-mainnetValidator-1<br>Ledger-Kiln-1<br>Ledger-validator-2 | Custody Provider |

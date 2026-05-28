@@ -342,11 +342,15 @@ async function main() {
     }
 
     const summary = companyNodeSummary.get(companyName);
-    summary.featuredApps.push({
-      appName: appName || providerPrefix,
-      providerParty,
-      faApproved: faApproved || fa.created_at?.slice(0, 10) || 'Unknown',
-    });
+    const faKey = `${providerParty}`;
+    const isDuplicate = summary.featuredApps.some(fa => fa.providerParty === faKey);
+    if (!isDuplicate) {
+      summary.featuredApps.push({
+        appName: appName || providerPrefix,
+        providerParty,
+        faApproved: faApproved || fa.created_at?.slice(0, 10) || 'Unknown',
+      });
+    }
     summary.matchedPrefixes.add(providerPrefix);
 
     const svInfo = svByPrefix.get(providerPrefix);
