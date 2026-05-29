@@ -71,7 +71,7 @@
     "pg-copy-streams": "^7.0.0",
     "piscina": "^5.1.4",
     "react": "^18.3.1",
-    "react-autoql": "8.29.1",
+    "react-autoql": "8.29.4",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.61.1",
