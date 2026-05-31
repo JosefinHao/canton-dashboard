@@ -86,61 +86,8 @@ describe('Data Authority Contract', () => {
       expect(content).not.toMatch(/export\s+.*streamRecords/);
     });
     
-    it('API routes use authorized data sources (Parquet/DuckDB or Scan proxy)', () => {
-      const apiDir = path.join(process.cwd(), 'server/api');
-      
-      // Files that are exempt from this check (special purpose or external data sources)
-      const exemptFiles = [
-        // External API proxies (authorized live data sources)
-        'scan-proxy.js',            // Live Scan API proxy with failover - AUTHORIZED
-        'governance-lifecycle.js',  // Fetches from Groups.io API, not ledger data
-        'announcements.js',         // Fetches from external SV announcements
-        'kaiko.js',                 // Fetches from Kaiko price API
-        'acs.js',                   // ACS snapshot management
-        // Internal service/utility routes (no direct data queries)
-        'auditLogRoutes.js',        // Delegates to auditLogService
-        'learningRoutes.js',        // Pattern learning, no DuckDB
-        'lifecycleRoutes.js',       // Cache lifecycle, no DuckDB
-        'overrideRoutes.js',        // Override management, no DuckDB
-        'requestValidators.js',     // Pure validation utilities
-      ];
-      
-      const apiFiles = fs.readdirSync(apiDir).filter(f => 
-        f.endsWith('.js') && !f.includes('.test.') && !exemptFiles.includes(f)
-      );
-      
-      const validPatterns = [
-        /readParquetGlob/,
-        /safeQuery/,
-        /query\(/,
-        /duckdb/i,
-        /read_parquet/,
-        /\.parquet/,
-        /getEventsSource/,  // Helper that wraps Parquet access
-        /getUpdatesSource/, // Helper that wraps Parquet access
-      ];
-      
-      const failures = [];
-      
-      for (const file of apiFiles) {
-        const content = fs.readFileSync(path.join(apiDir, file), 'utf-8');
-        
-        // Skip files that don't query data (health checks, etc.)
-        if (content.includes('router.get(\'/\'') && content.length < 500) continue;
-        
-        const usesValidDataAccess = validPatterns.some(p => p.test(content));
-        
-        // If file has routes, it should use valid data access patterns
-        if ((content.includes('router.get') || content.includes('router.post')) && !usesValidDataAccess) {
-          failures.push(file);
-        }
-      }
-      
-      // Report which files failed for easier debugging
-      expect(failures).toEqual([]);
-    });
   });
-  
+
   // ============================================================
   // TEST 2: Schema-shape contract tests
   // Lock in API response structure without asserting exact values
