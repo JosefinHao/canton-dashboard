@@ -263,6 +263,37 @@ Two BigQuery scheduled queries run daily at **03:00 UTC** to keep
 
 **Monitoring**: BigQuery console → Scheduled queries → click each query → Runs tab
 
+### Monitoring and Alerting
+
+Three layers of monitoring, none depending on VM auth:
+
+| Layer | What it monitors | Alert channel |
+|-------|-----------------|---------------|
+| Live ingest `alert.js` | GCS ingestion: stalls, crashes, endpoint failures | Slack `#pipeline-alerts` |
+| BigQuery daily refresh (2 queries) | Transform + load new data | Email + Slack (via Cloud Monitoring) |
+| BigQuery health-check query | Stale data detection | Email + Slack (via Cloud Monitoring) |
+| GCP Cloud Monitoring | All BigQuery scheduled query failures | Slack `#pipeline-alerts` |
+
+**Live ingestion alerts** (`scripts/ingest/alert.js`):
+- Configured via `ALERT_SLACK_WEBHOOK_URL` env var in `~/.gcs_hmac_env.systemd`
+- Alerts: ingestion started (INFO), stall detected (WARNING), cursor stuck (WARNING),
+  GCS backup failed (CRITICAL), all endpoints unreachable (CRITICAL), decode failures
+  (CRITICAL), max errors reached (FATAL), uncaught exceptions (FATAL)
+- Rate limited: 5 min between alerts of same type
+
+**BigQuery health-check** (`scripts/bigquery/scheduled/daily-health-check.sql`):
+- Runs at 04:00 UTC (1 hour after daily refresh)
+- Checks `INFORMATION_SCHEMA.PARTITIONS` for latest partition dates (free)
+- If either table is behind yesterday: `RAISE` with error message → triggers failure alerts
+- Email notifications enabled on the scheduled query
+
+**GCP Cloud Monitoring alert** (`BigQuery Pipeline Failure`):
+- Log-based alert on: `resource.type="bigquery_resource"` with error status
+- Catches ALL BigQuery scheduled query failures (refresh + health check)
+- Notification: Slack `#pipeline-alerts` channel
+- Rate limit: 1 notification per hour
+- Incident auto-close: 7 days
+
 ### Setup Scripts (`scripts/bigquery/`)
 
 **Bronze layer** (`bronze/`):
@@ -285,6 +316,7 @@ Two BigQuery scheduled queries run daily at **03:00 UTC** to keep
 |--------|---------|
 | `daily-refresh-events.sql` | Incremental INSERT NOT EXISTS for events_parsed |
 | `daily-refresh-updates.sql` | Incremental INSERT NOT EXISTS for updates_parsed |
+| `daily-health-check.sql` | Stale data detection — RAISE on failure → triggers alerts |
 
 **Silver layer** (`silver/`) — not yet deployed, available for future use:
 
