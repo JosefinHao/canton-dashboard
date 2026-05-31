@@ -269,9 +269,10 @@ Three layers of monitoring, none depending on VM auth:
 
 | Layer | What it monitors | Alert channel |
 |-------|-----------------|---------------|
-| Live ingest `alert.js` | GCS ingestion: stalls, crashes, endpoint failures | Slack (`#pipeline-alerts`) |
-| BigQuery health-check query | Daily refresh freshness (stale data detection) | Email (built-in) |
-| GCP Cloud Monitoring | All BigQuery scheduled query failures | Slack (`#pipeline-alerts`) |
+| Live ingest `alert.js` | GCS ingestion: stalls, crashes, endpoint failures | Slack `#pipeline-alerts` |
+| BigQuery daily refresh (2 queries) | Transform + load new data | Email + Slack (via Cloud Monitoring) |
+| BigQuery health-check query | Stale data detection | Email + Slack (via Cloud Monitoring) |
+| GCP Cloud Monitoring | All BigQuery scheduled query failures | Slack `#pipeline-alerts` |
 
 **Live ingestion alerts** (`scripts/ingest/alert.js`):
 - Configured via `ALERT_SLACK_WEBHOOK_URL` env var in `~/.gcs_hmac_env.systemd`

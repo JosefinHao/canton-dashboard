@@ -19,7 +19,7 @@ can detect and alert on failures independently — no single point of failure.
 │  Layer 2: BigQuery Daily Refresh                                 │
 │  Queries: daily-refresh-events / daily-refresh-updates           │
 │  Schedule: 03:00 UTC                                             │
-│  Alert:   Email on failure (BigQuery built-in)                   │
+│  Alert:   Email (built-in) + Slack (via Cloud Monitoring)        │
 │  Scope:   Transform + load new data into events/updates_parsed   │
 └─────────────────────────────────────────────────────────────────┘
         │
@@ -219,11 +219,11 @@ Set in `~/.gcs_hmac_env.systemd` (loaded by systemd service):
 
 ### BigQuery Scheduled Queries
 
-| Query | Schedule | Email on failure |
-|-------|----------|-----------------|
-| `daily-refresh-events-parsed` | 03:00 UTC | Yes |
-| `daily-refresh-updates-parsed` | 03:00 UTC | Yes |
-| `daily-health-check-pipeline` | 04:00 UTC | Yes |
+| Query | Schedule | Alerts on failure |
+|-------|----------|-------------------|
+| `daily-refresh-events-parsed` | 03:00 UTC | Email (built-in) + Slack (Cloud Monitoring) |
+| `daily-refresh-updates-parsed` | 03:00 UTC | Email (built-in) + Slack (Cloud Monitoring) |
+| `daily-health-check-pipeline` | 04:00 UTC | Email (built-in) + Slack (Cloud Monitoring) |
 
 ### GCP Cloud Monitoring
 
