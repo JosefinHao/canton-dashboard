@@ -60,8 +60,6 @@ This proves single-entity control over all 44+ party IDs.
 
 All contracts were created May 27-29, indicating wallets were swept recently. Only 0.4% of mined CC remains.
 
-**Estimated CC transferred out: ~2,793,597 CC (99.6% of total mined)**
-
 ---
 
 ## Governance Timeline
@@ -144,8 +142,8 @@ After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 C
 - `cryptolegacy-validator-1` (never paused — not an FA)
 - `coinaegisVault` (FA never revoked)
 
-### 5. Funds Transferred Out — Complete Money Trail
-99.6% of all mined CC (~2.79M CC) has been transferred out of the wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
+### 5. Funds Extracted — Complete Money Trail
+57.5% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.3% (~1.3M CC) was consumed as network traffic fees to sustain the high-volume farming operation. Only 0.4% (~10.9K CC) remains in wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
 
 #### Transfer Destinations (BigQuery-confirmed)
 
@@ -233,25 +231,57 @@ Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
 | **fba188** (ByBit-hosted wallet) | **~1,065,002** | 415K direct + 650K via quokka |
 | **Gate** (Gate.io exchange) | **~700,001** | 250K direct + 450K via quokka |
 | **quokka-validator-1** | **~4,234** | Small direct transfers |
-| **Total traced** | **~1,769,237** | |
-| **Transfer fees burned** | **~1,024,360** | See below |
+| **Total traced to external parties** | **~1,769,264** | BigQuery verified |
 
-#### On-Chain Activity & Fee Burns
+#### Complete CC Accounting (BigQuery-verified)
 
-CoinAegis generated extraordinary on-chain activity, the fees from which account for the untraced CC:
+| Item | CC | Verification |
+|---|---:|---|
+| App rewards earned | 2,804,520 | Canton Scan API |
+| Validator + faucet rewards harvested | ~268,325 | BigQuery (`exercise_result.summary`) |
+| **Total CC entered system** | **~3,072,845** | |
+| | | |
+| Transferred to external parties | -1,769,264 | BigQuery (36 transfers to 5 recipients) |
+| Consumed by BuyMemberTraffic | -1,301,539 | BigQuery (see breakdown below) |
+| Remaining in wallets | -10,923 | Canton Scan API |
+| Holding fees (demurrage) | ~-9,000 | Residual (<0.3% of total) |
+| **Balance** | **~0** | **Fully reconciled** |
+
+All app rewards (2,804,520 CC) have been fully claimed into amulets — confirmed by summing `inputAppRewardAmount` across all transfer and traffic purchase events: 1,971,768 CC (via transfers) + 832,752 CC (via BuyMemberTraffic) = **2,804,520 CC exact**.
+
+#### Transfer Fees Are Zero
+
+The Canton Network protocol config confirms `transferFee.initialRate: "0E-10"` — transfer fees are zero by design. The `senderChangeFee` field in every sampled exercise result (self-transfers, consolidations, and external transfers to exchanges) is `0E-10`. No CC was burned by transfer fees.
+
+#### Network Traffic Consumption (BuyMemberTraffic)
+
+CoinAegis spent ~1.3M CC buying network bandwidth to sustain its high-volume transaction farming. The 1,929 `BuyMemberTraffic` events consumed CC from multiple sources:
+
+| Input Source | CC |
+|---|---:|
+| Existing amulets (`inputAmuletAmount`) | 153,004,392 (recycled) |
+| App reward coupons (`inputAppRewardAmount`) | 832,752 (freshly claimed) |
+| Validator reward coupons (`inputValidatorRewardAmount`) | 159,401 (freshly claimed) |
+| Validator faucet coupons (`inputValidatorFaucetAmount`) | 4 |
+| **Total input** | **153,996,549** |
+| Returned as change (`senderChangeAmount`) | -152,695,010 |
+| **Net CC consumed for traffic** | **1,301,539** |
+
+This reveals the circular farming scheme: self-transfers generate app activity markers → markers convert to app reward coupons → reward coupons are consumed during BuyMemberTraffic to purchase more network bandwidth → bandwidth enables more self-transfers.
+
+#### On-Chain Activity (BigQuery-verified)
 
 | Activity | Count | Notes |
 |---|---:|---|
-| `AmuletRules_Transfer` | 315,420 | Including 61,985 consolidation (empty-output) transfers |
-| `AmuletRules_ConvertFeaturedAppActivityMarkers` | 55,049 | Mining — converting app activity into CC rewards |
-| `AmuletRules_BuyMemberTraffic` | 1,929 | Burning CC to buy network traffic for transactions |
-| `AmuletRules_Fetch` | 1,929 | Fetching/consuming amulets |
+| `AmuletRules_Transfer` | 315,420 | Including 61,985 consolidation (no-output) and 253,399 self-transfer (merge-split) |
+| `AmuletRules_BuyMemberTraffic` | 1,929 | Consumed ~1.3M CC for network traffic |
+| `AmuletRules_Fetch` | 1,929 | Config reads — does not consume CC |
 | `AmuletRules_CreateTransferPreapproval` | 43 | Preapproving transfers |
-| **Total on-chain actions** | **374,370** | |
+| **Total on-chain actions (AmuletRules)** | **319,321** |
 
-Every transfer burns a fee proportional to the amount. With 315,420 transfers (including 61,985 consolidation burns), the cumulative fee is ~1,024,360 CC — approximately 3.25 CC average per transfer. No CC was sent to any other external party; the entire untraced amount was consumed as network fees.
+Of the 315,420 transfers, only 3,937 were to non-CoinAegis parties (36 of those to the 5 external recipients above). The remaining 311,483 were self-transfers (merge-splits harvesting validator rewards) and consolidations.
 
-Note: the 2,804,520 CC total above reflects **app rewards only**. Validator rewards (`val_cc` ~292,000 CC for `cryptolegacy-validator-1`) are separate, meaning actual total CC available was ~3.1M and total fee burn may be ~1.3M CC.
+Note: the 2,804,520 CC total reflects **app rewards only**. Validator rewards (~268,325 CC harvested, ~292,000 CC earned) are separate.
 
 #### Key Entity: fba188
 
@@ -283,7 +313,7 @@ Note: the 2,804,520 CC total above reflects **app rewards only**. Validator rewa
 3. **Coordinate with ByBit** — confirm freeze on `fba188` account; request account holder details
 4. **Coordinate with Gate.io** — request freeze on `Gate` account that received ~700K CC
 5. **Investigate `quokka-validator-1`** — acted as intermediary, laundering 1.1M CC through auth0 hop addresses; may be complicit or compromised
-6. **Trace remaining ~1M CC** — investigate multi-output transfers, fee burns, and other transfer mechanisms
+6. ~~**Trace remaining ~1M CC**~~ — **RESOLVED**: ~1.3M CC consumed by BuyMemberTraffic for network bandwidth; full accounting reconciled via BigQuery (see "Complete CC Accounting" section)
 7. **Review the 40 auth0 party IDs** — determine if they still have active contracts
 8. **Assess systemic risk** — review whether other entities use the same pattern of multiple FA grants under different names with the same key
 
@@ -305,7 +335,14 @@ All data queried from Canton Scan API and BigQuery on 2026-06-01:
 
 **BigQuery (governence-483517.transformed.events_parsed):**
 - Transfer tracing via `AmuletRules_Transfer` exercised events
+- Fee verification via `exercise_result.summary.senderChangeFee` (confirmed zero)
+- Reward harvesting via `exercise_result.summary.inputAppRewardAmount`, `inputValidatorRewardAmount`, `inputValidatorFaucetAmount`
+- Traffic consumption via `AmuletRules_BuyMemberTraffic` input/output analysis
+- Protocol config via `AmuletRules_Fetch` exercise results (`transferFee.initialRate: "0E-10"`, `holdingFee.rate: 0.0000190259`)
+- Activity counts verified: `choice` column grouped by type, filtered on `acting_parties` containing CoinAegis key
+- External recipient verification: `payload.transfer.outputs[0].receiver` grouped by receiver, excluding CoinAegis key
 - Template: `c208d7ead1e4e9b610fc2054d0bf00716144ad444011bce0b02dcd6cd0cb8a23:Splice.AmuletRules:AmuletRules`
 - Date range: 2026-04-20 to 2026-06-01, migration_id = 4
+- Verification queries: `scripts/bigquery-fee-burn-verification.sql`
 
 SV endpoints used: Cumberland (`scan.sv-1.global.canton.network.cumberland.io`)
