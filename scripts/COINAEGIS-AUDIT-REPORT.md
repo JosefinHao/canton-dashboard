@@ -144,8 +144,73 @@ After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 C
 - `cryptolegacy-validator-1` (never paused — not an FA)
 - `coinaegisVault` (FA never revoked)
 
-### 5. Funds Transferred Out
+### 5. Funds Transferred Out — Complete Money Trail
 99.6% of all mined CC (~2.79M CC) has been transferred out of the wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
+
+#### Transfer Destinations (BigQuery-confirmed)
+
+CoinAegis used a two-phase extraction strategy with `quokka-validator-1` as an intermediary:
+
+**Phase 1 — Via quokka intermediary (Apr 24-25, 2026):**
+
+CoinAegis (`cryptolegacy-validator-1`) transferred CC to two auth0 party IDs controlled by quokka's key (`12200587db65aee55ac8d877208df0903c0dc9795909ee91347b0d1b6f7b43aa124e`):
+
+| Sender | Receiver | Txns | Amount (CC) | Provider |
+|---|---|---:|---:|---|
+| `cryptolegacy-validator-1` | `auth0_007c69ec1703...::quokka-key` | 4 | 650,020 | quokka-validator-1 |
+| `cryptolegacy-validator-1` | `auth0_007c69ebf59a...::quokka-key` | 3 | 450,010 | quokka-validator-1 |
+
+These quokka auth0 parties then forwarded to final destinations (Apr 25-26):
+
+| Sender | Receiver | Amount (CC) |
+|---|---|---:|
+| `auth0_007c69ec17...` (quokka) | `fba188` (ByBit wallet) | 650,002 |
+| `auth0_007c69ebf5...` (quokka) | `Gate` (Gate.io) | 450,001 |
+
+**Phase 2 — Direct transfers (May 29, 2026):**
+
+| Sender | Receiver | Amount (CC) | Provider |
+|---|---|---:|---|
+| `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 200,000 | **ByBit-MainNetValidator-1** |
+| `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 215,000 | **ByBit-MainNetValidator-1** |
+| `cryptolegacy-validator-1` | `Gate` (Gate.io) | 250,000 | gate-mainnet-1 |
+
+**Phase 3 — Small transfers (May 27, 2026):**
+
+| Sender | Receiver | Txns | Amount (CC) | Provider |
+|---|---|---:|---:|---|
+| `coinaegisVault` | `quokka-validator-1` | 26 | 4,234 | quokka-validator-1 |
+
+#### Aggregated Destinations
+
+| Final Destination | Total CC | Route |
+|---|---:|---|
+| **fba188** (ByBit-hosted wallet) | **~1,065,002** | 415K direct + 650K via quokka |
+| **Gate** (Gate.io exchange) | **~700,001** | 250K direct + 450K via quokka |
+| **quokka-validator-1** | **~4,234** | Small direct transfers |
+| **Total traced** | **~1,769,237** | |
+| **Unaccounted** | **~1,024,360** | Fees, burns, multi-output transfers |
+
+#### Key Entity: fba188
+
+- **Full party ID:** `fba188::1220b5c7e1c4c31c691712a9e660bc611ad91ee0aad58580108db04b84b560b3aa31`
+- **Hosted on:** ByBit-MainNetValidator-1 (confirmed by `provider` field in transfer payloads)
+- **Status:** Reported frozen by ByBit
+- **Received:** ~1,065,002 CC from CoinAegis (largest single recipient)
+
+#### Key Entity: Gate
+
+- **Full party ID:** `Gate::1220660fcee9042e5d36a50eccee8b6ff3e79cc3612ad41b7ec056c5c6cddacf864b`
+- **Hosted on:** gate-mainnet-1
+- **Received:** ~700,001 CC from CoinAegis
+
+#### Key Entity: quokka-validator-1 (Intermediary)
+
+- **Full party ID:** `quokka-validator-1::12200587db65aee55ac8d877208df0903c0dc9795909ee91347b0d1b6f7b43aa124e`
+- **Role:** Intermediary/money mule — received 1,100,030 CC from CoinAegis on Apr 24-25, forwarded 1,100,003 CC to fba188 and Gate on Apr 25-26
+- **Also controls auth0 parties** used as hop addresses:
+  - `auth0_007c69ec1703012e7f3c0b7f056d::quokka-key` (forwarded 650,002 to fba188)
+  - `auth0_007c69ebf59ab2450880196fff52::quokka-key` (forwarded 450,001 to Gate)
 
 ---
 
@@ -153,15 +218,20 @@ After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 C
 
 1. **Revoke `coinaegisVault` FA immediately** — it is still active and mining
 2. **Investigate `cryptolegacy-validator-1`** — determine how a non-FA validator earned 2.6M in app rewards; consider revoking its validator license
-3. **Trace transfers** — the `v0/transactions/by-party` endpoint timed out; use alternative methods to trace where ~2.79M CC was sent (ByBit and other exchanges are suspected destinations)
-4. **Review the 40 auth0 party IDs** — determine if they still have active contracts
-5. **Assess systemic risk** — review whether other entities use the same pattern of multiple FA grants under different names with the same key
+3. **Coordinate with ByBit** — confirm freeze on `fba188` account; request account holder details
+4. **Coordinate with Gate.io** — request freeze on `Gate` account that received ~700K CC
+5. **Investigate `quokka-validator-1`** — acted as intermediary, laundering 1.1M CC through auth0 hop addresses; may be complicit or compromised
+6. **Trace remaining ~1M CC** — investigate multi-output transfers, fee burns, and other transfer mechanisms
+7. **Review the 40 auth0 party IDs** — determine if they still have active contracts
+8. **Assess systemic risk** — review whether other entities use the same pattern of multiple FA grants under different names with the same key
 
 ---
 
 ## Data Sources
 
-All data queried from Canton Scan API on 2026-06-01:
+All data queried from Canton Scan API and BigQuery on 2026-06-01:
+
+**Canton Scan API:**
 - `v0/round-of-latest-data` — current round (98443)
 - `v0/featured-apps` — on-chain FA status (156 active)
 - `v0/top-providers-by-app-rewards` — cumulative CC per provider
@@ -169,5 +239,11 @@ All data queried from Canton Scan API on 2026-06-01:
 - `v0/holdings/summary` — current wallet balances
 - `v0/holdings/state` — active contract details
 - `v0/round-party-totals` — per-round cumulative rewards timeline
+- `v0/admin/validator/licenses` — ByBit node discovery (8 nodes confirmed)
+
+**BigQuery (governence-483517.transformed.events_parsed):**
+- Transfer tracing via `AmuletRules_Transfer` exercised events
+- Template: `c208d7ead1e4e9b610fc2054d0bf00716144ad444011bce0b02dcd6cd0cb8a23:Splice.AmuletRules:AmuletRules`
+- Date range: 2026-04-20 to 2026-06-01, migration_id = 4
 
 SV endpoints used: Cumberland (`scan.sv-1.global.canton.network.cumberland.io`)
