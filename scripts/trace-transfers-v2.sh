@@ -43,13 +43,13 @@ print(f'  Latest round: {d[\"round\"]} (effective: {d[\"effectiveAt\"]})')
 # Scan backwards from recent time looking for CoinAegis transfer activity.
 # The after param format is: {"after_migration_id": N, "after_record_time": "..."}
 
-echo -e "\n--- Step 1: Ledger scan via v2/updates (starting May 2026) ---"
-echo "  Jumping to May 1, 2026 (when mining accelerated)..."
+echo -e "\n--- Step 1: Ledger scan via v2/updates (starting May 25, 2026) ---"
+echo "  Jumping to May 25, 2026 (just before wallet sweeps on May 27-29)..."
 
 MAX_PAGES=500
 PAGE=0
 AFTER_MIG="4"
-AFTER_TIME="2026-05-01T00:00:00Z"
+AFTER_TIME="2026-05-25T00:00:00Z"
 TOTAL_UPDATES=0
 MATCH_FILE="$OUT/v2-transfer-matches.jsonl"
 > "$MATCH_FILE"
