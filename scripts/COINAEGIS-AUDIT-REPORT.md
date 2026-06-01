@@ -1,8 +1,6 @@
 # CoinAegis Incident Audit Report
 
 **Date:** 2026-06-01
-**Auditor:** Sync Insights Governance Team
-**Status:** URGENT — Active exploit, `coinaegisVault` FA still active
 
 ---
 
@@ -303,19 +301,6 @@ Note: the 2,804,520 CC total reflects **app rewards only**. Validator rewards (~
 - **Also controls auth0 parties** used as hop addresses:
   - `auth0_007c69ec1703012e7f3c0b7f056d::quokka-key` (forwarded 650,002 to fba188)
   - `auth0_007c69ebf59ab2450880196fff52::quokka-key` (forwarded 450,001 to Gate)
-
----
-
-## Immediate Recommended Actions
-
-1. **Revoke `coinaegisVault` FA immediately** — it is still active and mining
-2. **Investigate `cryptolegacy-validator-1`** — determine how a non-FA validator earned 2.6M in app rewards; consider revoking its validator license
-3. **Coordinate with ByBit** — confirm freeze on `fba188` account; request account holder details
-4. **Coordinate with Gate.io** — request freeze on `Gate` account that received ~700K CC
-5. **Investigate `quokka-validator-1`** — acted as intermediary, laundering 1.1M CC through auth0 hop addresses; may be complicit or compromised
-6. ~~**Trace remaining ~1M CC**~~ — **RESOLVED**: ~1.3M CC consumed by BuyMemberTraffic for network bandwidth; full accounting reconciled via BigQuery (see "Complete CC Accounting" section)
-7. **Review the 40 auth0 party IDs** — determine if they still have active contracts
-8. **Assess systemic risk** — review whether other entities use the same pattern of multiple FA grants under different names with the same key
 
 ---
 
