@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="https://github.com/bstolman1/amulet-scan-port.git"
+REPO_URL="https://github.com/cf-internal/amulet-scan-port.git"
 INSTALL_DIR="$HOME/canton-explorer"
 DATA_DIR="/mnt/c/ledger_raw"
 NODE_VERSION="20"
