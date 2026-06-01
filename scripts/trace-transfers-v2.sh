@@ -43,24 +43,20 @@ print(f'  Latest round: {d[\"round\"]} (effective: {d[\"effectiveAt\"]})')
 # Scan backwards from recent time looking for CoinAegis transfer activity.
 # The after param format is: {"after_migration_id": N, "after_record_time": "..."}
 
-echo -e "\n--- Step 1: Ledger scan via v2/updates (correct pagination) ---"
-echo "  Starting from most recent updates, scanning backwards..."
+echo -e "\n--- Step 1: Ledger scan via v2/updates (starting May 2026) ---"
+echo "  Jumping to May 1, 2026 (when mining accelerated)..."
 
-MAX_PAGES=100
+MAX_PAGES=500
 PAGE=0
-AFTER_MIG=""
-AFTER_TIME=""
+AFTER_MIG="4"
+AFTER_TIME="2026-05-01T00:00:00Z"
 TOTAL_UPDATES=0
 MATCH_FILE="$OUT/v2-transfer-matches.jsonl"
 > "$MATCH_FILE"
 
 while [ $PAGE -lt $MAX_PAGES ]; do
-  # Build request body
-  if [ -z "$AFTER_TIME" ]; then
-    BODY='{"page_size": 100}'
-  else
-    BODY="{\"page_size\": 100, \"after\": {\"after_migration_id\": $AFTER_MIG, \"after_record_time\": \"$AFTER_TIME\"}}"
-  fi
+  # Build request body — always use after cursor (starting from May 2026)
+  BODY="{\"page_size\": 100, \"after\": {\"after_migration_id\": $AFTER_MIG, \"after_record_time\": \"$AFTER_TIME\"}}"
 
   RESP_FILE="$OUT/v2-page-${PAGE}.json"
   HTTP_CODE=$(curl -sf -w "%{http_code}" -o "$RESP_FILE" \
@@ -232,44 +228,8 @@ else
   echo "  Run trace-bybit-transfers.sh first for holdings data"
 fi
 
-# ── Step 4: Try starting from a specific date ─────────────────────────
-# The v2/updates endpoint may support starting from a specific time.
-# Let's try starting from May 1 (when mining accelerated).
-
-echo -e "\n--- Step 4: Targeted scan from May 1, 2026 ---"
-echo "  Querying updates starting from 2026-05-01..."
-
-BODY='{"page_size": 100, "after": {"after_migration_id": 4, "after_record_time": "2026-05-01T00:00:00Z"}}'
-
-HTTP_CODE=$(curl -sf -w "%{http_code}" -o "$OUT/v2-may-page0.json" \
-  --max-time 30 \
-  -X POST "$BASE/v2/updates" \
-  -H 'Content-Type: application/json' \
-  -d "$BODY" 2>/dev/null || echo "000")
-
-echo "  HTTP $HTTP_CODE"
-
-if [ "$HTTP_CODE" = "200" ] && [ -s "$OUT/v2-may-page0.json" ]; then
-  COINAEGIS_KEY="$KEY" python3 -c "
-import json, os
-
-key = os.environ['COINAEGIS_KEY']
-d = json.load(open('$OUT/v2-may-page0.json'))
-txns = d.get('transactions', [])
-print(f'  Got {len(txns)} updates from May 1 onward')
-
-if txns:
-    first_rt = txns[0].get('record_time', '')
-    last_rt = txns[-1].get('record_time', '')
-    print(f'  Time range: {first_rt} to {last_rt}')
-
-    coinaegis_count = 0
-    for tx in txns:
-        if key in json.dumps(tx):
-            coinaegis_count += 1
-    print(f'  CoinAegis-related updates in this page: {coinaegis_count}')
-" 2>/dev/null
-fi
+# ── Step 4: (Merged into Step 1 — scan starts from May 2026 directly) ──
+echo -e "\n--- Step 4: Skipped (covered by Step 1) ---"
 
 # ── Step 5: Try v0/updates endpoint as alternative ─────────────────────
 
