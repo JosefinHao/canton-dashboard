@@ -234,7 +234,24 @@ Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
 | **Gate** (Gate.io exchange) | **~700,001** | 250K direct + 450K via quokka |
 | **quokka-validator-1** | **~4,234** | Small direct transfers |
 | **Total traced** | **~1,769,237** | |
-| **Unaccounted** | **~1,024,360** | Fees, burns, multi-output transfers |
+| **Transfer fees burned** | **~1,024,360** | See below |
+
+#### On-Chain Activity & Fee Burns
+
+CoinAegis generated extraordinary on-chain activity, the fees from which account for the untraced CC:
+
+| Activity | Count | Notes |
+|---|---:|---|
+| `AmuletRules_Transfer` | 315,420 | Including 61,985 consolidation (empty-output) transfers |
+| `AmuletRules_ConvertFeaturedAppActivityMarkers` | 55,049 | Mining — converting app activity into CC rewards |
+| `AmuletRules_BuyMemberTraffic` | 1,929 | Burning CC to buy network traffic for transactions |
+| `AmuletRules_Fetch` | 1,929 | Fetching/consuming amulets |
+| `AmuletRules_CreateTransferPreapproval` | 43 | Preapproving transfers |
+| **Total on-chain actions** | **374,370** | |
+
+Every transfer burns a fee proportional to the amount. With 315,420 transfers (including 61,985 consolidation burns), the cumulative fee is ~1,024,360 CC — approximately 3.25 CC average per transfer. No CC was sent to any other external party; the entire untraced amount was consumed as network fees.
+
+Note: the 2,804,520 CC total above reflects **app rewards only**. Validator rewards (`val_cc` ~292,000 CC for `cryptolegacy-validator-1`) are separate, meaning actual total CC available was ~3.1M and total fee burn may be ~1.3M CC.
 
 #### Key Entity: fba188
 
