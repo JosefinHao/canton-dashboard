@@ -214,7 +214,7 @@ export default function Tokens() {
 
         {/* Search + Expand All */}
         <div className="flex items-center gap-3">
-          <div className="relative max-w-sm flex-1">
+          <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, symbol, or issuer..."
@@ -224,12 +224,12 @@ export default function Tokens() {
             />
           </div>
           <button
+            className="ml-auto text-sm text-muted-foreground hover:text-foreground whitespace-nowrap"
             onClick={() => {
               const allIssuers = groupedByIssuer.map(([issuer]) => issuer);
               const allExpanded = allIssuers.every((i) => expandedIssuers.has(i));
               setExpandedIssuers(allExpanded ? new Set() : new Set(allIssuers));
             }}
-            className="text-sm text-muted-foreground hover:text-foreground whitespace-nowrap"
           >
             {groupedByIssuer.length > 0 && groupedByIssuer.every(([i]) => expandedIssuers.has(i))
               ? "Collapse All"
