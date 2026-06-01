@@ -130,7 +130,7 @@ print(f'  Total ByBit party IDs: {len(existing)}')
 
 echo -e "\n--- Step 2: All ByBit node holdings at key dates ---"
 
-DATES=("2026-05-25T00:00:00Z" "2026-05-27T00:00:00Z" "2026-05-28T00:00:00Z" "2026-05-29T00:00:00Z" "2026-05-30T00:00:00Z" "2026-06-01T15:00:00Z")
+DATES=("2026-05-25T00:00:00Z" "2026-05-26T00:00:00Z" "2026-05-27T00:00:00Z" "2026-05-28T00:00:00Z" "2026-05-29T00:00:00Z" "2026-05-30T00:00:00Z" "2026-05-31T00:00:00Z" "2026-06-01T15:00:00Z")
 
 # Get snapshot times
 declare -a SNAPSHOTS
