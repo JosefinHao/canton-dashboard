@@ -166,12 +166,20 @@ CoinAegis (`cryptolegacy-validator-1`) transferred CC to two auth0 party IDs con
 | 7 | 2026-04-25 05:14:14 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 250,000.00 | quokka-validator-1 | `12207dd007...d612:2` |
 | | | | **Phase 1 subtotal** | **1,100,030.00** | | |
 
-Quokka intermediary forwarding (timestamps TBD — query pending):
+Quokka intermediary forwarding — same day, hours later. Note the small test transactions (1 CC, 2 CC) before large transfers:
 
-| Sender | Receiver | Amount (CC) |
-|---|---|---:|
-| `auth0_007c69ec17...` (quokka) → | `fba188` (ByBit wallet) | 650,002 |
-| `auth0_007c69ebf5...` (quokka) → | `Gate` (Gate.io) | 450,001 |
+| # | Timestamp (UTC) | Sender | Receiver | Amount (CC) | Provider | Event ID |
+|---|---|---|---|---:|---|---|
+| 1a | 2026-04-25 07:30:14 | `auth0_...ff52` (quokka) | `Gate` (Gate.io) | 1.00 | gate-mainnet-1 | `1220fd47...00e7:2` |
+| 1b | 2026-04-25 08:12:43 | `auth0_...ff52` (quokka) | `Gate` (Gate.io) | 250,000.00 | gate-mainnet-1 | `122006bc...5fa1:2` |
+| 1c | 2026-04-25 11:37:37 | `auth0_...ff52` (quokka) | `Gate` (Gate.io) | 200,000.00 | gate-mainnet-1 | `12202c75...1f7e:2` |
+| | | | **Subtotal → Gate** | **450,001.00** | | |
+| 1d | 2026-04-25 12:09:00 | `auth0_...056d` (quokka) | `fba188` (ByBit) | 2.00 | **ByBit-MainNetValidator-1** | `12207bdd...a665:2` |
+| 1e | 2026-04-25 12:29:41 | `auth0_...056d` (quokka) | `fba188` (ByBit) | 50,000.00 | **ByBit-MainNetValidator-1** | `122059c4...79d0:2` |
+| 1f | 2026-04-25 13:08:12 | `auth0_...056d` (quokka) | `fba188` (ByBit) | 200,000.00 | **ByBit-MainNetValidator-1** | `1220dd36...9b96:2` |
+| 1g | 2026-04-25 17:08:23 | `auth0_...056d` (quokka) | `fba188` (ByBit) | 200,000.00 | **ByBit-MainNetValidator-1** | `12200977...323f:2` |
+| 1h | 2026-04-26 14:20:35 | `auth0_...056d` (quokka) | `fba188` (ByBit) | 200,000.00 | **ByBit-MainNetValidator-1** | `1220b6ab...a4f1:2` |
+| | | | **Subtotal → fba188** | **650,002.00** | | |
 
 **Phase 2 — Small drip transfers to quokka (May 27, 2026):**
 
