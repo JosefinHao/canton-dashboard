@@ -75,7 +75,7 @@ All contracts were created May 27-29, indicating wallets were swept recently. On
 | 2026-05-28 | **FA revoked: `aevumWallet`** | "on-chain activity needs further investigation" |
 | 2026-05-29 | **FA revoked: `coinaegis`** | Same reason |
 | 2026-06-01 | `coinaegisVault` | **STILL ACTIVE** |
-| 2026-06-01 | `goldacorn` | Status unclear — not in current FA list, no rewards earned |
+| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); 0 CC earned |
 
 ---
 
@@ -92,7 +92,7 @@ This validator was the primary mining vehicle, earning 93% of all CC:
 | ~May 22 | 97000 | 1,432,292 | 152,543 | Val CC also tripled |
 | ~May 28 | 97900 | 2,249,579 | 290,087 | **Day of first pause** |
 | ~May 29 | 98000 | ~2,300,000 | ~295,000 | **Day of second pause** |
-| Jun 1 | 98443 | **2,598,114** | ~250,000+ | **Still mining** |
+| Jun 1 | 98443 | **2,598,114** | >292,000 (last measured 292,142 at round 97910) | **Still mining** |
 
 ### Mining rate
 - Rounds 96000-97000 (~7 days): ~290,000 CC/week in app rewards
