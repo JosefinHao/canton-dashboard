@@ -21,8 +21,8 @@ export function useActiveVoteRequests() {
         source: "scan-api",
       };
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 10_000,
     retry: 2,
-    refetchInterval: 60 * 1000, // Refresh every minute
+    refetchInterval: 15_000,
   });
 }

@@ -13,6 +13,49 @@ import { extractHostname, createDispatcher } from '../lib/undici-dispatcher.js';
 
 const router = Router();
 
+const BACKGROUND_SYNC_INTERVAL_MS = 2 * 60 * 1000; // 2 minutes
+let backgroundSyncTimer = null;
+
+async function backgroundSync() {
+  try {
+    const endpoint = getCurrentEndpoint();
+    const hostname = extractHostname(endpoint.url);
+    const dispatcher = hostname ? createDispatcher(hostname) : undefined;
+
+    const scanRes = await fetch(`${endpoint.url}/v0/admin/sv/voteresults`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(hostname ? { Host: hostname } : {}),
+      },
+      body: JSON.stringify({ limit: 1000 }),
+      ...(dispatcher ? { dispatcher } : {}),
+      signal: AbortSignal.timeout(30_000),
+    });
+
+    if (!scanRes.ok) return;
+
+    const data = await scanRes.json();
+    const rawResults = data.dso_rules_vote_results || [];
+    if (rawResults.length === 0) return;
+
+    const { inserted } = await upsertVoteResults(rawResults);
+    if (inserted > 0) {
+      console.log(`[vote-results] Background sync: ${inserted} new results`);
+    }
+  } catch (err) {
+    console.warn(`[vote-results] Background sync failed: ${err.message}`);
+  }
+}
+
+// Start background sync after a short delay to let the server finish booting
+setTimeout(() => {
+  backgroundSync();
+  backgroundSyncTimer = setInterval(backgroundSync, BACKGROUND_SYNC_INTERVAL_MS);
+  console.log(`[vote-results] Background sync started (every ${BACKGROUND_SYNC_INTERVAL_MS / 1000}s)`);
+}, 5_000);
+
 /**
  * GET /vote-results
  *

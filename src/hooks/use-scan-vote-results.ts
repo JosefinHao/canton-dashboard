@@ -227,8 +227,9 @@ export function useScanVoteResults(request: VoteResultRequest = {}) {
         return dateB - dateA;
       });
     },
-    staleTime: 60_000, // 1 minute
+    staleTime: 20_000,
     retry: 2,
+    refetchInterval: 30_000,
   });
 }
 
@@ -278,7 +279,8 @@ export function useGovernanceVoteHistory(limit = 500) {
         return dateB - dateA;
       });
     },
-    staleTime: 60_000,
+    staleTime: 20_000,
     retry: 2,
+    refetchInterval: 30_000,
   });
 }

@@ -84,7 +84,8 @@ export function useGovernanceLifecycle(type?: string) {
       }
       return response.json();
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60_000,
+    refetchInterval: 2 * 60_000,
   });
 }
 
