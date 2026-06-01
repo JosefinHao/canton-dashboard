@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "duckdb-api",
       script: "server/server.js",   // ✅ FIXED
-      cwd: "/home/ben/amulet-scan-port",
+      cwd: __dirname,
       env: {
         NODE_ENV: "production",
       },
