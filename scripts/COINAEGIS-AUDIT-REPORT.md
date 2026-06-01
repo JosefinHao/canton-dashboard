@@ -149,37 +149,74 @@ After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 C
 
 #### Transfer Destinations (BigQuery-confirmed)
 
-CoinAegis used a two-phase extraction strategy with `quokka-validator-1` as an intermediary:
+CoinAegis used a three-phase extraction strategy with `quokka-validator-1` as an intermediary:
 
 **Phase 1 — Via quokka intermediary (Apr 24-25, 2026):**
 
-CoinAegis (`cryptolegacy-validator-1`) transferred CC to two auth0 party IDs controlled by quokka's key (`12200587db65aee55ac8d877208df0903c0dc9795909ee91347b0d1b6f7b43aa124e`):
+CoinAegis (`cryptolegacy-validator-1`) transferred CC to two auth0 party IDs controlled by quokka's key (`12200587db65aee55ac8d877208df0903c0dc9795909ee91347b0d1b6f7b43aa124e`). These quokka auth0 parties then forwarded to final destinations.
 
-| Sender | Receiver | Txns | Amount (CC) | Provider |
-|---|---|---:|---:|---|
-| `cryptolegacy-validator-1` | `auth0_007c69ec1703...::quokka-key` | 4 | 650,020 | quokka-validator-1 |
-| `cryptolegacy-validator-1` | `auth0_007c69ebf59a...::quokka-key` | 3 | 450,010 | quokka-validator-1 |
+| # | Timestamp (UTC) | Sender | Receiver | Amount (CC) | Provider | Event ID |
+|---|---|---|---|---:|---|---|
+| 1 | 2026-04-24 23:27:55 | `cryptolegacy-validator-1` | `auth0_007c69ebf59a...` (quokka) | 10.00 | quokka-validator-1 | `1220034729...4ade:2` |
+| 2 | 2026-04-24 23:35:20 | `cryptolegacy-validator-1` | `auth0_007c69ebf59a...` (quokka) | 200,000.00 | quokka-validator-1 | `1220eb2848...e4bb:2` |
+| 3 | 2026-04-24 23:36:53 | `cryptolegacy-validator-1` | `auth0_007c69ebf59a...` (quokka) | 250,000.00 | quokka-validator-1 | `1220ff6134...97b9:2` |
+| 4 | 2026-04-25 04:54:14 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 20.00 | quokka-validator-1 | `1220a6ebc8...18c4:2` |
+| 5 | 2026-04-25 04:59:27 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 200,000.00 | quokka-validator-1 | `1220e2d296...5aaa:2` |
+| 6 | 2026-04-25 05:00:48 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 200,000.00 | quokka-validator-1 | `122049c22b...1793:2` |
+| 7 | 2026-04-25 05:14:14 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 250,000.00 | quokka-validator-1 | `12207dd007...d612:2` |
+| | | | **Phase 1 subtotal** | **1,100,030.00** | | |
 
-These quokka auth0 parties then forwarded to final destinations (Apr 25-26):
+Quokka intermediary forwarding (timestamps TBD — query pending):
 
 | Sender | Receiver | Amount (CC) |
 |---|---|---:|
-| `auth0_007c69ec17...` (quokka) | `fba188` (ByBit wallet) | 650,002 |
-| `auth0_007c69ebf5...` (quokka) | `Gate` (Gate.io) | 450,001 |
+| `auth0_007c69ec17...` (quokka) → | `fba188` (ByBit wallet) | 650,002 |
+| `auth0_007c69ebf5...` (quokka) → | `Gate` (Gate.io) | 450,001 |
 
-**Phase 2 — Direct transfers (May 29, 2026):**
+**Phase 2 — Small drip transfers to quokka (May 27, 2026):**
 
-| Sender | Receiver | Amount (CC) | Provider |
-|---|---|---:|---|
-| `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 200,000 | **ByBit-MainNetValidator-1** |
-| `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 215,000 | **ByBit-MainNetValidator-1** |
-| `cryptolegacy-validator-1` | `Gate` (Gate.io) | 250,000 | gate-mainnet-1 |
+`coinaegisVault` and one auth0 party sent 26 small transfers to `quokka-validator-1` over ~6.5 hours:
 
-**Phase 3 — Small transfers (May 27, 2026):**
+| # | Timestamp (UTC) | Sender | Amount (CC) | Event ID |
+|---|---|---|---:|---|
+| 8 | 2026-05-27 08:45:36 | `auth0_007c6a07b6...` (CoinAegis) | 1.00 | `1220816a83...3833:1` |
+| 9 | 2026-05-27 08:47:54 | `auth0_007c6a07b6...` (CoinAegis) | 200.00 | `122001f9c2...5061:1` |
+| 10 | 2026-05-27 10:56:36 | `coinaegisVault` | 190.31 | `1220fa2544...49c2:2` |
+| 11 | 2026-05-27 11:25:50 | `coinaegisVault` | 155.83 | `1220db7c14...6c71:2` |
+| 12 | 2026-05-27 11:33:59 | `coinaegisVault` | 207.20 | `12208676...cf61:2` |
+| 13 | 2026-05-27 11:48:07 | `coinaegisVault` | 117.99 | `1220fe1f...a093:2` |
+| 14 | 2026-05-27 11:54:11 | `coinaegisVault` | 178.25 | `1220907e...9644:2` |
+| 15 | 2026-05-27 12:08:19 | `coinaegisVault` | 202.34 | `1220d6da...5a4:2` |
+| 16 | 2026-05-27 12:18:25 | `coinaegisVault` | 152.17 | `1220f2b2...4efa:2` |
+| 17 | 2026-05-27 12:28:31 | `coinaegisVault` | 176.78 | `12204f4c...e446:2` |
+| 18 | 2026-05-27 12:36:38 | `coinaegisVault` | 160.31 | `1220d451...d986:2` |
+| 19 | 2026-05-27 12:48:45 | `coinaegisVault` | 182.37 | `1220402f...29e2:2` |
+| 20 | 2026-05-27 12:58:51 | `coinaegisVault` | 158.88 | `12203c37...a69c:2` |
+| 21 | 2026-05-27 13:08:58 | `coinaegisVault` | 174.19 | `122098fd...307d:2` |
+| 22 | 2026-05-27 13:19:04 | `coinaegisVault` | 174.30 | `1220ec16...e34c:2` |
+| 23 | 2026-05-27 13:27:11 | `coinaegisVault` | 181.52 | `12202372...c2d4:2` |
+| 24 | 2026-05-27 13:35:16 | `coinaegisVault` | 150.54 | `12204409...592f:2` |
+| 25 | 2026-05-27 13:47:24 | `coinaegisVault` | 158.41 | `1220ca5c...6b85:2` |
+| 26 | 2026-05-27 14:01:32 | `coinaegisVault` | 158.34 | `1220bfdc...ed94:2` |
+| 27 | 2026-05-27 14:19:41 | `coinaegisVault` | 144.31 | `1220c6de...fd43:2` |
+| 28 | 2026-05-27 14:27:53 | `coinaegisVault` | 137.51 | `1220743f...2e9e:2` |
+| 29 | 2026-05-27 14:42:01 | `coinaegisVault` | 183.92 | `12201d3d...8b20:2` |
+| 30 | 2026-05-27 14:52:08 | `coinaegisVault` | 181.95 | `12209528...d5b1:2` |
+| 31 | 2026-05-27 15:02:15 | `coinaegisVault` | 139.84 | `122038cb...3fea:2` |
+| 32 | 2026-05-27 15:12:21 | `coinaegisVault` | 169.66 | `1220c897...c5c3:2` |
+| 33 | 2026-05-27 15:18:27 | `coinaegisVault` | 195.84 | `1220af5f...8702:2` |
+| | | **Phase 2 subtotal** | **4,233.76** | |
 
-| Sender | Receiver | Txns | Amount (CC) | Provider |
-|---|---|---:|---:|---|
-| `coinaegisVault` | `quokka-validator-1` | 26 | 4,234 | quokka-validator-1 |
+**Phase 3 — Direct large transfers to exchanges (May 29, 2026):**
+
+Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
+
+| # | Timestamp (UTC) | Sender | Receiver | Amount (CC) | Provider | Event ID |
+|---|---|---|---|---:|---|---|
+| 34 | 2026-05-29 10:38:47 | `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 200,000.00 | **ByBit-MainNetValidator-1** | `1220aadeb4...96ba:2` |
+| 35 | 2026-05-29 10:43:12 | `cryptolegacy-validator-1` | `Gate` (Gate.io) | 250,000.00 | gate-mainnet-1 | `122056fd6a...137a:2` |
+| 36 | 2026-05-29 10:45:48 | `cryptolegacy-validator-1` | `fba188` (ByBit wallet) | 215,000.00 | **ByBit-MainNetValidator-1** | `1220cb1006...fdc8:2` |
+| | | | **Phase 3 subtotal** | **665,000.00** | | |
 
 #### Aggregated Destinations
 
