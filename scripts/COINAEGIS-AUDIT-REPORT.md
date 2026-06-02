@@ -1,14 +1,20 @@
 # CoinAegis Incident Audit Report
 
-**Date:** 2026-06-01
+**Date:** 2026-06-02 (updated)
 
 ---
 
 ## Executive Summary
 
-CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The core mechanism was **wash trading**: 253,397 self-transfers (80.3% of all transfers) shuttled tiny amounts (0.1–4 CC) between CoinAegis-controlled parties to generate AppRewardCoupons through their own Featured Apps (aevumWallet and goldacorn). An additional 61,985 transfers (19.7%) were consolidation operations with no recipient (merge-splits harvesting rewards). Only **36 out of 315,418 transfers (0.01%)** were genuine external transactions.
+CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
 
-The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through a validator node (`cryptolegacy-validator-1`) that was never itself a Featured App. After the AevumWallet pause vote reached threshold on May 28 at 21:41:38 UTC, the last reward coupon was generated **39 seconds later** — the operator was monitoring governance in real time. Within 31 minutes, they consolidated 665K CC for extraction. 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through intermediary wallets to obscure the money trail.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted grossly inflated `weight` parameters when creating FeaturedAppActivityMarkers for the goldacorn FA. While the app processed only ~134 real transfers, the validator claimed a cumulative weight of 193,706 — a **1,336× inflation** over legitimate levels. This gave goldacorn a 16.8% share of the network reward pool despite negligible real activity. In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
+
+**Phase 2 — Weight Inflation + Wash Trading (aevumWallet, May 9–28):** The operator combined inflated marker weights with high-volume self-transfers — 253,397 wash trades (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties. 88,340 markers at 18.6-second intervals generated 78,717 AppRewardCoupons worth 3,292,568 CC, though 78.9% expired unclaimed because coupons were generated faster than they could be harvested.
+
+**Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's exploitation window (April–May 2026).
+
+The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in all goldacorn activity markers. After the AevumWallet pause vote reached threshold on May 28 at 21:41:38 UTC, the last reward coupon was generated **39 seconds later** — the operator was monitoring governance in real time. 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through intermediary wallets to obscure the money trail. As of June 2, 2026, `coinaegisVault` remains an active Featured App with 199.89 CC in holdings.
 
 ---
 
@@ -23,11 +29,32 @@ This proves single-entity control over all 44 party IDs.
 
 ---
 
+## Consolidated Party Summary
+
+| Party | Role | Phase | Scheme | Transfers | Markers | Marker Interval | Total Weight | Coupons | CC Created | CC Claimed | CC Expired |
+|---|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|
+| `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Inflated marker weights** | ~134 | 919 | 31.9s (19× norm) | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
+| `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **Inflated weights + wash trading** | 253,397 self-transfers | 88,340 | 18.6s (32× norm) | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
+| `coinaegis` | Featured App (provider) | Minor | Weight inflation | — | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
+| `coinaegisVault` | Featured App (provider) | Minor | Weight inflation | — | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
+| `cryptolegacy-validator-1` | Validator + designated marker `beneficiary` | Both | Reward harvesting | — | — (beneficiary, not creator) | — | — | — | — | 2,598,113.64 (harvested) | — |
+| 40 `auth0_*` parties | Wash trade endpoints | 2 | Self-transfer recipients | 253,397 (endpoints) | — | — | — | — | — | ~39,001.13 (harvested) | — |
+| **TOTAL** | | | | | **89,259 markers** | | | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
+
+**Key observations:**
+- `cryptolegacy-validator-1` never created markers itself — it was the designated `beneficiary` receiving coupons from goldacorn and aevumWallet markers
+- goldacorn's ~134 transfers generated 193,706 in marker weight (1,446× ratio vs 1.07× for legitimate app `arcane-mainnet-1`)
+- aevumWallet combined weight inflation with high-volume wash trading but generated coupons faster than they could be claimed — 78.9% expired
+- 100% of AppRewardCoupons are `featured=true` — all rewards came through the FeaturedAppActivityMarker mechanism, not directly from transfers
+- goldacorn was the most "efficient" exploit: 855 coupons, 100% claimed, 2.09M CC — all extracted within hours
+
+---
+
 ## Total CC Mined (All Entities)
 
 | Party ID | App Rewards Harvested (CC) | Type |
 |---|---:|---|
-| `cryptolegacy-validator-1` | 2,598,113.64 | Validator (never an FA) |
+| `cryptolegacy-validator-1` | 2,598,113.64 | Validator — designated `beneficiary` in all FA markers |
 | `aevumWallet` | 155,970.47 | FA (revoked May 28) |
 | `coinaegis` | 7,201.82 | FA (revoked May 29) |
 | `coinaegisVault` | 4,232.76 | FA (**STILL ACTIVE**) |
@@ -76,14 +103,14 @@ All contracts were created May 27-29, indicating wallets were swept recently. On
 | 2026-05-28 22:12:56 | 665K CC consolidated | Pre-existing amulets (635K) + harvested rewards (29.7K) merged |
 | 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
-| 2026-06-01 | `coinaegisVault` | **STILL ACTIVE** |
-| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,600.71 CC in coupons (all claimed) |
+| 2026-06-02 | `coinaegisVault` | **STILL ACTIVE** — confirmed via live API: 199.89 CC holdings |
+| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,600.71 CC in coupons via inflated marker weights (all claimed) |
 
 ---
 
 ## Mining Timeline (cryptolegacy-validator-1)
 
-This validator was the primary mining vehicle, earning 92.6% of all CC:
+This validator was the designated `beneficiary` in all CoinAegis FA markers, making it the primary reward harvester (92.6% of all CC):
 
 | Date (approx) | Round | Cumulative App CC | Cumulative Val CC | Note |
 |---|---:|---:|---:|---|
@@ -139,8 +166,41 @@ The same entity (same key) applied for and received FA status under at least 3 d
 
 These were presented as separate companies/products in the governance vote reasons.
 
-### 2. Wash Trading — Self-Transfers to Farm Rewards
-Created 40 `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.3% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Each transfer generated an AppRewardCoupon through their Featured Apps (aevumWallet, goldacorn). The CC never left CoinAegis's control — it just circled between their 44 party IDs while the FA earned fresh reward CC on every hop.
+### 2. Activity Marker Weight Inflation (PRIMARY Exploit Mechanism)
+
+The operator exploited a protocol vulnerability in how FeaturedAppActivityMarkers were created. When a validator exercises `FeaturedAppRight_CreateActivityMarker`, it passes a `weight` parameter that determines the FA's share of the network reward pool. The old Splice protocol **did not validate** that this weight corresponded to actual app activity — it accepted whatever value the validator submitted.
+
+**Direct proof of inflation — single-beneficiary FA comparison (BigQuery-verified):**
+
+| FA Provider | Transfers | Marker Weight | Ratio (Weight/Transfers) |
+|---|---:|---:|---:|
+| `arcane-mainnet-1` | 135 | 145 | **1.07×** |
+| `kora-app` | ~5,000 | ~5,000 | **~1.0×** |
+| `goldacorn` (CoinAegis) | ~134 | 193,706 | **1,446×** |
+
+Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn inflated its weight by **1,336× over the legitimate baseline** (arcane), capturing 16.8% of the featured app reward pool despite negligible real activity.
+
+**Marker creation frequency (BigQuery-verified):**
+
+| FA | Total Markers | Avg Interval | vs Normal (~10 min) |
+|---|---:|---:|---:|
+| `goldacorn` (CoinAegis) | 919 | 31.9 seconds | **19× faster** |
+| `aevumWallet` (CoinAegis) | 88,340 | 18.6 seconds | **32× faster** |
+| `kora-app` (legitimate) | — | 602.7 seconds (~10 min) | Baseline |
+
+**Marker payload structure** (from BigQuery exercise events):
+```json
+{
+  "beneficiaries": [{"beneficiary": "cryptolegacy-validator-1::1220...", "weight": "1.0"}],
+  "weight": "376.0"
+}
+```
+The outer `weight` (376.0) is the inflated value the validator submitted. The beneficiary is `cryptolegacy-validator-1`, which explains why the validator — not the FA itself — earned 92.6% of all CC.
+
+**CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's exploitation window (April–May 2026), leaving the protocol open to arbitrary weight claims.
+
+### 3. Wash Trading — Self-Transfers to Farm Rewards (Phase 2 — aevumWallet)
+Created 40 `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.3% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Combined with inflated marker weights, these transfers generated AppRewardCoupons through aevumWallet. The CC never left CoinAegis's control — it just circled between their 44 party IDs while the FA earned fresh reward CC on every hop.
 
 **Daily wash trading volume (BigQuery-verified):**
 
@@ -167,15 +227,15 @@ auth0_...a3ac → auth0_...adde   1.00 CC
 auth0_...adde → auth0_...a3ac   0.20 CC
 ```
 
-### 3. Validator Used as Primary Mining Vehicle
-`cryptolegacy-validator-1` earned **2.6M CC in app rewards** despite never being registered as a Featured App. It earned more than any FA in the network.
+### 4. Validator Used as Primary Reward Harvester
+`cryptolegacy-validator-1` earned **2.6M CC in app rewards** despite never being registered as a Featured App. This was possible because the validator was designated as the `beneficiary` in all goldacorn and aevumWallet FeaturedAppActivityMarkers. When markers converted to AppRewardCoupons, the coupons were attributed to this validator. The coupons were then claimed into amulets during transfers and BuyMemberTraffic operations. As a result, `cryptolegacy-validator-1` earned more app rewards than any actual FA in the network.
 
-### 4. Continued Mining After Pause
+### 5. Continued Mining After Pause
 After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through:
 - `cryptolegacy-validator-1` (never paused — not an FA)
 - `coinaegisVault` (FA never revoked)
 
-### 5. Funds Extracted — Complete Money Trail
+### 6. Funds Extracted — Complete Money Trail
 57.6% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.4% (~1.3M CC) was consumed as network traffic fees to sustain the high-volume farming operation. Only 0.4% (~10.9K CC) remains in wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
 
 #### Transfer Destinations (BigQuery-confirmed)
@@ -301,7 +361,9 @@ CoinAegis spent ~1.3M CC buying network bandwidth to sustain its high-volume tra
 | Returned as change (`senderChangeAmount`) | -152,695,010 |
 | **Net CC consumed for traffic** | **1,301,539** |
 
-This reveals the circular farming scheme: self-transfers generate app activity markers → markers convert to app reward coupons → reward coupons are consumed during BuyMemberTraffic to purchase more network bandwidth → bandwidth enables more self-transfers.
+This reveals the circular farming scheme: the validator creates inflated activity markers → markers convert to app reward coupons based on weight share → reward coupons are consumed during BuyMemberTraffic to purchase more network bandwidth → bandwidth increases marker creation frequency → self-transfers provide a veneer of legitimate activity.
+
+**BuyMemberTraffic timeline:** CoinAegis made 1,929 BuyMemberTraffic purchases. The first purchase was at 2026-04-24 22:27 UTC — nearly 5 hours after goldacorn's first activity marker (17:32 UTC). Traffic purchases were not the activation trigger for marker creation, but they did increase marker frequency from ~1/min to 3–5/min.
 
 #### On-Chain Activity (BigQuery-verified)
 
@@ -320,7 +382,7 @@ Of the 315,418 transfers:
 
 #### AppRewardCoupon Generation by Featured App (BigQuery-verified)
 
-The wash trades generated AppRewardCoupons attributed to these FAs:
+AppRewardCoupons were generated through inflated FeaturedAppActivityMarkers (all coupons are `featured=true`). The marker weight determined each FA's share of the network reward pool:
 
 | FA (provider) | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---:|---:|---:|---:|
@@ -332,7 +394,7 @@ The wash trades generated AppRewardCoupons attributed to these FAs:
 
 Key observations:
 - `aevumWallet` generated 78,717 coupons via high-frequency wash trades (~42 CC each) — but **78.9% expired unclaimed** because coupons were generated faster than they could be harvested
-- `goldacorn` generated only 855 coupons but at ~2,445 CC each (large-value transfers) — **all claimed**
+- `goldacorn` generated only 855 coupons but at ~2,445 CC each — these came from **inflated marker weights** (193,706 total weight from ~134 actual transfers, a 1,336× inflation), not from large-value transfers — **all claimed**
 - `coinaegis` and `coinaegisVault` coupons were all claimed
 - Claim/expire status verified via BigQuery exercise choice: "Archive" = claimed, "AppRewardCoupon_DsoExpire" = expired
 - The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn.
@@ -364,7 +426,7 @@ Note: the 2,804,520 CC total reflects **app rewards claimed into amulets**. Vali
 
 ## Data Sources
 
-All data queried from Canton Scan API and BigQuery on 2026-06-01:
+All data queried from Canton Scan API and BigQuery on 2026-06-01 and 2026-06-02:
 
 **Canton Scan API:**
 - `v0/round-of-latest-data` — current round (98443)
@@ -384,8 +446,13 @@ All data queried from Canton Scan API and BigQuery on 2026-06-01:
 - Protocol config via `AmuletRules_Fetch` exercise results (`transferFee.initialRate: "0E-10"`, `holdingFee.rate: 0.0000190259`)
 - Activity counts verified: `choice` column grouped by type, filtered on `acting_parties` containing CoinAegis key
 - External recipient verification: `payload.transfer.outputs[0].receiver` grouped by receiver, excluding CoinAegis key
+- **Activity marker analysis** via `FeaturedAppRight_CreateActivityMarker` exercise events — weight parameter, beneficiary, provider, creation frequency
+- **Marker weight validation** via cross-referencing marker weight against transfer count per FA provider
 - Template: `c208d7ead1e4e9b610fc2054d0bf00716144ad444011bce0b02dcd6cd0cb8a23:Splice.AmuletRules:AmuletRules`
 - Date range: 2026-04-20 to 2026-06-01, migration_id = 4
 - Verification queries: `scripts/bigquery-fee-burn-verification.sql`
+
+**Canton Improvement Proposals:**
+- CIP-0104 (approved 2026-02-12): "Replace Splice Featured App Rewards with Activity-based Rewards" — confirms that the old marker weight system was vulnerable to inflation and that the protocol did not validate weights against actual activity
 
 SV endpoints used: Cumberland (`scan.sv-1.global.canton.network.cumberland.io`)
