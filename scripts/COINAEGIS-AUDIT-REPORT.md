@@ -1,7 +1,5 @@
 # CoinAegis Incident Audit Report
 
-**Date:** 2026-06-02 (updated)
-
 ---
 
 ## Executive Summary
