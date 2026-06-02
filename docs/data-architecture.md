@@ -47,7 +47,7 @@ Canton Scan API
 │  └── ../cursors/live-cursor.json                                     │
 │                                                                      │
 │  Hive-partitioned, ZSTD-compressed Parquet                           │
-│  697+ days ingested (2024-06-24 → present), 3.6B+ events            │
+│  Ingesting since 2024-06-24, 3.6B+ events, 250M+ updates            │
 │  5 migrations (M0–M4)                                                │
 └─────────────────────────────────────────────────────────────────────┘
       │
@@ -63,6 +63,10 @@ Canton Scan API
 │  transformed.parsed_*               (analytical views)           │
 │    ↓ daily scheduled refresh                                     │
 │  03:00 UTC, ~$0.16/day              (INSERT NOT EXISTS)          │
+│    ↓ health check                                                │
+│  04:00 UTC, free                    (RAISE on stale data)        │
+│                                                                   │
+│  Monitoring: GCP Cloud Monitoring → Slack #pipeline-alerts       │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -163,7 +167,7 @@ will be NULL because the payload contains the choice argument, not the contract 
 **Environment files on governance-dashboard**:
 - `~/amulet-scan-port/scripts/ingest/.env` — Scan API config
 - `~/.gcs_hmac_env` — HMAC keys with `export` (for shell/tmux)
-- `~/.gcs_hmac_env.systemd` — HMAC keys without `export` (for systemd)
+- `~/.gcs_hmac_env.systemd` — HMAC keys without `export` (for systemd), plus `ALERT_SLACK_WEBHOOK_URL`
 
 Service file source: `scripts/ingest/canton-live-ingest.service`
 
@@ -281,6 +285,9 @@ Three layers of monitoring, none depending on VM auth:
   (CRITICAL), max errors reached (FATAL), uncaught exceptions (FATAL)
 - Rate limited: 5 min between alerts of same type
 
+See `docs/monitoring-alerting.md` for comprehensive monitoring documentation
+including all alert types, failure scenarios, recovery steps, and configuration.
+
 **BigQuery health-check** (`scripts/bigquery/scheduled/daily-health-check.sql`):
 - Runs at 04:00 UTC (1 hour after daily refresh)
 - Checks `INFORMATION_SCHEMA.PARTITIONS` for latest partition dates (free)
@@ -295,6 +302,10 @@ Three layers of monitoring, none depending on VM auth:
 - Incident auto-close: 7 days
 
 ### Setup Scripts (`scripts/bigquery/`)
+
+| Script | Purpose |
+|--------|---------|
+| `deploy.sh` | Parameterized deployment of bronze/silver layers (substitutes `${PROJECT_ID}` / `${BUCKET_NAME}`) |
 
 **Bronze layer** (`bronze/`):
 
