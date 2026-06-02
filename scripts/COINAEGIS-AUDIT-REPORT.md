@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44+ party IDs** all controlled by the same cryptographic key. The core mechanism was **wash trading**: 253,397 self-transfers (80% of all activity) shuttled tiny amounts (0.1–4 CC) between CoinAegis-controlled parties to generate AppRewardCoupons through their own Featured Apps (aevumWallet and goldacorn). Only **36 out of 315,418 transfers (0.01%)** were genuine external transactions — the rest were circular.
+CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44+ party IDs** all controlled by the same cryptographic key. The core mechanism was **wash trading**: 253,397 self-transfers (80% of all transfers) shuttled tiny amounts (0.1–4 CC) between CoinAegis-controlled parties to generate AppRewardCoupons through their own Featured Apps (aevumWallet and goldacorn). Only **36 out of 315,418 transfers (0.01%)** were genuine external transactions — the rest were circular.
 
 The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through a validator node (`cryptolegacy-validator-1`) that was never itself a Featured App. After the AevumWallet pause vote reached threshold on May 28 at 21:41:38 UTC, the last reward coupon was generated **39 seconds later** — the operator was monitoring governance in real time. Within 31 minutes, they consolidated 665K CC for extraction. 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through intermediary wallets to obscure the money trail.
 
@@ -77,13 +77,13 @@ All contracts were created May 27-29, indicating wallets were swept recently. On
 | 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
 | 2026-06-01 | `coinaegisVault` | **STILL ACTIVE** |
-| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,601 CC in coupons (all claimed) |
+| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,600.71 CC in coupons (all claimed) |
 
 ---
 
 ## Mining Timeline (cryptolegacy-validator-1)
 
-This validator was the primary mining vehicle, earning 93% of all CC:
+This validator was the primary mining vehicle, earning 92.6% of all CC:
 
 | Date (approx) | Round | Cumulative App CC | Cumulative Val CC | Note |
 |---|---:|---:|---:|---|
@@ -140,7 +140,7 @@ The same entity (same key) applied for and received FA status under at least 3 d
 These were presented as separate companies/products in the governance vote reasons.
 
 ### 2. Wash Trading — Self-Transfers to Farm Rewards
-Created 40+ `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.4% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Each transfer generated an AppRewardCoupon through their Featured Apps (aevumWallet, goldacorn). The CC never left CoinAegis's control — it just circled between their 44+ party IDs while the FA earned fresh reward CC on every hop.
+Created 40+ `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.3% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Each transfer generated an AppRewardCoupon through their Featured Apps (aevumWallet, goldacorn). The CC never left CoinAegis's control — it just circled between their 44+ party IDs while the FA earned fresh reward CC on every hop.
 
 **Daily wash trading volume (BigQuery-verified):**
 
@@ -171,12 +171,12 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 `cryptolegacy-validator-1` earned **2.6M CC in app rewards** despite never being registered as a Featured App. It earned more than any FA in the network.
 
 ### 4. Continued Mining After Pause
-After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** continued to be mined through:
+After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through:
 - `cryptolegacy-validator-1` (never paused — not an FA)
 - `coinaegisVault` (FA never revoked)
 
 ### 5. Funds Extracted — Complete Money Trail
-57.5% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.3% (~1.3M CC) was consumed as network traffic fees to sustain the high-volume farming operation. Only 0.4% (~10.9K CC) remains in wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
+57.6% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.4% (~1.3M CC) was consumed as network traffic fees to sustain the high-volume farming operation. Only 0.4% (~10.9K CC) remains in wallets. Contracts were recreated May 27-29 (just before/during the pauses), suggesting a deliberate sweep.
 
 #### Transfer Destinations (BigQuery-confirmed)
 
@@ -263,9 +263,9 @@ Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
 |---|---:|---|
 | **fba188** (ByBit-hosted wallet) | **1,065,002** | 415K direct + 650K via intermediary |
 | **Gate** (Gate.io exchange) | **700,001** | 250K direct + 450K via intermediary |
-| **quokka-validator-1** | **4,234** | Small direct transfers |
-| Retained by intermediary wallets | 27 | Test amounts not forwarded |
-| **Total left CoinAegis control** | **1,769,264** | BigQuery verified (36 transfers to 5 recipients) |
+| **quokka-validator-1** | **4,233.76** | Small direct transfers |
+| Retained by intermediary wallets | 27.00 | Test amounts not forwarded |
+| **Total left CoinAegis control** | **1,769,263.76** | BigQuery verified (36 transfers to 5 recipients) |
 
 #### Complete CC Accounting (BigQuery-verified)
 
@@ -275,7 +275,7 @@ Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
 | Validator + faucet rewards harvested | ~268,325 | BigQuery (`exercise_result.summary`) |
 | **Total CC entered system** | **~3,072,845** | |
 | | | |
-| Transferred to external parties | -1,769,264 | BigQuery (36 transfers to 5 recipients) |
+| Transferred to external parties | -1,769,263.76 | BigQuery (36 transfers to 5 recipients) |
 | Consumed by BuyMemberTraffic | -1,301,539 | BigQuery (see breakdown below) |
 | Remaining in wallets | -10,923 | Canton Scan API |
 | Holding fees (demurrage) | ~-9,000 | Residual (<0.3% of total) |
@@ -314,8 +314,8 @@ This reveals the circular farming scheme: self-transfers generate app activity m
 | **Total on-chain actions (AmuletRules)** | **319,319** |
 
 Of the 315,418 transfers:
-- **253,397** (80.4%) were wash trades — sender and receiver both have the CoinAegis key
-- **61,985** (19.6%) had NULL receivers — consolidation/merge-split operations
+- **253,397** (80.3%) were wash trades — sender and receiver both have the CoinAegis key
+- **61,985** (19.7%) had NULL receivers — consolidation/merge-split operations
 - **36** (0.01%) were genuine external transfers to 5 recipients (ByBit, Gate, quokka, and 2 intermediary wallets)
 
 #### AppRewardCoupon Generation by Featured App (BigQuery-verified)
