@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44+ party IDs** all controlled by the same cryptographic key. The core mechanism was **wash trading**: 253,397 self-transfers (80% of all transfers) shuttled tiny amounts (0.1–4 CC) between CoinAegis-controlled parties to generate AppRewardCoupons through their own Featured Apps (aevumWallet and goldacorn). Only **36 out of 315,418 transfers (0.01%)** were genuine external transactions — the rest were circular.
+CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The core mechanism was **wash trading**: 253,397 self-transfers (80% of all transfers) shuttled tiny amounts (0.1–4 CC) between CoinAegis-controlled parties to generate AppRewardCoupons through their own Featured Apps (aevumWallet and goldacorn). Only **36 out of 315,418 transfers (0.01%)** were genuine external transactions — the rest were circular.
 
 The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through a validator node (`cryptolegacy-validator-1`) that was never itself a Featured App. After the AevumWallet pause vote reached threshold on May 28 at 21:41:38 UTC, the last reward coupon was generated **39 seconds later** — the operator was monitoring governance in real time. Within 31 minutes, they consolidated 665K CC for extraction. 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through intermediary wallets to obscure the money trail.
 
@@ -19,7 +19,7 @@ All party IDs share the same key:
 122002cb5bad0f12132febb896a511d40b7d542e0b9cde83b415b5c7148a9d2419c3
 ```
 
-This proves single-entity control over all 44+ party IDs.
+This proves single-entity control over all 44 party IDs.
 
 ---
 
@@ -140,7 +140,7 @@ The same entity (same key) applied for and received FA status under at least 3 d
 These were presented as separate companies/products in the governance vote reasons.
 
 ### 2. Wash Trading — Self-Transfers to Farm Rewards
-Created 40+ `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.3% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Each transfer generated an AppRewardCoupon through their Featured Apps (aevumWallet, goldacorn). The CC never left CoinAegis's control — it just circled between their 44+ party IDs while the FA earned fresh reward CC on every hop.
+Created 40 `auth0_*` party IDs all controlled by the same key. Used them to execute **253,397 self-transfers** (80.3% of all CoinAegis transfers) shuffling tiny amounts (0.1–4 CC) between their own parties. Each transfer generated an AppRewardCoupon through their Featured Apps (aevumWallet, goldacorn). The CC never left CoinAegis's control — it just circled between their 44 party IDs while the FA earned fresh reward CC on every hop.
 
 **Daily wash trading volume (BigQuery-verified):**
 
