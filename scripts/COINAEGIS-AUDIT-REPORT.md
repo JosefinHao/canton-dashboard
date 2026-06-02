@@ -103,25 +103,29 @@ This validator was the primary mining vehicle, earning 93% of all CC:
 
 ---
 
-## Post-Pause Illegal Mining Estimate
+## Post-Pause Reward Harvesting
 
-### After aevumWallet pause (May 28, 2026)
+### After aevumWallet pause (May 28 21:41:38 UTC)
+
+The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42:17 UTC, 39 seconds after threshold). However, previously-generated coupons could still be harvested during transfers and BuyMemberTraffic. The Scan API cumulative counters continued increasing as pre-existing coupons were claimed:
 
 At round ~97900 (May 28):
 - `cryptolegacy-validator-1` app_cc: 2,249,579
 - `aevumWallet` app_cc: 150,360
 
-Current:
+Current (round 98443, Jun 1):
 - `cryptolegacy-validator-1` app_cc: 2,598,114
 - `aevumWallet` app_cc: 155,970
 
-| Party | CC mined after May 28 pause |
-|---|---:|
-| `cryptolegacy-validator-1` (app rewards) | ~348,535 |
-| `aevumWallet` | ~5,610 |
-| `coinaegisVault` (still active) | unknown portion of 4,233 |
-| auth0 parties | unknown portion |
-| **Minimum post-pause total** | **~354,145 CC** |
+| Party | CC harvested after May 28 pause | Source |
+|---|---:|---|
+| `cryptolegacy-validator-1` (app rewards) | ~348,535 | Pre-existing coupons claimed via transfers/BuyMemberTraffic |
+| `aevumWallet` | ~5,610 | Pre-existing coupons claimed |
+| `coinaegisVault` (still active) | unknown portion of 4,233 | May still generate NEW coupons |
+| auth0 parties | unknown portion | Pre-existing coupons claimed |
+| **Minimum post-pause total** | **~354,145 CC** | |
+
+Note: `coinaegisVault` FA was never paused and can still generate new AppRewardCoupons. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
 
 ---
 
