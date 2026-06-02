@@ -325,7 +325,7 @@ The wash trades generated AppRewardCoupons attributed to these FAs:
 | FA (provider) | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---:|---:|---:|---:|
 | `aevumWallet` | 78,717 | 3,292,568.37 | ≤3,292,568.37 | ≥507,591 |
-| `goldacorn` | 855 | 2,090,600.71 | 0 | 2,090,601 |
+| `goldacorn` | 855 | 2,090,600.71 | 0 (all 855 expired) | 2,090,600.71 |
 | `coinaegis` | 11 | 11,979.16 | ≤11,979.16 | — |
 | `coinaegisVault` | 30 | 7,564.14 | ≤7,564.14 | — |
 | **Total** | **79,613** | **5,402,712.38** | **2,804,520** | **2,598,192** |
