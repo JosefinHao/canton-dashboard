@@ -322,17 +322,21 @@ Of the 315,418 transfers:
 
 The wash trades generated AppRewardCoupons attributed to these FAs:
 
-| FA (provider) | Coupons Created (CC) | Coupons Claimed (CC) | Unclaimed/Expired (CC) |
-|---|---:|---:|---:|
-| `aevumWallet` | 3,290,000 | ~1,970,000 | ~1,320,000 |
-| `goldacorn` | 2,090,000 | 0 | 2,090,000 |
-| `coinaegis` | 12,000 | ~12,000 | ~0 |
-| `coinaegisVault` | 7,600 | ~7,600 | ~0 |
-| **Total** | **~5,400,000** | **~2,804,520** | **~2,600,000** |
+| FA (provider) | Coupons | CC Created | CC Claimed | CC Expired |
+|---|---:|---:|---:|---:|
+| `aevumWallet` | 78,717 | 3,292,568.37 | ≤3,292,568.37 | ≥507,591 |
+| `goldacorn` | 855 | 2,090,600.71 | 0 | 2,090,601 |
+| `coinaegis` | 11 | 11,979.16 | ≤11,979.16 | — |
+| `coinaegisVault` | 30 | 7,564.14 | ≤7,564.14 | — |
+| **Total** | **79,613** | **5,402,712.38** | **2,804,520** | **2,598,192** |
 
-The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn. Goldacorn's entire 2.09M CC in coupons expired unclaimed.
+Key observations:
+- `aevumWallet` generated 78,717 coupons (99% of all coupons) via high-frequency wash trades
+- `goldacorn` generated only 855 coupons but at ~2,445 CC each (large-value transfers) — **all expired unclaimed**
+- Total CC created (5.4M) is nearly double what was claimed (2.8M) — 48% of generated rewards expired
+- The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn.
 
-Note: the 2,804,520 CC total reflects **app rewards claimed into amulets**. Validator rewards (~268,325 CC harvested, ~292,000 CC earned) are separate. An additional ~2.6M CC in AppRewardCoupons were generated but expired unclaimed.
+Note: the 2,804,520 CC total reflects **app rewards claimed into amulets**. Validator rewards (~268,325 CC harvested, ~292,000 CC earned) are separate. An additional 2,598,192 CC in AppRewardCoupons were generated but expired unclaimed.
 
 #### Key Entity: fba188
 
