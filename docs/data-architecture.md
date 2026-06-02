@@ -1,5 +1,20 @@
 # Data Architecture
 
+## Table of Contents
+
+- [Overview](#overview) — Three-stage pipeline from Scan API to BigQuery views
+- [Data Flow](#data-flow) — End-to-end pipeline diagram
+- [GCS Layout](#gcs-layout) — Parquet schema, type notes, timestamp and event semantics
+- [Live Ingestion](#live-ingestion) — systemd service, environment, deprecated scripts
+- [BigQuery Pipeline](#bigquery-pipeline) — Datasets, tables, views, transforms, daily refresh
+- [Monitoring and Alerting](#monitoring-and-alerting) — Three-layer monitoring with alert routing
+- [Incident Recovery](#incident-recovery) — Decision tree for diagnosing and fixing data gaps
+- [Setup Scripts](#setup-scripts) — All SQL scripts and deployment
+- [Archive Remediation History](#archive-remediation-history) — Full remediation record and bug fixes
+- [Design Decisions](#design-decisions) — Why Parquet, GCS, INSERT NOT EXISTS, bronze-only, etc.
+
+---
+
 ## Overview
 
 Canton ledger data flows through a three-stage pipeline:
@@ -29,45 +44,29 @@ Canton ledger data flows through a three-stage pipeline:
 
 ## Data Flow
 
-```
-Canton Scan API
-      │
-      ▼
-┌─────────────────────────────────┐
-│  fetch-updates.js (systemd)     │  Live polling, BATCH_SIZE=1000
-│  canton-live-ingest.service     │  Auto-restart, cursor persistence
-└─────────────────────────────────┘
-      │
-      ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  GCS: gs://canton-bucket/raw/updates/                               │
-│                                                                      │
-│  ├── events/migration=M/year=Y/month=M/day=D/*.parquet              │
-│  ├── updates/migration=M/year=Y/month=M/day=D/*.parquet             │
-│  └── ../cursors/live-cursor.json                                     │
-│                                                                      │
-│  Hive-partitioned, ZSTD-compressed Parquet                           │
-│  Ingesting since 2024-06-24, 3.6B+ events, 250M+ updates            │
-│  5 migrations (M0–M4)                                                │
-└─────────────────────────────────────────────────────────────────────┘
-      │
-      ▼
-┌──────────────────────────────────────────────────────────────────┐
-│  BigQuery (governence-483517)                                    │
-│                                                                   │
-│  raw.events / raw.updates            (external tables on GCS)    │
-│    ↓ 02-transform-raw-data.sql                                   │
-│  transformed.events_parsed (3.6B)    (materialized, typed)       │
-│  transformed.updates_parsed (250M)                               │
-│    ↓ bronze views                                                │
-│  transformed.parsed_*               (analytical views)           │
-│    ↓ daily scheduled refresh                                     │
-│  03:00 UTC, ~$0.16/day              (INSERT NOT EXISTS)          │
-│    ↓ health check                                                │
-│  04:00 UTC, free                    (RAISE on stale data)        │
-│                                                                   │
-│  Monitoring: GCP Cloud Monitoring → Slack #pipeline-alerts       │
-└──────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    A[Canton Scan API<br/>13 SV endpoints] -->|v2/updates| B[fetch-updates.js<br/>systemd, BATCH_SIZE=1000]
+    B -->|Parquet + ZSTD| C[GCS: canton-bucket<br/>Hive-partitioned]
+    C -->|External tables| D[BigQuery raw]
+    D -->|Transform: SAFE.PARSE_TIMESTAMP<br/>UNNEST .list, SAFE.PARSE_JSON| E[BigQuery transformed<br/>events_parsed 3.6B+<br/>updates_parsed 250M+]
+    E -->|Views| F[6 Bronze Views]
+
+    B -.->|alert.js| G[Slack #pipeline-alerts]
+
+    subgraph "governance-dashboard"
+        B
+    end
+
+    subgraph "GCS"
+        C
+    end
+
+    subgraph "BigQuery: governence-483517"
+        D
+        E
+        F
+    end
 ```
 
 ---
@@ -110,14 +109,31 @@ Defined in `scripts/ingest/data-schema.js`:
 ### Parquet Type Notes
 
 Raw Parquet files store types that BigQuery cannot auto-resolve:
-- Timestamps → ISO 8601 strings (not TIMESTAMP)
-- Arrays → Parquet LIST structs with a `.list` field
-- JSON → plain strings
 
-The BigQuery transform step (`02-transform-raw-data.sql`) handles these:
-- `SAFE.PARSE_TIMESTAMP('%Y-%m-%dT%H:%M:%E*SZ', ...)` for timestamps
-- `ARRAY(SELECT element FROM UNNEST(field.list))` for arrays
-- `SAFE.PARSE_JSON(...)` for JSON fields
+```mermaid
+flowchart LR
+    subgraph PARQUET["Raw Parquet (DuckDB-written)"]
+        P1["effective_at: VARCHAR<br/>'2025-01-15T00:00:04.164Z'"]
+        P2["signatories: VARCHAR[]<br/>Parquet LIST struct with .list"]
+        P3["payload: VARCHAR<br/>JSON as plain string"]
+        P4["migration_id: BIGINT"]
+        P5["consuming: BOOLEAN"]
+    end
+
+    subgraph BIGQUERY["BigQuery transformed"]
+        B1["effective_at: TIMESTAMP<br/>2025-01-15 00:00:04.164 UTC"]
+        B2["signatories: ARRAY‹STRING›"]
+        B3["payload: JSON<br/>Supports JSON_VALUE queries"]
+        B4["migration_id: INT64"]
+        B5["consuming: BOOL"]
+    end
+
+    P1 -->|"SAFE.PARSE_TIMESTAMP<br/>('%Y-%m-%dT%H:%M:%E*SZ')"| B1
+    P2 -->|"ARRAY(SELECT element<br/>FROM UNNEST(field.list))"| B2
+    P3 -->|"SAFE.PARSE_JSON()"| B3
+    P4 -->|"CAST AS INT64"| B4
+    P5 -->|"CAST AS BOOL"| B5
+```
 
 `SAFE.*` variants return NULL on parse failure instead of killing the query.
 
@@ -191,6 +207,40 @@ Service file source: `scripts/ingest/canton-live-ingest.service`
 | `raw` | External tables on GCS Parquet | Zero (reads GCS at query time) |
 | `transformed` | Materialized tables with proper types + bronze views | ~$0.02/GB/month |
 
+### BigQuery Architecture
+
+```mermaid
+flowchart TD
+    subgraph RAW["raw (external, zero cost)"]
+        RE[raw.events<br/>3.6B+ rows]
+        RU[raw.updates<br/>250M+ rows]
+    end
+
+    subgraph MATERIALIZED["transformed (materialized)"]
+        EP[events_parsed<br/>Partitioned: DATE effective_at<br/>Clustered: template_id, event_type, migration_id]
+        UP[updates_parsed<br/>Partitioned: DATE effective_at<br/>Clustered: update_type, migration_id]
+    end
+
+    subgraph VIEWS["transformed (views, zero cost)"]
+        V1[parsed_app_reward_coupon]
+        V2[parsed_sv_reward_coupon]
+        V3[sv_weight_history]
+        V4[daily_activity]
+        V5[daily_mint_burn]
+        V6[governance_action_summary]
+    end
+
+    RE -->|02-transform-raw-data.sql| EP
+    RU -->|02-transform-raw-data.sql| UP
+
+    EP --> V1
+    EP --> V2
+    EP --> V3
+    UP --> V4
+    EP --> V5
+    EP --> V6
+```
+
 ### Tables
 
 | Table | Rows | Partitioned by | Clustered by |
@@ -247,12 +297,23 @@ Two BigQuery scheduled queries run daily at **03:00 UTC** to keep
 **Scripts**: `scripts/bigquery/scheduled/daily-refresh-events.sql` and
 `daily-refresh-updates.sql`
 
-**How it works**:
-1. Reads latest loaded date from `INFORMATION_SCHEMA.PARTITIONS` (free metadata query)
-2. Sets lookback to 1 day before latest (catches late-arriving data)
-3. Loops day-by-day from lookback through yesterday (`< CURRENT_DATE()`)
-4. For each day: `INSERT ... WHERE NOT EXISTS` — inserts only new rows
-5. Dedup via `event_id`/`update_id` + `DATE(effective_at)` match
+```mermaid
+flowchart TD
+    A[03:00 UTC: Scheduled query starts] --> B[Read INFORMATION_SCHEMA.PARTITIONS<br/>Get latest loaded date<br/>Cost: free]
+    B --> C[Set lookback = latest - 1 day]
+    C --> D{load_date < today?}
+    D -->|Yes| E[SELECT from raw WHERE<br/>year/month/day = load_date]
+    E --> F[INSERT WHERE NOT EXISTS<br/>Dedup on event_id + DATE effective_at]
+    F --> G[Advance load_date + 1]
+    G --> D
+    D -->|No| H[Done]
+
+    H --> I[04:00 UTC: Health check starts]
+    I --> J[Read INFORMATION_SCHEMA.PARTITIONS<br/>Get latest partition dates<br/>Cost: free]
+    J --> K{Latest >= yesterday?}
+    K -->|Yes| L[Pass — no action]
+    K -->|No| M[RAISE: STALE DATA<br/>Triggers email + Slack alert]
+```
 
 **Guarantees**:
 - **No duplicates**: `NOT EXISTS` on unique ID + partition date
@@ -265,11 +326,47 @@ Two BigQuery scheduled queries run daily at **03:00 UTC** to keep
 - Events: ~20.5 GB scanned/day
 - Updates: ~10.9 GB scanned/day
 
-**Monitoring**: BigQuery console → Scheduled queries → click each query → Runs tab
+---
 
-### Monitoring and Alerting
+## Monitoring and Alerting
 
 Three layers of monitoring, none depending on VM auth:
+
+```mermaid
+flowchart TD
+    subgraph LAYER1["Layer 1: Live Ingestion"]
+        INGEST[canton-live-ingest.service] --> ALERTJS[alert.js]
+    end
+
+    subgraph EVENTS1["Alert Types"]
+        INFO[INFO: ingestion_started]
+        WARN[WARNING: stall, cursor_stuck]
+        CRIT[CRITICAL: endpoints_down,<br/>gcs_backup_failed, decode_failures]
+        FATAL[FATAL: max_errors,<br/>uncaught_exception, crash]
+    end
+
+    subgraph LAYER2["Layer 2: BigQuery Scheduled Queries"]
+        REFRESH_E[daily-refresh-events<br/>03:00 UTC]
+        REFRESH_U[daily-refresh-updates<br/>03:00 UTC]
+        HEALTH[daily-health-check<br/>04:00 UTC]
+    end
+
+    subgraph MONITORING["GCP Cloud Monitoring"]
+        LOGALERT[Log-based alert<br/>BigQuery Pipeline Failure<br/>Rate: 1/hour, Auto-close: 7 days]
+    end
+
+    subgraph CHANNELS["Alert Channels"]
+        SLACK[Slack #pipeline-alerts]
+        EMAIL[Email notification]
+    end
+
+    ALERTJS --> INFO & WARN & CRIT & FATAL
+    INFO & WARN & CRIT & FATAL --> SLACK
+
+    REFRESH_E & REFRESH_U & HEALTH -->|On failure| EMAIL
+    REFRESH_E & REFRESH_U & HEALTH -->|Error logs| LOGALERT
+    LOGALERT --> SLACK
+```
 
 | Layer | What it monitors | Alert channel |
 |-------|-----------------|---------------|
@@ -285,9 +382,6 @@ Three layers of monitoring, none depending on VM auth:
   (CRITICAL), max errors reached (FATAL), uncaught exceptions (FATAL)
 - Rate limited: 5 min between alerts of same type
 
-See `docs/monitoring-alerting.md` for comprehensive monitoring documentation
-including all alert types, failure scenarios, recovery steps, and configuration.
-
 **BigQuery health-check** (`scripts/bigquery/scheduled/daily-health-check.sql`):
 - Runs at 04:00 UTC (1 hour after daily refresh)
 - Checks `INFORMATION_SCHEMA.PARTITIONS` for latest partition dates (free)
@@ -301,7 +395,71 @@ including all alert types, failure scenarios, recovery steps, and configuration.
 - Rate limit: 1 notification per hour
 - Incident auto-close: 7 days
 
-### Setup Scripts (`scripts/bigquery/`)
+### Failure Scenarios
+
+| Scenario | Detected by | Alert channel | Recovery |
+|----------|------------|---------------|----------|
+| Live ingest crashes | Layer 1 (alert.js) | Slack (FATAL) | systemd auto-restarts; check logs |
+| Live ingest stalls | Layer 1 (alert.js) | Slack (WARNING) | Check Scan API endpoints; restart service |
+| All Scan API endpoints down | Layer 1 (alert.js) | Slack (CRITICAL) | Wait for endpoints; service auto-retries |
+| Daily refresh fails | Layers 2+3 | Email + Slack | Check BigQuery scheduled query logs; rerun manually |
+| Daily refresh succeeds but data stale | Layer 3 (health check) | Email + Slack | Check GCS for missing data; may need reingest |
+| BigQuery itself down | Layer 3 (Cloud Monitoring) | Slack | Wait for BigQuery; refresh will auto-catch-up |
+| Governance-dashboard VM down | Layer 3 (health check next day) | Email + Slack | Restart VM; ingest auto-resumes from cursor |
+
+### Configuration Reference
+
+**Environment variables** (governance-dashboard, `~/.gcs_hmac_env.systemd`):
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `ALERT_SLACK_WEBHOOK_URL` | Slack incoming webhook URL | Yes (for Slack alerts) |
+| `ALERT_RATE_LIMIT_MS` | Min interval between same-type alerts (default: 300000 = 5 min) | No |
+| `ALERT_HOSTNAME` | Host identifier in alert messages (default: hostname) | No |
+
+**BigQuery scheduled queries**:
+
+| Query | Schedule | Alerts on failure |
+|-------|----------|-------------------|
+| `daily-refresh-events-parsed` | 03:00 UTC | Email + Slack (Cloud Monitoring) |
+| `daily-refresh-updates-parsed` | 03:00 UTC | Email + Slack (Cloud Monitoring) |
+| `daily-health-check-pipeline` | 04:00 UTC | Email + Slack (Cloud Monitoring) |
+
+---
+
+## Incident Recovery
+
+```mermaid
+flowchart TD
+    A[Alert received:<br/>data gap suspected] --> B[Check BigQuery partition counts<br/>INFORMATION_SCHEMA.PARTITIONS<br/>Cost: free]
+    B --> C{Counts match<br/>raw vs transformed?}
+    C -->|No| D[BigQuery backfill needed<br/>DELETE + INSERT for affected days]
+    C -->|Yes| E{Raw count matches<br/>expected daily volume?}
+    E -->|Yes| F[Data is intact<br/>No action needed]
+    E -->|No| G[GCS gap: verify against Scan API]
+    G --> H[Run verify-scan-completeness.js<br/>--migration=4 --date=YYYY-MM-DD]
+    H --> I{GCS matches<br/>Scan API?}
+    I -->|Yes| J[GCS intact<br/>Issue is elsewhere]
+    I -->|No| K[Reingest from Scan API]
+    K --> L[reingest-updates.js<br/>--start=DATE --end=DATE<br/>--migration=4 --clean]
+    L --> M[Check adjacent partitions<br/>for *-ri-* duplicate files]
+    M --> N[Re-verify counts]
+    N --> D
+```
+
+**Important notes for reingest**:
+- `--end` is **inclusive** (not exclusive). `--end=2026-05-21` includes May 21.
+- `--clean` deletes existing data for the date range before re-ingesting.
+- Reingest can spill boundary records into adjacent partitions (records with
+  `effective_at` on day N-1 but `record_time` on day N). After any reingest,
+  check adjacent day partitions for `*-ri-*` files and delete them.
+- Use `--max-old-space-size=8192` for days with high volume to avoid OOM.
+
+---
+
+## Setup Scripts
+
+**`scripts/bigquery/`**:
 
 | Script | Purpose |
 |--------|---------|
@@ -342,10 +500,6 @@ including all alert types, failure scenarios, recovery steps, and configuration.
 
 ### Deployment (initial setup)
 
-The `deploy.sh` script handles parameterized deployment of bronze and silver layers.
-For the initial bulk load, scripts were run manually step-by-step with verification
-at each stage. The daily scheduled queries handle ongoing incremental loads.
-
 ```bash
 # Dry run (prints rendered SQL)
 PROJECT_ID=governence-483517 BUCKET_NAME=canton-bucket DRY_RUN=1 ./scripts/bigquery/deploy.sh
@@ -362,6 +516,20 @@ PROJECT_ID=governence-483517 BUCKET_NAME=canton-bucket ./scripts/bigquery/deploy
 | Daily incremental refresh | ~$0.16/day ($4.80/month) |
 | Bronze view queries | Per-query (partition-pruned, typically <$1) |
 | Storage (transformed tables) | ~$0.02/GB/month |
+
+---
+
+## GCS Operations
+
+All GCS operations use `@google-cloud/storage` SDK with Application Default
+Credentials (ADC). No script depends on gsutil.
+
+| Script | GCS Usage |
+|--------|-----------|
+| `verify-scan-completeness.js` | `listExistingGlobs()` via SDK |
+| `gcs-scanner.js` | Walks Hive partitions via SDK |
+| `gcs-preflight.js` | Read/write checks via SDK |
+| `fetch-updates.js` | Writes Parquet via SDK |
 
 ---
 
@@ -415,24 +583,6 @@ the cursor to it without checking if the time was in the future.
 verified against Scan API (508,576 and 453,970 updates respectively), BigQuery
 backfilled manually. All 26 days in May verified: 100% match between GCS and
 BigQuery transformed tables.
-
-**Lesson**: Reingest `--clean` with multi-day ranges can spill boundary records
-into adjacent partitions (records with `effective_at` on day N-1 but `record_time`
-on day N). After any reingest, check adjacent day partitions for `*-ri-*` files.
-
----
-
-## GCS Operations
-
-All GCS operations use `@google-cloud/storage` SDK with Application Default
-Credentials (ADC). No script depends on gsutil.
-
-| Script | GCS Usage |
-|--------|-----------|
-| `verify-scan-completeness.js` | `listExistingGlobs()` via SDK |
-| `gcs-scanner.js` | Walks Hive partitions via SDK |
-| `gcs-preflight.js` | Read/write checks via SDK |
-| `fetch-updates.js` | Writes Parquet via SDK |
 
 ---
 
