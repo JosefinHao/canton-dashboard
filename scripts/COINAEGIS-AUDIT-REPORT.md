@@ -77,7 +77,7 @@ All contracts were created May 27-29, indicating wallets were swept recently. On
 | 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
 | 2026-06-01 | `coinaegisVault` | **STILL ACTIVE** |
-| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired) |
+| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,601 CC in coupons (all claimed) |
 
 ---
 
@@ -324,16 +324,17 @@ The wash trades generated AppRewardCoupons attributed to these FAs:
 
 | FA (provider) | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---:|---:|---:|---:|
-| `aevumWallet` | 78,717 | 3,292,568.37 | ≤3,292,568.37 | ≥507,591 |
-| `goldacorn` | 855 | 2,090,600.71 | 0 (all 855 expired) | 2,090,600.71 |
-| `coinaegis` | 11 | 11,979.16 | ≤11,979.16 | — |
-| `coinaegisVault` | 30 | 7,564.14 | ≤7,564.14 | — |
-| **Total** | **79,613** | **5,402,712.38** | **2,804,520** | **2,598,192** |
+| `aevumWallet` | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
+| `goldacorn` | 855 | 2,090,600.71 | 2,090,600.71 (all claimed) | 0 |
+| `coinaegis` | 11 | 11,979.16 | 11,979.16 (all claimed) | 0 |
+| `coinaegisVault` | 30 | 7,564.14 | 7,564.14 (all claimed) | 0 |
+| **Total** | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
 
 Key observations:
-- `aevumWallet` generated 78,717 coupons (99% of all coupons) via high-frequency wash trades
-- `goldacorn` generated only 855 coupons but at ~2,445 CC each (large-value transfers) — **all expired unclaimed**
-- Total CC created (5.4M) is nearly double what was claimed (2.8M) — 48% of generated rewards expired
+- `aevumWallet` generated 78,717 coupons via high-frequency wash trades (~42 CC each) — but **78.9% expired unclaimed** because coupons were generated faster than they could be harvested
+- `goldacorn` generated only 855 coupons but at ~2,445 CC each (large-value transfers) — **all claimed**
+- `coinaegis` and `coinaegisVault` coupons were all claimed
+- Claim/expire status verified via BigQuery exercise choice: "Archive" = claimed, "AppRewardCoupon_DsoExpire" = expired
 - The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn.
 
 Note: the 2,804,520 CC total reflects **app rewards claimed into amulets**. Validator rewards (~268,325 CC harvested, ~292,000 CC earned) are separate. An additional 2,598,192 CC in AppRewardCoupons were generated but expired unclaimed.
