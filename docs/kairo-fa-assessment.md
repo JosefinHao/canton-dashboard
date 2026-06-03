@@ -114,10 +114,18 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 **kairo-mainnet** earns FA app rewards only (25.65M cumulative CC from leaderboard).
 
-**angelhack-mainnet-1** independently earns SV and validator rewards:
-- SvRewardCoupon: 25,343 coupons (total weight 633,575,000)
-- ValidatorRewardCoupon: 19,681 coupons
-- Buys network traffic: 18,238 `AmuletRules_BuyMemberTraffic` events
+**angelhack-mainnet-1** independently earns SV and validator rewards and actively purchases network traffic:
+
+| Metric | Value |
+|--------|-------|
+| Cumulative validator rewards | 3,521,811 CC |
+| Cumulative app rewards | 0 |
+| SvRewardCoupon events | 25,343 (total weight 633,575,000) |
+| ValidatorRewardCoupon events | 19,681 |
+| Cumulative traffic CC spent | 17,666,162 CC |
+| Traffic purchase count | 12,010 |
+
+Note: `angelhack-mainnet-1` spends 17.7M CC on network traffic while `kairo-mainnet` purchases zero.
 
 ### 6.3 Outflows from kairo-mainnet
 
