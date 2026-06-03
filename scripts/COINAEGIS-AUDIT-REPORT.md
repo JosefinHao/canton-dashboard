@@ -93,7 +93,10 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 |---|---|---|
 | 2026-04-20 | FA granted: `coinaegis` | "Dual-Vault RWA yield engine" |
 | 2026-04-20 | FA granted: `aevumWallet` | "Aevum Extension Wallet" — same key as CoinAegis |
-| 2026-04-20 | FA granted: `goldacorn` | "Goldacorn OTC/P2P swapping platform" — same key |
+| 2026-04-20 | FA granted: `goldacorn` | "Goldacorn OTC/P2P swapping platform" — same key. 13 SVs voted yes, 0 against |
+| 2026-04-24 21:26:31 | **Goldacorn revoke vote initiated** | Requester: Global-Synchronizer-Foundation. Reason: "Recent on-chain activity associated with the Goldacorn Protocol App requires further review. The Tokenomics Committee voted to pause it." URL: https://lists.sync.global/g/tokenomics-announce/message/316 |
+| 2026-04-24 23:27–Apr 25 05:14 | **1.1M CC extracted via quokka** | 7 transfers from `cryptolegacy-validator-1` to quokka-controlled auth0 parties (see Money Trail Phase 1) — extraction occurred DURING the revoke vote window |
+| 2026-04-25 06:35:24 | **Goldacorn FA revoked** | Vote threshold reached: 9 for / 0 against, 4 abstaining (C7-Technology-Services-Limited, Proof-Group-1, SV-Nodeops-Limited, Tradeweb-Markets-1). Effective immediately. Last vote: Digital-Asset-1 at 06:35:15 |
 | 2026-05-01 | FA granted: `coinaegisVault` | "2nd partyID" for CoinAegis |
 | 2026-05-28 20:00:01 | **AevumWallet pause vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the AevumWallet App due to recent on-chain activity that needs further investigation" |
 | 2026-05-28 21:41:38 | **AevumWallet pause vote reached threshold** | 10 SVs voted to pause |
@@ -102,7 +105,6 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 | 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
 | 2026-06-02 | `coinaegisVault` | **STILL ACTIVE** — confirmed via live API: 199.89 CC holdings |
-| 2026-06-01 | `goldacorn` | Not in current FA list (revoked or expired); generated 2,090,600.71 CC in coupons via inflated marker weights (all claimed) |
 
 ---
 
