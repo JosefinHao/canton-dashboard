@@ -1,9 +1,5 @@
 # Kairo FA Assessment — Data Summary for Tokenomics Committee
 
-**Date**: June 3, 2026
-**Subject**: Kairo FA — On-chain activity assessment
-**Party ID**: `kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060`
-
 ---
 
 ## Executive Summary
