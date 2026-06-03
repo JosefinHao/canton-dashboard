@@ -8,7 +8,7 @@ Kairo has held Featured App status since December 16, 2025. A second FeaturedApp
 
 Kairo ranks #47 among all Featured Apps with 25.65M cumulative CC, compared to the top 5 which range from 495M to 2B CC. All reward coupons are tagged `featured = true` (zero unfeatured coupons).
 
-Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party, but no external wallets participate in any of them.
+Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. On all of these, Kairo is the sender and the receivers array is empty — no external wallets participate in any of them. These receiverless transfers still generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
 Kairo has purchased zero network traffic across all sampled rounds. The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution.
 
@@ -38,18 +38,18 @@ All parties appearing in `signatories`, `acting_parties`, and `observers` arrays
 
 ## 3. Monthly Transfer Volume
 
-Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. Zero unique senders were identifiable from transfer payloads, and zero external wallets participate in these events.
+Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. On every one of these transfers, `$.transfer.sender` is Kairo's own party ID and the `$.transfer.receivers` array is empty (NULL at `$.transfer.receivers[0].party`). Zero external wallets participate in any of them.
 
-| Month | Transfer Events | Unique Senders |
-|-------|----------------|----------------|
-| 2025-12 | 265 | 0 |
-| 2026-01 | 6,596 | 0 |
-| 2026-02 | 109,980 | 0 |
-| 2026-03 | 386,141 | 0 |
-| 2026-04 | 114,506 | 0 |
-| 2026-05 | 2,571 | 0 |
-| 2026-06 (3 days) | 113 | 0 |
-| **Total** | **620,172** | **0** |
+| Month | Transfer Events | Unique Senders | Unique Receivers |
+|-------|----------------|----------------|------------------|
+| 2025-12 | 265 | 0 | 0 |
+| 2026-01 | 6,596 | 0 | 0 |
+| 2026-02 | 109,980 | 0 | 0 |
+| 2026-03 | 386,141 | 0 | 0 |
+| 2026-04 | 114,506 | 0 | 0 |
+| 2026-05 | 2,571 | 0 | 0 |
+| 2026-06 (3 days) | 113 | 0 | 0 |
+| **Total** | **620,172** | **0** | **0** |
 
 ## 4. Monthly App Rewards Earned
 
@@ -68,7 +68,18 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
 Note: USD estimates use the current amulet price for all months; actual values at the time of each reward may differ.
 
-## 5. Network Traffic
+## 5. Reward Generation Mechanism
+
+Kairo's `AppRewardCoupon` contracts are generated as a side effect of `AmuletRules_Transfer` choice executions. On the Canton Network, exercising this choice on the `AmuletRules` contract triggers reward coupon creation for the provider when the provider holds Featured App status.
+
+In Kairo's case, every transfer has:
+- **Sender** (`$.transfer.sender`): Kairo's own party ID
+- **Receivers** (`$.transfer.receivers`): empty array (no recipient)
+- **Provider**: Kairo (as Featured App)
+
+Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagged `featured = true`. This is the sole source of Kairo's ~44.2M CC in cumulative rewards.
+
+## 6. Network Traffic
 
 | Metric | Value |
 |--------|-------|
@@ -78,7 +89,7 @@ Note: USD estimates use the current amulet price for all months; actual values a
 
 Sampled at rounds 78,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned zero.
 
-## 6. On-Chain Activity
+## 7. On-Chain Activity
 
 The only contract templates where Kairo appears as a party:
 
@@ -109,4 +120,4 @@ Project `governence-483517`, table `transformed.events_parsed`. All queries filt
 
 - **Party matching**: `signatories`, `witness_parties`, `acting_parties`, `observers` (ARRAY<STRING>)
 - **Reward extraction**: `JSON_VALUE(payload, '$.provider')`, `'$.amount'`, `'$.featured'`, `'$.round.number'`
-- **Transfer extraction**: `JSON_VALUE(payload, '$.sender')`, `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
+- **Transfer extraction**: `JSON_VALUE(payload, '$.transfer.sender')`, `JSON_VALUE(payload, '$.transfer.receivers[0].party')`, `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
