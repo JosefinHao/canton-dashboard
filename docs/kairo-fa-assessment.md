@@ -4,59 +4,51 @@
 
 ## Executive Summary
 
-Kairo has held Featured App status since December 16, 2025. A second FeaturedAppRight contract was created on April 21, 2026; the associated on-chain vote reason references a reinstatement with a compliance deadline of April 20, 2026.
-
-Kairo ranks #47 among all Featured Apps with 19,405,516 cumulative CC (from both `top-providers-by-app-rewards` and `round-party-totals` at round 98,727). All reward coupons are tagged `featured = true` (zero unfeatured coupons).
-
-141 unique `kairo::` parties (registered on Kairo's own participant node) appear as signatories and acting parties on kairo-mainnet events. None receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output amount, verified across 100% of transfers. These receiverless transfers generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
-
-Four wallets share the same namespace key fingerprint (`1220516244...`): `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. On the Canton Network, a shared namespace fingerprint means these parties were created under the same namespace root key (see Section 6.1). 94 outbound transfers moved CC from `kairo-mainnet` to `angelhack-mainnet-1` and other recipients between January 26 and June 1, 2026. `angelhack-mainnet-1` independently earns SV and validator rewards. Combined current holdings across all four wallets total 3,510,098 CC (queried June 3, 2026).
-
-Kairo has purchased zero network traffic across all sampled rounds (78,649–98,649). The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation`.
-
----
-
-## 1. FA Status
-
 | Metric | Value | Source |
 |--------|-------|--------|
 | FA Approval Date | 2025-12-16 | `featured-apps` |
+| Second FeaturedAppRight created | 2026-04-21 | `featured-apps` |
 | Leaderboard Rank | #47 of all Featured Apps | `top-providers-by-app-rewards` |
-| Cumulative CC (credited) | 19,405,516 | `top-providers-by-app-rewards` and `round-party-totals`, both at round 98,727 |
+| Cumulative CC credited | 19,405,516 | `top-providers-by-app-rewards` and `round-party-totals`, both at round 98,727 |
 | Pre-FA CC | 0 | `round-party-totals` |
-
-Note: BigQuery coupon `$.amount` totals differ from credited CC — see Section 4 for breakdown.
+| Network traffic purchased | 0 | `round-party-totals`, rounds 78,649–98,649 |
 
 The on-chain vote reason for Kairo's FA grant states:
 
 > "Tokenomics has agreed to reinstate the FA rights for the Kairo app and give them the same opportunity as all other apps to be fully compliant with the existing FA Guidelines by Monday, Apr 20th 2026, 5 pm ET."
 
-Two `FeaturedAppRight` contracts were created for Kairo: one on 2025-12-16 and a second on 2026-04-21.
+All 620,172 `AmuletRules_Transfer` events have zero receivers and zero output amount, verified across 100% of transfers via BigQuery and independently confirmed via Scan API (see Section 4). These receiverless transfers generate `AppRewardCoupon` contracts because Kairo holds Featured App status. All coupons are tagged `featured = true` (zero unfeatured coupons).
 
-## 2. Active Wallets
+141 unique `kairo::` parties appear as signatories and acting parties on kairo-mainnet events. None receive any CC (see Section 1).
+
+Four wallets share the same namespace key fingerprint (`1220516244...`): `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. On the Canton Network, a shared namespace fingerprint means these parties were created under the same namespace root key (see Section 5.1). CC was transferred from `kairo-mainnet` to external recipients (see Section 5). Combined current holdings across all four wallets total 3,510,098 CC (Scan API, June 3, 2026).
+
+The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation`.
+
+## 1. Active Wallets
 
 141 unique `kairo::` parties (each with a distinct key) appear as **signatories** (257,558 events) and **acting_parties** (939,422 events) on kairo-mainnet events. These parties are registered on Kairo's own participant node.
 
 None of these parties receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output (verified across 100% of transfers). Zero `kairo::` parties appear as `witness_parties` or `observers`.
 
-Additional external parties appearing in kairo-mainnet events include `angelhack-mainnet-1`, `kairo-dex-lp-1`, `kairo-dex-lp-2` (all same namespace key as kairo-mainnet), QCP Trading validators, and several anonymous wallets (see Section 6).
+Additional external parties appearing in kairo-mainnet events include `angelhack-mainnet-1`, `kairo-dex-lp-1`, `kairo-dex-lp-2` (all same namespace key as kairo-mainnet), QCP Trading validators, and several anonymous wallets (see Section 5).
 
-## 3. Monthly Transfer Volume
+## 2. Monthly Transfer Volume
 
 Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. On every one of these transfers, `$.transfer.sender` is Kairo's own party ID and the `$.transfer.receivers` array is empty (NULL at `$.transfer.receivers[0].party`).
 
-| Month | Transfer Events | Unique Senders | Unique Receivers |
-|-------|----------------|----------------|------------------|
-| 2025-12 | 265 | 0 | 0 |
-| 2026-01 | 6,596 | 0 | 0 |
-| 2026-02 | 109,980 | 0 | 0 |
-| 2026-03 | 386,141 | 0 | 0 |
-| 2026-04 | 114,506 | 0 | 0 |
-| 2026-05 | 2,571 | 0 | 0 |
-| 2026-06 (partial) | 113 | 0 | 0 |
-| **Total** | **620,172** | **0** | **0** |
+| Month | Transfer Events |
+|-------|----------------|
+| 2025-12 | 265 |
+| 2026-01 | 6,596 |
+| 2026-02 | 109,980 |
+| 2026-03 | 386,141 |
+| 2026-04 | 114,506 |
+| 2026-05 | 2,571 |
+| 2026-06 (partial) | 113 |
+| **Total** | **620,172** |
 
-## 4. App Rewards
+## 3. App Rewards
 
 **Total credited CC: 19,405,516** (Scan API, both `top-providers-by-app-rewards` and `round-party-totals` at round 98,727).
 
@@ -84,7 +76,7 @@ Coupon amounts are not equal to credited CC. `AppRewardCoupon.amount` is documen
 
 The credited amount is 79.5% of the coupon amount for this round. The ratio varies per round.
 
-## 5. Reward Generation Mechanism
+## 4. Reward Generation Mechanism
 
 Kairo's `AppRewardCoupon` contracts are generated as a side effect of `AmuletRules_Transfer` choice executions. On the Canton Network, exercising this choice on the `AmuletRules` contract triggers reward coupon creation for the provider when the provider holds Featured App status.
 
@@ -106,7 +98,7 @@ Sample of transfer exercise results (BigQuery):
 
 All 620,172 transfers have this pattern. Each generated an `AppRewardCoupon` tagged `featured = true`.
 
-### 5.1 Independent Verification via Scan API
+### 4.1 Independent Verification via Scan API
 
 The receiverless transfer pattern was independently confirmed via a live Scan API query (`/v0/activities`) on June 3, 2026. Raw response for a Kairo transfer at round 98,729:
 
@@ -157,9 +149,9 @@ For comparison, a transfer from a different app in the same API response (round 
 | BigQuery (`events_parsed`) | 100% of 620,172 transfers | All receivers NULL |
 | Scan API (`/v0/activities`) | Live sample, June 3 2026 | `receivers: []` |
 
-## 6. Wallet Network and Flow of Funds
+## 5. Wallet Network and Flow of Funds
 
-### 6.1 Wallets Sharing Namespace Key Fingerprint
+### 5.1 Wallets Sharing Namespace Key Fingerprint
 
 Four wallets share the same namespace key fingerprint (`1220516244...`):
 
@@ -175,7 +167,7 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 **What a shared namespace fingerprint means:** On the Canton Network, a party ID has the format `name::fingerprint`. The fingerprint is the SHA-256 hash of the namespace root public key. Parties sharing the same fingerprint exist within the same namespace, created under the authority of the same root key. Per Digital Asset documentation, creating parties within a participant node's namespace "puts the ownership of the party in the hands of the owners of the Participant Node's namespace" ([source](https://docs.daml.com/canton/usermanual/identity_management.html)). The namespace root key holder retains administrative control over all parties in that namespace.
 
-### 6.2 Income Sources
+### 5.2 Income Sources
 
 **kairo-mainnet** (from `top-providers-by-app-rewards` and `round-party-totals`):
 
@@ -197,7 +189,7 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 | Cumulative traffic CC spent | 17,666,162 CC |
 | Traffic purchase count | 12,010 |
 
-### 6.3 Outflows from kairo-mainnet
+### 5.3 Outflows from kairo-mainnet
 
 94 outbound transfers via `TransferPreapproval_Send` (84) and `TransferPreapproval_SendV2` (10) between January 26 and June 1, 2026. Additionally, 93 `TransferFactory_Transfer` events. Exercise result metadata labels these as `"Transfer via direct TransferFactory (internal)"`.
 
@@ -213,7 +205,7 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 Note: Individual transfer amounts to `angelhack-mainnet-1` were not summed in the query. The remaining outbound transfers (majority of the 94) went to this wallet.
 
-### 6.4 Outflows from angelhack-mainnet-1
+### 5.4 Outflows from angelhack-mainnet-1
 
 **Recipients from angelhack-mainnet-1 (from BigQuery `exercise_result` data):**
 
@@ -228,7 +220,7 @@ Note: Individual transfer amounts to `angelhack-mainnet-1` were not summed in th
 
 The transfer reason field for the February 8 transfer contains `"E2182132FA527DDD221D"`.
 
-### 6.5 Balance Summary
+### 5.5 Balance Summary
 
 | Metric | CC | Source |
 |--------|-----|--------|
@@ -236,7 +228,7 @@ The transfer reason field for the February 8 transfer contains `"E2182132FA527DD
 | Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | `round-party-totals` |
 | Current balance across all 4 wallets | 3,510,098 | Scan API, June 3 2026 |
 
-## 7. Network Traffic (kairo-mainnet)
+## 6. Network Traffic (kairo-mainnet)
 
 | Metric | Value |
 |--------|-------|
@@ -246,7 +238,7 @@ The transfer reason field for the February 8 transfer contains `"E2182132FA527DD
 
 Source: `round-party-totals`, sampled at rounds 78,649 through 98,649.
 
-## 8. On-Chain Activity
+## 7. On-Chain Activity
 
 **Choice frequency (all choices exercised by Kairo, from BigQuery):**
 
