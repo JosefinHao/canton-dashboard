@@ -10,7 +10,7 @@ Kairo ranks #47 among all Featured Apps with 25.65M cumulative CC, compared to t
 
 Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. On all of these, Kairo is the sender and the receivers array is empty — no external wallets participate in any of them. These receiverless transfers still generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
-Kairo has moved earned rewards to a second AngelHack-controlled wallet (`angelhack-mainnet-1`) via 94 `TransferPreapproval_Send` operations between January 26 and June 1, 2026. Both wallets share the same key fingerprint. Combined current holdings across both wallets total ~3.36M CC — approximately 13% of the 25.65M cumulative CC earned.
+Four wallets share the same key fingerprint (`1220516244...`), forming an AngelHack wallet network: `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. Earned rewards flow from `kairo-mainnet` to `angelhack-mainnet-1` (which also earns SV and validator rewards independently) and onward to external parties. The largest single outflow was ~40M CC to an anonymous wallet on February 8, 2026. Combined current holdings across all four wallets total ~3.5M CC — approximately 14% of the 25.65M cumulative FA CC earned.
 
 Kairo has purchased zero network traffic across all sampled rounds. The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution.
 
@@ -94,30 +94,69 @@ Sample of verified transfer exercise results:
 
 Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagged `featured = true`. This is the sole source of Kairo's ~44.2M CC in cumulative rewards.
 
-## 6. Reward Withdrawals
+## 6. Wallet Network and Flow of Funds
 
-Kairo has transferred earned rewards to `angelhack-mainnet-1::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060` — a wallet sharing the same key fingerprint as Kairo, indicating the same controlling entity.
+### 6.1 AngelHack Wallet Network
 
-| Metric | Value |
-|--------|-------|
-| Outbound transfer count | 94 |
-| First outbound transfer | 2026-01-26 |
-| Last outbound transfer | 2026-06-01 |
-| Transfer mechanism | `TransferPreapproval_Send` / `TransferPreapproval_SendV2` |
+Four wallets share the same key fingerprint (`1220516244...`), indicating a single controlling entity:
 
-**Current balances (as of 2026-06-03):**
+| Wallet | Role | Balance (CC) | ~USD |
+|--------|------|-------------|------|
+| `kairo-mainnet` | FA reward generator | 2,566,014 | $382,000 |
+| `angelhack-mainnet-1` | SV beneficiary + validator | 837,821 | $125,000 |
+| `kairo-dex-lp-1` | LP wallet | 51,092 | $8,000 |
+| `kairo-dex-lp-2` | LP wallet | 55,171 | $8,000 |
+| **Total held** | | **3,510,098** | **$523,000** |
 
-| Wallet | Balance (CC) | ~USD |
-|--------|-------------|------|
-| `kairo-mainnet` | 2,522,577 | $376,000 |
-| `angelhack-mainnet-1` | 837,821 | $125,000 |
-| **Combined** | **3,360,398** | **$501,000** |
-| **Cumulative CC earned** | **25,650,297** | **$3,822,000** |
-| **No longer held** | **~22,290,000** | **~$3,321,000** |
+Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
-Approximately 87% of cumulative earned CC is no longer held by either wallet.
+### 6.2 Income Sources
 
-The exercise result metadata on these transfers labels them as `"Transfer via direct TransferFactory (internal)"`. Each transfer is a paired `TransferFactory_Transfer` + `TransferPreapproval_SendV2` execution at the same timestamp.
+**kairo-mainnet** earns FA app rewards only (25.65M cumulative CC from leaderboard).
+
+**angelhack-mainnet-1** independently earns SV and validator rewards:
+- SvRewardCoupon: 25,343 coupons (total weight 633,575,000)
+- ValidatorRewardCoupon: 19,681 coupons
+- Buys network traffic: 18,238 `AmuletRules_BuyMemberTraffic` events
+
+### 6.3 Outflows from kairo-mainnet
+
+94 outbound transfers via `TransferPreapproval_Send`/`SendV2` between January 26 and June 1, 2026. Exercise result metadata labels these as `"Transfer via direct TransferFactory (internal)"`.
+
+**Recipients from kairo-mainnet:**
+
+| Recipient | Total CC (approx) | Period |
+|-----------|------------------|--------|
+| `angelhack-mainnet-1` (same key) | Millions across ~70 transfers | Jan–Jun 2026 |
+| `1220d54a...` (anonymous) | ~7,554,000 | Mar 9 + Apr 28, 2026 |
+| `3182da19...` (anonymous) | ~130,000 | Multiple dates |
+| `kairo-dex-lp-1` (same key) | ~50,000 | Apr 2, 2026 |
+| `kairo-dex-lp-2` (same key) | ~50,000 | Apr 2, 2026 |
+
+### 6.4 Outflows from angelhack-mainnet-1
+
+**Recipients from angelhack-mainnet-1:**
+
+| Date | Recipient | CC Amount |
+|------|-----------|-----------|
+| 2026-02-08 | `1220c3cece...` (anonymous) | **~40,067,000** |
+| 2026-01-27 | `12206f27...` (anonymous) | ~5,000,000 |
+| 2026-05-14 | `qcpTradingME-validator-1` | ~750,000 |
+| 2026-05-14 | `qcpTradingPteLtd-validator-1` | ~547,500 |
+| Multiple | `3182da19...` (anonymous) | ~112,000 |
+| 2026-01-21 | `2d06f92d...` (anonymous) | ~2,600 |
+
+The February 8 transfer of ~40M CC to anonymous wallet `1220c3cece...` is the largest single outflow. The transfer reason field contains `"E2182132FA527DDD221D"`.
+
+### 6.5 Balance Summary
+
+| Metric | CC | ~USD |
+|--------|-----|------|
+| Cumulative FA rewards earned (kairo-mainnet) | 25,650,297 | $3,822,000 |
+| Current balance across all 4 wallets | 3,510,098 | $523,000 |
+| **No longer held** | **~22,140,000** | **~$3,299,000** |
+
+Approximately 86% of cumulative FA-earned CC is no longer held by any AngelHack-controlled wallet.
 
 ## 7. Network Traffic
 
@@ -151,7 +190,7 @@ Sampled at rounds 78,649 through 98,649 (covering Kairo's full FA lifetime). Eve
 | `LockedAmulet_OwnerExpireLock` | 81 |
 | `TransferPreapproval_SendV2` | 10 |
 
-The dominant activity is `FeaturedAppRight_CreateActivityMarker` (5.15M events), which drives reward coupon generation. The only choices involving an external party are `TransferFactory_Transfer` (93) and `TransferPreapproval_Send/V2` (94) — the outbound transfers to `angelhack-mainnet-1`.
+The dominant activity is `FeaturedAppRight_CreateActivityMarker` (5.15M events), which drives reward coupon generation. The only choices involving external parties are `TransferFactory_Transfer` (93) and `TransferPreapproval_Send/V2` (94) — outbound transfers to `angelhack-mainnet-1` and other recipients (see Section 6).
 
 **Contract templates where Kairo appears as a party:**
 
