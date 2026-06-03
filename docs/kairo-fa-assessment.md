@@ -10,6 +10,8 @@ Kairo ranks #47 among all Featured Apps with 25.65M cumulative CC, compared to t
 
 Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. On all of these, Kairo is the sender and the receivers array is empty — no external wallets participate in any of them. These receiverless transfers still generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
+Kairo has moved earned rewards to a second AngelHack-controlled wallet (`angelhack-mainnet-1`) via 94 `TransferPreapproval_Send` operations between January 26 and June 1, 2026. Both wallets share the same key fingerprint. Combined current holdings across both wallets total ~3.36M CC — approximately 13% of the 25.65M cumulative CC earned.
+
 Kairo has purchased zero network traffic across all sampled rounds. The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution.
 
 ---
@@ -92,7 +94,32 @@ Sample of verified transfer exercise results:
 
 Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagged `featured = true`. This is the sole source of Kairo's ~44.2M CC in cumulative rewards.
 
-## 6. Network Traffic
+## 6. Reward Withdrawals
+
+Kairo has transferred earned rewards to `angelhack-mainnet-1::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060` — a wallet sharing the same key fingerprint as Kairo, indicating the same controlling entity.
+
+| Metric | Value |
+|--------|-------|
+| Outbound transfer count | 94 |
+| First outbound transfer | 2026-01-26 |
+| Last outbound transfer | 2026-06-01 |
+| Transfer mechanism | `TransferPreapproval_Send` / `TransferPreapproval_SendV2` |
+
+**Current balances (as of 2026-06-03):**
+
+| Wallet | Balance (CC) | ~USD |
+|--------|-------------|------|
+| `kairo-mainnet` | 2,522,577 | $376,000 |
+| `angelhack-mainnet-1` | 837,821 | $125,000 |
+| **Combined** | **3,360,398** | **$501,000** |
+| **Cumulative CC earned** | **25,650,297** | **$3,822,000** |
+| **No longer held** | **~22,290,000** | **~$3,321,000** |
+
+Approximately 87% of cumulative earned CC is no longer held by either wallet.
+
+The exercise result metadata on these transfers labels them as `"Transfer via direct TransferFactory (internal)"`. Each transfer is a paired `TransferFactory_Transfer` + `TransferPreapproval_SendV2` execution at the same timestamp.
+
+## 7. Network Traffic
 
 | Metric | Value |
 |--------|-------|
@@ -102,9 +129,31 @@ Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagg
 
 Sampled at rounds 78,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned zero.
 
-## 7. On-Chain Activity
+## 8. On-Chain Activity
 
-The only contract templates where Kairo appears as a party:
+**Choice frequency (all choices exercised by Kairo):**
+
+| Choice | Count |
+|--------|-------|
+| `FeaturedAppRight_CreateActivityMarker` | 5,150,586 |
+| `AmuletRules_Transfer` | 620,172 |
+| `Allocation_ExecuteTransfer` | 469,604 |
+| `Archive` | 395,848 |
+| `AmuletRules_ComputeFees` | 124,518 |
+| `AllocationFactory_Allocate` | 124,518 |
+| `LockedAmulet_Unlock` | 124,437 |
+| `BatchedMarkersProxy_CreateMarkers` | 21,059 |
+| `Allocation_Withdraw` | 4,447 |
+| `BatchedMarkersProxy_CreateMarkersV2` | 4,168 |
+| `Allocation_Cancel` | 173 |
+| `TransferFactory_Transfer` | 93 |
+| `TransferPreapproval_Send` | 84 |
+| `LockedAmulet_OwnerExpireLock` | 81 |
+| `TransferPreapproval_SendV2` | 10 |
+
+The dominant activity is `FeaturedAppRight_CreateActivityMarker` (5.15M events), which drives reward coupon generation. The only choices involving an external party are `TransferFactory_Transfer` (93) and `TransferPreapproval_Send/V2` (94) — the outbound transfers to `angelhack-mainnet-1`.
+
+**Contract templates where Kairo appears as a party:**
 
 | Template | Active Months |
 |----------|--------------|
@@ -126,6 +175,7 @@ All three are related to amulet reward distribution.
 - **`GET /v0/top-providers-by-app-rewards`** — `providersAndRewards[].provider`, `.rewards`
 - **`POST /v0/round-party-totals`** — `entries[].party`, `.cumulative_app_rewards`, `.cumulative_validator_rewards`, `.cumulative_traffic_purchased`, `.cumulative_traffic_num_purchases`
 - **`POST /v0/admin/sv/voteresults`** — `dso_rules_vote_results[].request.reason.body`, `.completedAt`
+- **`POST /v0/holdings/summary`** — `summaries[].party_id`, `.total_unlocked_coin`, `.total_locked_coin`, `.total_coin_holdings`
 
 ### BigQuery
 
@@ -134,3 +184,5 @@ Project `governence-483517`, table `transformed.events_parsed`. All queries filt
 - **Party matching**: `signatories`, `witness_parties`, `acting_parties`, `observers` (ARRAY<STRING>)
 - **Reward extraction**: `JSON_VALUE(payload, '$.provider')`, `'$.amount'`, `'$.featured'`, `'$.round.number'`
 - **Transfer extraction**: `JSON_VALUE(payload, '$.transfer.sender')`, `JSON_VALUE(payload, '$.transfer.receivers[0].party')`, `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
+- **Choice frequency**: `choice`, `COUNT(*)` grouped by choice, filtered by `acting_parties`
+- **Outbound transfers**: `exercise_result` → `$.result.summary.balanceChanges`, `$.meta.values` for `TransferPreapproval_SendV2` events
