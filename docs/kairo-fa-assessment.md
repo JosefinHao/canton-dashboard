@@ -72,7 +72,26 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 | 2026-06 (partial) | 188 | 345,621 |
 | **Total** | **732,612** | **44,219,434** |
 
-Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field). This total (44,219,434) differs from both the leaderboard cumulative (25,650,297 from `top-providers-by-app-rewards`) and the round-party-totals `cumulative_app_rewards` (19,405,516 at round 98,727). Double-counting was ruled out: filtering to `event_type = 'created'` only returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter. The three sources measure different aspects of the reward lifecycle; all figures are reported as queried.
+Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field).
+
+**Three sources report different cumulative figures:**
+
+| Source | Cumulative CC | What it measures |
+|--------|--------------|------------------|
+| BigQuery coupon `$.amount` sum | 44,219,434 | Sum of all coupon entitlement amounts |
+| Leaderboard (`top-providers-by-app-rewards`) | 25,650,297 | Scan API leaderboard figure |
+| Round-party-totals `cumulative_app_rewards` (round 98,727) | 19,405,516 | Per-round credited rewards, cumulative |
+
+Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
+
+The coupon `$.amount` is the reward entitlement, not the CC actually credited. Per-round comparison at round 88,266:
+
+| Metric | Value |
+|--------|-------|
+| Coupon `$.amount` sum (BigQuery, 193 coupons) | 12,722 CC |
+| Credited `app_rewards` (round-party-totals) | 10,118 CC |
+
+The credited amount (10,118) is 79.5% of the coupon amount (12,722) for this round. The conversion ratio varies per round based on issuance parameters.
 
 ## 5. Reward Generation Mechanism
 
