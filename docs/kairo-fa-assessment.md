@@ -74,8 +74,21 @@ Kairo's `AppRewardCoupon` contracts are generated as a side effect of `AmuletRul
 
 In Kairo's case, every transfer has:
 - **Sender** (`$.transfer.sender`): Kairo's own party ID
-- **Receivers** (`$.transfer.receivers`): empty array (no recipient)
+- **Receivers** (`$.transfer.receivers`): NULL (field absent from payload — no recipient exists)
+- **Output amount** (`$.summary.outputAmuletAmount`): NULL
+- **Sender fee** (`$.summary.senderChangeFee`): 0
+- **Input amount** (`$.summary.inputAmuletAmount`): ~2.4–2.6M CC per transfer
 - **Provider**: Kairo (as Featured App)
+
+Sample of verified transfer exercise results:
+
+| Input Amount (CC) | Output Amount | Sender Fee | Receivers |
+|-------------------|---------------|------------|-----------|
+| 2,582,463 | NULL | 0 | NULL |
+| 2,413,470 | NULL | 0 | NULL |
+| 2,579,753 | NULL | 0 | NULL |
+| 2,554,626 | NULL | 0 | NULL |
+| 2,567,943 | NULL | 0 | NULL |
 
 Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagged `featured = true`. This is the sole source of Kairo's ~44.2M CC in cumulative rewards.
 
