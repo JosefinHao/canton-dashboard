@@ -6,6 +6,22 @@
 
 ---
 
+## Executive Summary
+
+Kairo (kairo-mainnet) has held Featured App status for 168 days since its initial FA approval on December 16, 2025. A second FeaturedAppRight contract was created on April 21, 2026; the associated on-chain vote reason references a reinstatement with a compliance deadline of April 20, 2026.
+
+During its lifetime, Kairo has earned approximately 44.2M CC in app reward coupons, all tagged as featured (zero unfeatured coupons). It ranks #47 among all Featured Apps by cumulative CC, compared to the top 5 which range from 495M to 2B CC.
+
+Kairo has zero unique external wallets across its entire on-chain history. BigQuery queries across all events where Kairo appears as a signatory or witness party — searching signatories, acting_parties, and observers arrays — returned no parties other than Kairo itself and DSO system parties.
+
+The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. However, all of these transfers have zero identifiable senders in the payload, and no external wallets participate in any of them.
+
+Kairo has purchased zero network traffic across all sampled rounds (cumulative_traffic_purchased = 0, cumulative_traffic_num_purchases = 0). Validator rewards are also zero at every sampled round.
+
+The only contract templates associated with Kairo's party ID are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution. No DEX-specific contract templates (order books, liquidity pools, swap contracts) were found in Kairo's on-chain footprint.
+
+---
+
 ## 1. FA Status & Leaderboard Position
 
 | Metric | Value | Source |
