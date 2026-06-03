@@ -10,7 +10,7 @@ Kairo ranks #47 among all Featured Apps with 25,650,297 cumulative CC (leaderboa
 
 141 unique `kairo::` parties (registered on Kairo's own participant node) appear as signatories and acting parties on kairo-mainnet events. None receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output amount, verified across 100% of transfers. These receiverless transfers generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
-Four wallets share the same key fingerprint (`1220516244...`): `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. 94 outbound transfers moved CC from `kairo-mainnet` to `angelhack-mainnet-1` and other recipients between January 26 and June 1, 2026. `angelhack-mainnet-1` independently earns SV and validator rewards. Combined current holdings across all four wallets total 3,510,098 CC (queried June 3, 2026).
+Four wallets share the same namespace key fingerprint (`1220516244...`): `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. On the Canton Network, a shared namespace fingerprint means these parties were created under the same namespace root key (see Section 6.1). 94 outbound transfers moved CC from `kairo-mainnet` to `angelhack-mainnet-1` and other recipients between January 26 and June 1, 2026. `angelhack-mainnet-1` independently earns SV and validator rewards. Combined current holdings across all four wallets total 3,510,098 CC (queried June 3, 2026).
 
 Kairo has purchased zero network traffic across all sampled rounds (78,649–98,649). The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation`.
 
@@ -40,7 +40,7 @@ Two `FeaturedAppRight` contracts were created for Kairo: one on 2025-12-16 and a
 
 None of these parties receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output (verified across 100% of transfers). Zero `kairo::` parties appear as `witness_parties` or `observers`.
 
-Additional external parties appearing in kairo-mainnet events include `angelhack-mainnet-1`, `kairo-dex-lp-1`, `kairo-dex-lp-2` (all same key as kairo-mainnet), QCP Trading validators, and several anonymous wallets (see Section 6).
+Additional external parties appearing in kairo-mainnet events include `angelhack-mainnet-1`, `kairo-dex-lp-1`, `kairo-dex-lp-2` (all same namespace key as kairo-mainnet), QCP Trading validators, and several anonymous wallets (see Section 6).
 
 ## 3. Monthly Transfer Volume
 
@@ -149,9 +149,9 @@ For comparison, a transfer from a different app in the same API response (round 
 
 ## 6. Wallet Network and Flow of Funds
 
-### 6.1 Wallets Sharing Key Fingerprint
+### 6.1 Wallets Sharing Namespace Key Fingerprint
 
-Four wallets share the same key fingerprint (`1220516244...`):
+Four wallets share the same namespace key fingerprint (`1220516244...`):
 
 | Wallet | Balance (CC) |
 |--------|-------------|
@@ -162,6 +162,8 @@ Four wallets share the same key fingerprint (`1220516244...`):
 | **Total** | **3,510,098** |
 
 Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
+
+**What a shared namespace fingerprint means:** On the Canton Network, a party ID has the format `name::fingerprint`. The fingerprint is the SHA-256 hash of the namespace root public key. Parties sharing the same fingerprint exist within the same namespace, created under the authority of the same root key. Per Digital Asset documentation, creating parties within a participant node's namespace "puts the ownership of the party in the hands of the owners of the Participant Node's namespace" ([source](https://docs.daml.com/canton/usermanual/identity_management.html)). The namespace root key holder retains administrative control over all parties in that namespace.
 
 ### 6.2 Income Sources
 
@@ -193,11 +195,11 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 | Recipient | Total CC | Period |
 |-----------|----------|--------|
-| `angelhack-mainnet-1` (same key) | Not individually summed | Jan–Jun 2026 |
+| `angelhack-mainnet-1` (same namespace key) | Not individually summed | Jan–Jun 2026 |
 | `1220d54a...` (anonymous) | 7,554,000 | Mar 9 + Apr 28, 2026 |
 | `3182da19...` (anonymous) | 130,000 | Multiple dates |
-| `kairo-dex-lp-1` (same key) | 50,000 | Apr 2, 2026 |
-| `kairo-dex-lp-2` (same key) | 50,000 | Apr 2, 2026 |
+| `kairo-dex-lp-1` (same namespace key) | 50,000 | Apr 2, 2026 |
+| `kairo-dex-lp-2` (same namespace key) | 50,000 | Apr 2, 2026 |
 
 Note: Individual transfer amounts to `angelhack-mainnet-1` were not summed in the query. The remaining outbound transfers (majority of the 94) went to this wallet.
 
@@ -288,6 +290,10 @@ Project `governence-483517`, table `transformed.events_parsed`. All queries filt
 - **Transfer extraction**: `JSON_VALUE(payload, '$.transfer.sender')`, `JSON_VALUE(payload, '$.transfer.receivers[0].party')`, `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
 - **Choice frequency**: `choice`, `COUNT(*)` grouped by choice, filtered by `acting_parties`
 - **Outbound transfers**: `exercise_result` → `$.result.summary.balanceChanges`, `$.meta.values` for `TransferPreapproval_SendV2` events
+
+### Reference Price
+
+The CC/USD price on the query date (June 3, 2026) was **$0.149/CC**. All amounts in this report are in CC. Multiply by $0.149 for approximate USD equivalents at the query date; actual prices at the time of each transaction may have differed.
 
 ### Query Date
 
