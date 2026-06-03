@@ -158,17 +158,27 @@ Validator rewards are 0.0 at every sampled round. `cumulative_traffic_purchased`
 
 All data in this report comes from:
 
-1. **Canton Scan API** (free, real-time): `https://scan.sv-1.global.canton.network.sync.global/api/scan`
-   - `GET /v0/featured-apps`
-   - `GET /v0/top-providers-by-app-rewards?round={N}&limit=1000`
-   - `GET /v0/round-of-latest-data`
-   - `POST /v0/round-party-totals`
+### Canton Scan API
 
-2. **BigQuery** (project `governence-483517`, table `transformed.events_parsed`):
-   - Partitioned by `DATE(effective_at)`, clustered by `template_id, event_type, migration_id`
-   - 3.6B+ rows, covering full Canton Network ledger history
-   - All queries filtered `effective_at >= '2025-12-01'` for partition pruning
+Base URL: `https://scan.sv-1.global.canton.network.sync.global/api/scan`
 
-3. **`featured-apps-report.mjs`**: Script in this repository that queries Scan API endpoints and computes FA milestones, approval dates, and company names from on-chain vote records.
+- **`GET /v0/featured-apps`** — Returns `featured_apps[]` with `payload.provider`, `payload.appName`, `created_at`
+- **`GET /v0/top-providers-by-app-rewards?round={N}&limit=1000`** — Returns `providersAndRewards[]` with `provider`, `rewards` (cumulative CC). Used to determine leaderboard rank.
+- **`GET /v0/round-of-latest-data`** — Returns `round`, `effectiveAt`. Latest round was 98,649 at time of report.
+- **`POST /v0/round-party-totals`** (body: `{start_round, end_round}`) — Returns `entries[]` with per-party fields: `closed_round`, `party`, `app_rewards`, `cumulative_app_rewards`, `cumulative_validator_rewards`, `traffic_purchased`, `cumulative_traffic_purchased`, `cumulative_traffic_num_purchases`. Sampled at 10 round offsets across Kairo's FA lifetime.
+- **`POST /v0/admin/sv/voteresults`** (body: `{actionName: "SRARC_GrantFeaturedAppRight", accepted: true}`) — Returns `dso_rules_vote_results[]` with `request.reason.body`, `completedAt`, `request.action.value.dsoAction.value.provider`. Source of the vote reason snippet and FA approval date.
 
-4. **Repository reference files**: `docs/featured-app-company-names.json`, `docs/party-id-company-map.json`
+### BigQuery
+
+Project: `governence-483517`, table: `transformed.events_parsed` (3.6B+ rows). All queries filtered `effective_at >= '2025-12-01'`.
+
+Key columns used:
+- **Filtering**: `effective_at` (partition key), `template_id` + `event_type` (cluster keys), `choice`
+- **Party matching**: `signatories`, `witness_parties`, `acting_parties`, `observers` (ARRAY<STRING>)
+- **Payload extraction**: `JSON_VALUE(payload, '$.provider')`, `JSON_VALUE(payload, '$.amount')`, `JSON_VALUE(payload, '$.featured')`, `JSON_VALUE(payload, '$.round.number')`, `JSON_VALUE(payload, '$.sender')`, `JSON_VALUE(payload, '$.buyer')`
+- **Transfer results**: `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
+
+### Other
+
+- **`featured-apps-report.mjs`** — Script in this repository that queries the above Scan API endpoints and computes FA milestones, approval dates, and company names from on-chain vote records.
+- **`docs/featured-app-company-names.json`**, **`docs/party-id-company-map.json`** — Reference mappings of provider party IDs to company names.
