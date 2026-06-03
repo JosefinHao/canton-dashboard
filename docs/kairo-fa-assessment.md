@@ -57,7 +57,7 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
 | Month | Reward Coupons | CC Earned | ~USD (at current $0.149/CC) |
 |-------|---------------|-----------|----------------------------|
-| 2025-12 | 737 | 5,566 | $830 |
+| 2025-12 | 737 | 5,565 | $830 |
 | 2026-01 | 36,443 | 265,065 | $39,529 |
 | 2026-02 | 214,134 | 4,671,441 | $696,647 |
 | 2026-03 | 442,771 | 20,544,805 | $3,063,826 |
@@ -76,7 +76,7 @@ Note: USD estimates use the current amulet price for all months; actual values a
 | Cumulative traffic CC spent | 0 |
 | Traffic num purchases | 0 |
 
-Sampled at rounds 74,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned zero.
+Sampled at rounds 78,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned zero.
 
 ## 6. On-Chain Activity
 
