@@ -23,10 +23,10 @@ Kairo has purchased zero network traffic across all sampled rounds (78,649–98,
 | FA Approval Date | 2025-12-16 | `featured-apps` |
 | Leaderboard Rank | #47 of all Featured Apps | `top-providers-by-app-rewards` |
 | Cumulative CC (leaderboard) | 25,650,297 | `top-providers-by-app-rewards` |
-| Cumulative app rewards (round-party-totals) | 19,334,538 | `round-party-totals` |
+| Cumulative app rewards (round-party-totals, round 98,727) | 19,405,516 | `round-party-totals` |
 | Pre-FA CC | 0 | `round-party-totals` |
 
-Note: The leaderboard cumulative (25,650,297) and round-party-totals cumulative (19,334,538) differ. Both are reported as queried.
+Note: Three sources report different cumulative reward figures — see Section 4 for full breakdown.
 
 The on-chain vote reason for Kairo's FA grant states:
 
@@ -72,7 +72,7 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 | 2026-06 (partial) | 188 | 345,621 |
 | **Total** | **732,612** | **44,219,434** |
 
-Source: BigQuery `AppRewardCoupon` events, summing `$.amount`. This total (44,219,434) differs from both the leaderboard cumulative (25,650,297) and round-party-totals cumulative (19,334,538). All three figures are reported as queried from their respective sources.
+Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field). This total (44,219,434) differs from both the leaderboard cumulative (25,650,297 from `top-providers-by-app-rewards`) and the round-party-totals `cumulative_app_rewards` (19,405,516 at round 98,727). Double-counting was ruled out: filtering to `event_type = 'created'` only returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter. The three sources measure different aspects of the reward lifecycle; all figures are reported as queried.
 
 ## 5. Reward Generation Mechanism
 
@@ -222,8 +222,9 @@ The transfer reason field for the February 8 transfer contains `"E2182132FA527DD
 
 | Metric | CC | Source |
 |--------|-----|--------|
-| Cumulative FA rewards (kairo-mainnet) | 25,650,297 | Leaderboard |
-| Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | round-party-totals |
+| Cumulative FA rewards (kairo-mainnet) | 25,650,297 | Leaderboard (`top-providers-by-app-rewards`) |
+| Cumulative FA rewards (kairo-mainnet) | 19,405,516 | `round-party-totals` at round 98,727 |
+| Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | `round-party-totals` |
 | Current balance across all 4 wallets | 3,510,098 | Scan API, June 3 2026 |
 
 ## 7. Network Traffic (kairo-mainnet)
