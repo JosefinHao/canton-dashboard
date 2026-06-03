@@ -56,12 +56,16 @@ Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. On every o
 | 2026-06 (partial) | 113 | 0 | 0 |
 | **Total** | **620,172** | **0** | **0** |
 
-## 4. Monthly App Rewards Earned
+## 4. App Rewards
+
+**Total credited CC: 19,405,516** (Scan API, both `top-providers-by-app-rewards` and `round-party-totals` at round 98,727).
 
 All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
-| Month | Reward Coupons | Coupon Amount (CC) |
-|-------|---------------|--------------------|
+Monthly coupon breakdown (BigQuery `AppRewardCoupon` created events, `$.amount`):
+
+| Month | Reward Coupons | Coupon Amount (Amulet units) |
+|-------|---------------|------------------------------|
 | 2025-12 | 737 | 5,565 |
 | 2026-01 | 36,443 | 265,065 |
 | 2026-02 | 214,134 | 4,671,441 |
@@ -71,26 +75,14 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 | 2026-06 (partial) | 188 | 345,621 |
 | **Total** | **732,612** | **44,219,434** |
 
-Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field).
-
-**Coupon amounts vs. credited CC:**
-
-| Source | Cumulative CC | What it measures |
-|--------|--------------|------------------|
-| BigQuery coupon `$.amount` sum | 44,219,434 | Unclaimed reward amounts in Amulet units (per coupon contract) |
-| `top-providers-by-app-rewards` (round 98,727) | 19,405,516 | CC actually credited after redemption |
-| `round-party-totals` `cumulative_app_rewards` (round 98,727) | 19,405,516 | CC actually credited after redemption |
-
-The two Scan API sources agree. The BigQuery total is higher because `AppRewardCoupon.amount` is documented as "the reward amount in Amulet units" on unclaimed coupon contracts that "can be redeemed for Amulet tokens" (source: `Splice.Amulet:AppRewardCoupon` template documentation). The credited CC after redemption is lower. Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
-
-The coupon `$.amount` is the reward entitlement, not the CC actually credited. Per-round comparison at round 88,266:
+Coupon amounts are not equal to credited CC. `AppRewardCoupon.amount` is documented as "the reward amount in Amulet units" on unclaimed coupon contracts that "can be redeemed for Amulet tokens" (source: `Splice.Amulet:AppRewardCoupon` template documentation). Per-round comparison at round 88,266:
 
 | Metric | Value |
 |--------|-------|
-| Coupon `$.amount` sum (BigQuery, 193 coupons) | 12,722 CC |
-| Credited `app_rewards` (round-party-totals) | 10,118 CC |
+| Coupon `$.amount` sum (BigQuery, 193 coupons) | 12,722 |
+| Credited `app_rewards` (Scan API `round-party-totals`) | 10,118 |
 
-The credited amount (10,118) is 79.5% of the coupon amount (12,722) for this round. The conversion ratio varies per round based on issuance parameters.
+The credited amount is 79.5% of the coupon amount for this round. The ratio varies per round.
 
 ## 5. Reward Generation Mechanism
 
