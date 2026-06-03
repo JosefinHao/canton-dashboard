@@ -73,15 +73,15 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
 Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field).
 
-**Coupon entitlement vs. credited CC:**
+**Coupon amounts vs. credited CC:**
 
 | Source | Cumulative CC | What it measures |
 |--------|--------------|------------------|
-| BigQuery coupon `$.amount` sum | 44,219,434 | Sum of all coupon entitlement amounts |
-| `top-providers-by-app-rewards` (round 98,727) | 19,405,516 | Credited CC (actual rewards received) |
-| `round-party-totals` `cumulative_app_rewards` (round 98,727) | 19,405,516 | Credited CC (actual rewards received) |
+| BigQuery coupon `$.amount` sum | 44,219,434 | Unclaimed reward amounts in Amulet units (per coupon contract) |
+| `top-providers-by-app-rewards` (round 98,727) | 19,405,516 | CC actually credited after redemption |
+| `round-party-totals` `cumulative_app_rewards` (round 98,727) | 19,405,516 | CC actually credited after redemption |
 
-The two Scan API sources agree. The BigQuery total is higher because coupon `$.amount` represents the reward entitlement, not the CC actually credited. Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
+The two Scan API sources agree. The BigQuery total is higher because `AppRewardCoupon.amount` is documented as "the reward amount in Amulet units" on unclaimed coupon contracts that "can be redeemed for Amulet tokens" (source: `Splice.Amulet:AppRewardCoupon` template documentation). The credited CC after redemption is lower. Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
 
 The coupon `$.amount` is the reward entitlement, not the CC actually credited. Per-round comparison at round 88,266:
 
