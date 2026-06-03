@@ -6,7 +6,7 @@
 
 Kairo has held Featured App status since December 16, 2025. A second FeaturedAppRight contract was created on April 21, 2026; the associated on-chain vote reason references a reinstatement with a compliance deadline of April 20, 2026.
 
-Kairo ranks #47 among all Featured Apps with 25,650,297 cumulative CC (leaderboard). All reward coupons are tagged `featured = true` (zero unfeatured coupons).
+Kairo ranks #47 among all Featured Apps with 19,405,516 cumulative CC (from both `top-providers-by-app-rewards` and `round-party-totals` at round 98,727). All reward coupons are tagged `featured = true` (zero unfeatured coupons).
 
 141 unique `kairo::` parties (registered on Kairo's own participant node) appear as signatories and acting parties on kairo-mainnet events. None receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output amount, verified across 100% of transfers. These receiverless transfers generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
@@ -22,11 +22,10 @@ Kairo has purchased zero network traffic across all sampled rounds (78,649–98,
 |--------|-------|--------|
 | FA Approval Date | 2025-12-16 | `featured-apps` |
 | Leaderboard Rank | #47 of all Featured Apps | `top-providers-by-app-rewards` |
-| Cumulative CC (leaderboard) | 25,650,297 | `top-providers-by-app-rewards` |
-| Cumulative app rewards (round-party-totals, round 98,727) | 19,405,516 | `round-party-totals` |
+| Cumulative CC (credited) | 19,405,516 | `top-providers-by-app-rewards` and `round-party-totals`, both at round 98,727 |
 | Pre-FA CC | 0 | `round-party-totals` |
 
-Note: Three sources report different cumulative reward figures — see Section 4 for full breakdown.
+Note: BigQuery coupon `$.amount` totals differ from credited CC — see Section 4 for breakdown.
 
 The on-chain vote reason for Kairo's FA grant states:
 
@@ -74,15 +73,15 @@ All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
 Source: BigQuery `AppRewardCoupon` created events, summing `$.amount` (coupon payload field).
 
-**Three sources report different cumulative figures:**
+**Coupon entitlement vs. credited CC:**
 
 | Source | Cumulative CC | What it measures |
 |--------|--------------|------------------|
 | BigQuery coupon `$.amount` sum | 44,219,434 | Sum of all coupon entitlement amounts |
-| Leaderboard (`top-providers-by-app-rewards`) | 25,650,297 | Scan API leaderboard figure |
-| Round-party-totals `cumulative_app_rewards` (round 98,727) | 19,405,516 | Per-round credited rewards, cumulative |
+| `top-providers-by-app-rewards` (round 98,727) | 19,405,516 | Credited CC (actual rewards received) |
+| `round-party-totals` `cumulative_app_rewards` (round 98,727) | 19,405,516 | Credited CC (actual rewards received) |
 
-Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
+The two Scan API sources agree. The BigQuery total is higher because coupon `$.amount` represents the reward entitlement, not the CC actually credited. Double-counting was ruled out: filtering to `event_type = 'created'` returns the same 732,612 coupons and 44,219,434 total. Only one provider matches the filter.
 
 The coupon `$.amount` is the reward entitlement, not the CC actually credited. Per-round comparison at round 88,266:
 
@@ -190,7 +189,7 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 | Metric | Value |
 |--------|-------|
-| Cumulative app rewards (leaderboard) | 25,650,297 CC |
+| Cumulative app rewards credited | 19,405,516 CC |
 | Cumulative validator rewards | 0 |
 | Cumulative traffic purchased | 0 |
 | Cumulative traffic CC spent | 0 |
@@ -241,8 +240,7 @@ The transfer reason field for the February 8 transfer contains `"E2182132FA527DD
 
 | Metric | CC | Source |
 |--------|-----|--------|
-| Cumulative FA rewards (kairo-mainnet) | 25,650,297 | Leaderboard (`top-providers-by-app-rewards`) |
-| Cumulative FA rewards (kairo-mainnet) | 19,405,516 | `round-party-totals` at round 98,727 |
+| Cumulative FA rewards credited (kairo-mainnet) | 19,405,516 | `top-providers-by-app-rewards` and `round-party-totals` at round 98,727 |
 | Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | `round-party-totals` |
 | Current balance across all 4 wallets | 3,510,098 | Scan API, June 3 2026 |
 
