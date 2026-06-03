@@ -97,6 +97,60 @@ Sample of verified transfer exercise results:
 
 Each of these 620,172 receiverless transfers generated an `AppRewardCoupon` tagged `featured = true`. This is the sole source of Kairo's ~44.2M CC in cumulative rewards.
 
+### 5.1 Independent Verification via Scan API
+
+The receiverless transfer pattern was independently confirmed via a live Scan API query (`/v0/activities`) on June 3, 2026. Raw response for a Kairo transfer at round 98,729:
+
+```json
+{
+  "activity_type": "transfer",
+  "date": "2026-06-03T15:47:04.969682Z",
+  "round": 98729,
+  "transfer": {
+    "sender": {
+      "party": "kairo-mainnet::122051624456...",
+      "input_amulet_amount": "2589357.5956765744",
+      "input_app_reward_amount": "551.7205892748",
+      "sender_change_amount": "2589909.3162658492",
+      "sender_change_fee": "0.0000000000",
+      "sender_fee": "0.0000000000",
+      "holding_fees": "0.0000000000"
+    },
+    "receivers": []
+  }
+}
+```
+
+The `receivers` array is empty. The full input (2,589,357.60 CC amulet + 551.72 CC accumulated app rewards = 2,589,909.32 CC) returns to Kairo as `sender_change_amount`. Zero CC leaves the wallet.
+
+For comparison, a normal transfer from the same API response (same round, different app):
+
+```json
+{
+  "sender": {
+    "input_amulet_amount": "1428981010.0727602883",
+    "sender_change_amount": "1428980910.0727602883"
+  },
+  "receivers": [
+    {
+      "party": "auxilary-1::1220b8301e...",
+      "amount": "100.0000000000",
+      "receiver_fee": "0.0000000000"
+    }
+  ]
+}
+```
+
+Normal transfers have populated `receivers` with party IDs and amounts. Kairo's transfers have none.
+
+**Data sources cross-referenced:**
+
+| Source | Scope | Result |
+|--------|-------|--------|
+| BigQuery (`events_parsed`) | 100% of 620,172 transfers | All receivers NULL |
+| Scan API (`/v0/activities`) | Live sample, June 3 2026 | `receivers: []` |
+| Scan API (`/v0/holdings/summary`) | Current balances | Consistent with no outbound CC via transfers |
+
 ## 6. Wallet Network and Flow of Funds
 
 ### 6.1 AngelHack Wallet Network
