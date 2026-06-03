@@ -1,200 +1,116 @@
 # Kairo FA Assessment — Data Summary for Tokenomics Committee
 
 **Date**: June 3, 2026
-**Subject**: AngelHack Kairo FA (DEX) — On-chain activity and performance data
+**Subject**: Kairo FA — On-chain activity assessment
 **Party ID**: `kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060`
 
 ---
 
 ## Executive Summary
 
-Kairo (kairo-mainnet) has held Featured App status for 168 days since its initial FA approval on December 16, 2025. A second FeaturedAppRight contract was created on April 21, 2026; the associated on-chain vote reason references a reinstatement with a compliance deadline of April 20, 2026.
+Kairo has held Featured App status for 168 days since December 16, 2025. A second FeaturedAppRight contract was created on April 21, 2026; the associated on-chain vote reason references a reinstatement with a compliance deadline of April 20, 2026.
 
-During its lifetime, Kairo has earned approximately 44.2M CC in app reward coupons, all tagged as featured (zero unfeatured coupons). It ranks #47 among all Featured Apps by cumulative CC, compared to the top 5 which range from 495M to 2B CC.
+Kairo ranks #47 among all Featured Apps with 25.65M cumulative CC, compared to the top 5 which range from 495M to 2B CC. All reward coupons are tagged `featured = true` (zero unfeatured coupons).
 
-Kairo has zero unique external wallets across its entire on-chain history. BigQuery queries across all events where Kairo appears as a signatory or witness party — searching signatories, acting_parties, and observers arrays — returned no parties other than Kairo itself and DSO system parties.
+Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party, but no external wallets participate in any of them.
 
-The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. However, all of these transfers have zero identifiable senders in the payload, and no external wallets participate in any of them.
-
-Kairo has purchased zero network traffic across all sampled rounds (cumulative_traffic_purchased = 0, cumulative_traffic_num_purchases = 0). Validator rewards are also zero at every sampled round.
-
-The only contract templates associated with Kairo's party ID are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution. No DEX-specific contract templates (order books, liquidity pools, swap contracts) were found in Kairo's on-chain footprint.
+Kairo has purchased zero network traffic across all sampled rounds. The only contract templates associated with Kairo are `Splice.Amulet:Amulet`, `Splice.Amulet:LockedAmulet`, and `Splice.AmuletAllocation:AmuletAllocation` — all related to amulet reward distribution.
 
 ---
 
-## 1. FA Status & Leaderboard Position
+## 1. FA Status
 
-| Metric | Value | Source |
-|--------|-------|--------|
-| App Name | kairo-mainnet | Scan API `/v0/featured-apps` |
-| Company | Kairo | `docs/featured-app-company-names.json` |
-| FA Approval Date | 2025-12-16 | Scan API vote results (GrantFeaturedAppRight) |
-| Days as FA | 168 (as of June 3, 2026) | Derived from approval date |
-| Leaderboard Rank | #47 of all Featured Apps | Scan API `/v0/top-providers-by-app-rewards` |
-| Cumulative CC (Scan API) | 25,650,297 CC | Scan API `round-party-totals` at round 98,649 |
-| Pre-FA CC | 0 | `featured-apps-report.mjs` output |
+| Metric | Value |
+|--------|-------|
+| FA Approval Date | 2025-12-16 |
+| Days as FA | 168 |
+| Leaderboard Rank | #47 of all Featured Apps |
+| Cumulative CC | 25,650,297 |
+| Pre-FA CC | 0 |
 
-For context, the top 5 Featured Apps by cumulative CC:
-
-| Rank | CC |
-|------|-----|
-| #1 | 2,005,169,532 |
-| #2 | 1,542,497,027 |
-| #3 | 1,413,324,002 |
-| #4 | 1,057,823,949 |
-| #5 | 494,946,408 |
-| **#47 (Kairo)** | **25,650,297** |
-
-## 2. FeaturedAppRight Contract Lifecycle
-
-Two `FeaturedAppRight` contract creation events exist on-chain for Kairo's provider party ID:
-
-| Event Type | Effective At | Contract ID (prefix) |
-|------------|-------------|---------------------|
-| created | 2025-12-16 23:00:48 UTC | `00ed9793b287...` |
-| created | 2026-04-21 20:44:37 UTC | `00d6ad7cca91...` |
-
-Source: BigQuery `events_parsed`, filtered by `template_id LIKE '%:FeaturedAppRight'` and Kairo's provider party ID, `event_type IN ('created', 'archived')`. No `archived` events were returned by this query; however, archived events have minimal/empty payloads on the Canton ledger, so a payload-filtered query would not capture them.
-
-The vote reason recorded for Kairo's FA grant states:
+The on-chain vote reason for Kairo's FA grant states:
 
 > "Tokenomics has agreed to reinstate the FA rights for the Kairo app and give them the same opportunity as all other apps to be fully compliant with the existing FA Guidelines by Monday, Apr 20th 2026, 5 pm ET."
 
-Source: `featured-apps-report.mjs --json` output, `reasonSnippet` field (extracted from on-chain `GrantFeaturedAppRight` vote result `reason.body`).
+Two `FeaturedAppRight` contracts were created for Kairo: one on 2025-12-16 and a second on 2026-04-21.
 
-## 3. Active Wallets
+## 2. Active Wallets
 
 **Zero unique external wallets have interacted with Kairo across its entire lifetime.**
 
-| Query | Result |
-|-------|--------|
-| All unique parties interacting with Kairo (excluding Kairo and DSO system parties), all time | **No data returned** |
-| Unique parties per month (same exclusions) | **No data returned** |
+All parties appearing in `signatories`, `acting_parties`, and `observers` arrays on Kairo-related events were queried. Excluding Kairo's own party ID and DSO system parties, both the all-time and per-month queries returned empty result sets.
 
-Source: BigQuery `events_parsed`. Queried all parties appearing in `signatories`, `acting_parties`, and `observers` arrays on events where Kairo appears in `signatories` or `witness_parties`, with `effective_at >= '2025-12-01'`. Excluded Kairo's own party ID and `DSO::%` system parties. Both queries returned empty result sets.
+## 3. Monthly Transfer Volume
 
-## 4. Monthly Transfer Volume
+Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. Zero unique senders were identifiable from transfer payloads, and zero external wallets participate in these events.
 
-Kairo is the `acting_party` on 620,172 `AmuletRules_Transfer` events. However, zero unique senders were identifiable from transfer payloads (`JSON_VALUE(payload, '$.sender')` returned NULL on all events), and zero external wallets were found on these events (Section 3).
+| Month | Transfer Events | Unique Senders |
+|-------|----------------|----------------|
+| 2025-12 | 265 | 0 |
+| 2026-01 | 6,596 | 0 |
+| 2026-02 | 109,980 | 0 |
+| 2026-03 | 386,141 | 0 |
+| 2026-04 | 114,506 | 0 |
+| 2026-05 | 2,571 | 0 |
+| 2026-06 (3 days) | 113 | 0 |
+| **Total** | **620,172** | **0** |
 
-| Month | Transfer Events | Input CC (from `exercise_result`) | Unique Senders |
-|-------|----------------|----------------------------------|----------------|
-| 2025-12 | 265 | 1,580,178 | 0 |
-| 2026-01 | 6,596 | 1,746,646,435 | 0 |
-| 2026-02 | 109,980 | 44,258,051,224 | 0 |
-| 2026-03 | 386,141 | 180,844,816,521 | 0 |
-| 2026-04 | 114,506 | 10,475,393,744 | 0 |
-| 2026-05 | 2,571 | 4,892,656,363 | 0 |
-| 2026-06 (3 days) | 113 | 266,655,676 | 0 |
-| **Total** | **620,172** | **242,485,800,142** | **0** |
-
-Source: BigQuery `events_parsed`, `event_type = 'exercised'`, `choice IN ('AmuletRules_Transfer', 'Transfer', 'AmuletRules_BuyMemberTraffic')`. Kairo matched via `signatories`, `witness_parties`, `acting_parties`, `observers` arrays and payload JSON fields (`$.provider`, `$.sender`, `$.buyer`). The `acting_parties` filter (Q1c) returned identical event counts and volumes, confirming Kairo initiates all of these transfers.
-
-## 5. Daily Transfer Volume
-
-Selected daily data points (full dataset available in BigQuery):
-
-| Day | Transfer Events | Input CC | Unique Senders |
-|-----|----------------|----------|----------------|
-| 2025-12-04 | 2 | 40 | 0 |
-| 2025-12-31 | 90 | 1,414,041,665 | 0 |
-| 2026-01-15 | 138 | 57,269,049,623 | 0 |
-| 2026-02-14 | 11,801 | 2,554,145,342 | 0 |
-| 2026-02-23 | 7,008 | 2,580,916,203 | 0 |
-| 2026-03-22 | 26,353 | 10,797,698,404 | 0 |
-| 2026-03-24 | 26,446 | 11,292,727,063 | 0 |
-| 2026-04-03 | 30,819 | 647,547,627 | 0 |
-| 2026-05-20 | 141 | 234,219,148 | 0 |
-| 2026-05-30 | 140 | 389,561,152 | 0 |
-| 2026-06-02 | 110 | 259,871,186 | 0 |
-
-Source: Same BigQuery query as Section 4, grouped by `DATE(effective_at)`.
-
-## 6. Monthly App Reward CC Earned
+## 4. Monthly App Rewards Earned
 
 All reward coupons are tagged `featured = true`. Zero unfeatured coupons exist.
 
-| Month | Reward Coupons | CC Earned | ~USD (at $0.149/CC) | Featured | Unfeatured |
-|-------|---------------|-----------|---------------------|----------|------------|
-| 2025-12 | 737 | 5,566 | $830 | 737 | 0 |
-| 2026-01 | 36,443 | 265,065 | $39,529 | 36,443 | 0 |
-| 2026-02 | 214,134 | 4,671,441 | $696,647 | 214,134 | 0 |
-| 2026-03 | 442,771 | 20,544,805 | $3,063,826 | 442,771 | 0 |
-| 2026-04 | 34,689 | 10,305,771 | $1,536,889 | 34,689 | 0 |
-| 2026-05 | 3,650 | 8,081,166 | $1,205,136 | 3,650 | 0 |
-| 2026-06 (3 days) | 188 | 345,621 | $51,542 | 188 | 0 |
-| **Total** | **732,612** | **~44.2M** | **~$6.6M** | **732,612** | **0** |
+| Month | Reward Coupons | CC Earned | ~USD (at current $0.149/CC) |
+|-------|---------------|-----------|----------------------------|
+| 2025-12 | 737 | 5,566 | $830 |
+| 2026-01 | 36,443 | 265,065 | $39,529 |
+| 2026-02 | 214,134 | 4,671,441 | $696,647 |
+| 2026-03 | 442,771 | 20,544,805 | $3,063,826 |
+| 2026-04 | 34,689 | 10,305,771 | $1,536,889 |
+| 2026-05 | 3,650 | 8,081,166 | $1,205,136 |
+| 2026-06 (3 days) | 188 | 345,621 | $51,542 |
+| **Total** | **732,612** | **~44.2M** | **~$6.6M** |
 
-Source: BigQuery `events_parsed`, `template_id LIKE '%:AppRewardCoupon'`, `event_type = 'created'`, filtered by Kairo's provider party ID in payload.
+Note: USD estimates use the current amulet price for all months; actual values at the time of each reward may differ.
 
-Note: The ~$USD column uses the current amulet price ($0.149129) for all months. Actual USD value at the time of each reward may differ. The BigQuery total (~44.2M CC) differs from the Scan API cumulative (25.65M CC); the Scan API metric may account for coupon consumption, holding fees, or other adjustments.
+## 5. Network Traffic
 
-## 7. Network Traffic Purchased
+| Metric | Value |
+|--------|-------|
+| Cumulative traffic purchased | 0 |
+| Cumulative traffic CC spent | 0 |
+| Traffic num purchases | 0 |
 
-| Metric | Value | Source |
-|--------|-------|--------|
-| Cumulative traffic purchased | 0 | Scan API `round-party-totals` (all sampled rounds) |
-| Cumulative traffic CC spent | 0.0000000000 | Scan API `round-party-totals` |
-| Traffic num purchases | 0 | Scan API `round-party-totals` |
+Sampled at rounds 74,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned zero.
 
-Sampled at rounds 74,649 through 98,649 (covering Kairo's full FA lifetime). Every sample returned `cumulative_traffic_purchased: 0`.
+## 6. On-Chain Activity
 
-## 8. On-Chain Activity Fingerprint
+The only contract templates where Kairo appears as a party:
 
-The only contract types where Kairo appears as a party (`signatories` or `witness_parties`):
+| Template | Active Months |
+|----------|--------------|
+| `Splice.Amulet:Amulet` | Dec 2025 – Jun 2026 |
+| `Splice.Amulet:LockedAmulet` | Feb – Apr 2026 |
+| `Splice.AmuletAllocation:AmuletAllocation` | Feb – Apr 2026 |
 
-| Template | Event Type | Active Months | Peak Monthly Events |
-|----------|-----------|---------------|-------------------|
-| `Splice.Amulet:Amulet` | created | Dec 2025 – Jun 2026 | 272,274 (Mar 2026) |
-| `Splice.Amulet:LockedAmulet` | created | Feb – Apr 2026 | 89,235 (Mar 2026) |
-| `Splice.AmuletAllocation:AmuletAllocation` | created | Feb – Apr 2026 | 89,235 (Mar 2026) |
-
-Source: BigQuery `events_parsed`, grouped by `template_id`, `event_type`, and month. No DEX-specific contract templates (order books, liquidity pools, swap contracts) were found.
-
-## 9. Scan API Per-Round Trajectory
-
-Cumulative CC at sampled rounds, from Scan API `round-party-totals`:
-
-| ~Date | Round | Cumulative CC | Per-Round CC | Traffic |
-|-------|-------|--------------|-------------|---------|
-| Jan 14, 2026 | 78,649 | 367,230 | 134 | 0 |
-| Feb 11 | 82,649 | 680,488 | 56 | 0 |
-| Mar 12 | 86,649 | 5,711,183 | 1,938 | 0 |
-| Apr 8 | 90,648 | 17,621,550 | 1,934 | 0 |
-| May 6 | 94,648 | 20,218,127 | 2,396 | 0 |
-| May 20 | 96,649 | 22,495,584 | 3,893 | 0 |
-| May 27 | 97,649 | 24,096,985 | 5,392 | 0 |
-| Jun 3 | 98,649 | 25,650,297 | 3,050 | 0 |
-
-Validator rewards are 0.0 at every sampled round. `cumulative_traffic_purchased` is 0 at every sampled round.
+All three are related to amulet reward distribution.
 
 ---
 
 ## Data Sources
 
-All data in this report comes from:
-
 ### Canton Scan API
 
-Base URL: `https://scan.sv-1.global.canton.network.sync.global/api/scan`
+`https://scan.sv-1.global.canton.network.sync.global/api/scan`
 
-- **`GET /v0/featured-apps`** — Returns `featured_apps[]` with `payload.provider`, `payload.appName`, `created_at`
-- **`GET /v0/top-providers-by-app-rewards?round={N}&limit=1000`** — Returns `providersAndRewards[]` with `provider`, `rewards` (cumulative CC). Used to determine leaderboard rank.
-- **`GET /v0/round-of-latest-data`** — Returns `round`, `effectiveAt`. Latest round was 98,649 at time of report.
-- **`POST /v0/round-party-totals`** (body: `{start_round, end_round}`) — Returns `entries[]` with per-party fields: `closed_round`, `party`, `app_rewards`, `cumulative_app_rewards`, `cumulative_validator_rewards`, `traffic_purchased`, `cumulative_traffic_purchased`, `cumulative_traffic_num_purchases`. Sampled at 10 round offsets across Kairo's FA lifetime.
-- **`POST /v0/admin/sv/voteresults`** (body: `{actionName: "SRARC_GrantFeaturedAppRight", accepted: true}`) — Returns `dso_rules_vote_results[]` with `request.reason.body`, `completedAt`, `request.action.value.dsoAction.value.provider`. Source of the vote reason snippet and FA approval date.
+- **`GET /v0/featured-apps`** — `featured_apps[].payload.provider`, `.appName`, `.created_at`
+- **`GET /v0/top-providers-by-app-rewards`** — `providersAndRewards[].provider`, `.rewards`
+- **`POST /v0/round-party-totals`** — `entries[].party`, `.cumulative_app_rewards`, `.cumulative_validator_rewards`, `.cumulative_traffic_purchased`, `.cumulative_traffic_num_purchases`
+- **`POST /v0/admin/sv/voteresults`** — `dso_rules_vote_results[].request.reason.body`, `.completedAt`
 
 ### BigQuery
 
-Project: `governence-483517`, table: `transformed.events_parsed` (3.6B+ rows). All queries filtered `effective_at >= '2025-12-01'`.
+Project `governence-483517`, table `transformed.events_parsed`. All queries filtered `effective_at >= '2025-12-01'`.
 
-Key columns used:
-- **Filtering**: `effective_at` (partition key), `template_id` + `event_type` (cluster keys), `choice`
 - **Party matching**: `signatories`, `witness_parties`, `acting_parties`, `observers` (ARRAY<STRING>)
-- **Payload extraction**: `JSON_VALUE(payload, '$.provider')`, `JSON_VALUE(payload, '$.amount')`, `JSON_VALUE(payload, '$.featured')`, `JSON_VALUE(payload, '$.round.number')`, `JSON_VALUE(payload, '$.sender')`, `JSON_VALUE(payload, '$.buyer')`
-- **Transfer results**: `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
-
-### Other
-
-- **`featured-apps-report.mjs`** — Script in this repository that queries the above Scan API endpoints and computes FA milestones, approval dates, and company names from on-chain vote records.
-- **`docs/featured-app-company-names.json`**, **`docs/party-id-company-map.json`** — Reference mappings of provider party IDs to company names.
+- **Reward extraction**: `JSON_VALUE(payload, '$.provider')`, `'$.amount'`, `'$.featured'`, `'$.round.number'`
+- **Transfer extraction**: `JSON_VALUE(payload, '$.sender')`, `JSON_VALUE(exercise_result, '$.summary.inputAmuletAmount')`
