@@ -8,7 +8,7 @@ Kairo has held Featured App status since December 16, 2025. A second FeaturedApp
 
 Kairo ranks #47 among all Featured Apps with 25.65M cumulative CC, compared to the top 5 which range from 495M to 2B CC. All reward coupons are tagged `featured = true` (zero unfeatured coupons).
 
-Kairo has zero unique external wallets across its entire on-chain history. The ledger shows 620,172 `AmuletRules_Transfer` events where Kairo is the acting party. On all of these, Kairo is the sender and the receivers array is empty — no external wallets participate in any of them. These receiverless transfers still generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
+141 unique `kairo::` parties (registered on Kairo's own participant node) appear as signatories and acting parties on kairo-mainnet events — co-signing allocation contracts and co-executing transfers. However, none receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output amount, verified across 100% of transfers. These receiverless transfers still generate `AppRewardCoupon` contracts because Kairo holds Featured App status.
 
 Four wallets share the same key fingerprint (`1220516244...`), forming an AngelHack wallet network: `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-lp-1`, and `kairo-dex-lp-2`. Earned rewards flow from `kairo-mainnet` to `angelhack-mainnet-1` (which also earns SV and validator rewards independently) and onward to external parties. The largest single outflow was ~40M CC to an anonymous wallet on February 8, 2026. Combined current holdings across all four wallets total ~3.5M CC — approximately 14% of the 25.65M cumulative FA CC earned.
 
@@ -23,7 +23,8 @@ Kairo has purchased zero network traffic across all sampled rounds. The only con
 | FA Approval Date | 2025-12-16 |
 | Days as FA | 168 |
 | Leaderboard Rank | #47 of all Featured Apps |
-| Cumulative CC | 25,650,297 |
+| Cumulative CC (leaderboard) | 25,650,297 |
+| Cumulative app rewards (round-party-totals) | 19,334,538 |
 | Pre-FA CC | 0 |
 
 The on-chain vote reason for Kairo's FA grant states:
@@ -34,9 +35,11 @@ Two `FeaturedAppRight` contracts were created for Kairo: one on 2025-12-16 and a
 
 ## 2. Active Wallets
 
-**Zero unique external wallets have interacted with Kairo across its entire lifetime.**
+141 unique `kairo::` parties (each with a distinct key) appear as **signatories** (257,558 events) and **acting_parties** (939,422 events) on kairo-mainnet events. These parties are registered on Kairo's own participant node. They co-sign `AmuletAllocation` contracts and co-execute `Allocation_ExecuteTransfer` and `AmuletRules_Transfer` choices.
 
-All parties appearing in `signatories`, `acting_parties`, and `observers` arrays on Kairo-related events were queried. Excluding Kairo's own party ID and DSO system parties, both the all-time and per-month queries returned empty result sets.
+However, none of these parties receive any CC: all 620,172 `AmuletRules_Transfer` events have zero receivers and zero output (verified across 100% of transfers). Zero `kairo::` parties appear as `witness_parties` or `observers`.
+
+Additional external parties appearing in kairo-mainnet events include `angelhack-mainnet-1`, `kairo-dex-lp-1`, `kairo-dex-lp-2` (all same key as kairo-mainnet), QCP Trading validators, and several anonymous wallets — all related to outbound reward transfers (see Section 6).
 
 ## 3. Monthly Transfer Volume
 
