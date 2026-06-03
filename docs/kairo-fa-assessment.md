@@ -191,19 +191,17 @@ Balances queried via Scan API `/v0/holdings/summary` on 2026-06-03.
 
 ### 5.3 Outflows from kairo-mainnet
 
-94 outbound transfers via `TransferPreapproval_Send` (84) and `TransferPreapproval_SendV2` (10) between January 26 and June 1, 2026. Additionally, 93 `TransferFactory_Transfer` events. Exercise result metadata labels these as `"Transfer via direct TransferFactory (internal)"`.
+28 outbound transfers to `angelhack-mainnet-1` totaling 13,700,482 CC received (from BigQuery `balanceChanges`). Additional transfers to other recipients via `TransferPreapproval_Send` (84 total) and `TransferPreapproval_SendV2` (10 total) between January 26 and June 1, 2026. Additionally, 93 `TransferFactory_Transfer` events (these contain no `balanceChanges` data; the corresponding `TransferPreapproval_Send` event holds the transfer details).
 
-**Recipients from kairo-mainnet (from BigQuery `exercise_result` data):**
+**Recipients from kairo-mainnet (from BigQuery `exercise_result` balanceChanges):**
 
-| Recipient | Total CC | Period |
-|-----------|----------|--------|
-| `angelhack-mainnet-1` (same namespace key) | Not individually summed | Jan–Jun 2026 |
-| `1220d54a...` (anonymous) | 7,554,000 | Mar 9 + Apr 28, 2026 |
-| `3182da19...` (anonymous) | 130,000 | Multiple dates |
-| `kairo-dex-lp-1` (same namespace key) | 50,000 | Apr 2, 2026 |
-| `kairo-dex-lp-2` (same namespace key) | 50,000 | Apr 2, 2026 |
-
-Note: Individual transfer amounts to `angelhack-mainnet-1` were not summed in the query. The remaining outbound transfers (majority of the 94) went to this wallet.
+| Recipient | Total CC Sent | Transfers | Period |
+|-----------|--------------|-----------|--------|
+| `angelhack-mainnet-1` (same namespace key) | 13,700,262 | 28 | Jan–Jun 2026 |
+| `1220d54a...` (anonymous) | 7,554,000 | 2 | Mar 9 + Apr 28, 2026 |
+| `3182da19...` | 130,000 | Multiple | Multiple dates |
+| `kairo-dex-lp-1` (same namespace key) | 50,000 | 1 | Apr 2, 2026 |
+| `kairo-dex-lp-2` (same namespace key) | 50,000 | 1 | Apr 2, 2026 |
 
 ### 5.4 Outflows from angelhack-mainnet-1
 
