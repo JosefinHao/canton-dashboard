@@ -6,7 +6,7 @@
 
 CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding on-chain activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers** involving goldacorn during its active FA period (Apr 20–25), yet the validator claimed a cumulative marker weight of 193,706. For comparison, legitimate FA `arcane-mainnet-1` shows 135 transfers → 145 weight (1.07× ratio). In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding on-chain activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers** involving goldacorn during its active FA period (Apr 20–25), yet the validator claimed a cumulative marker weight of 193,706. In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
 
 **Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** The operator executed 253,397 self-transfers (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers at 18.6-second intervals (32× faster than `kora-app`'s ~10-minute interval). 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
 
@@ -147,23 +147,17 @@ These were presented as separate companies/products in the governance vote reaso
 
 The operator exploited a protocol vulnerability in how FeaturedAppActivityMarkers were created. When a validator exercises `FeaturedAppRight_CreateActivityMarker`, it passes a `weight` parameter that determines the FA's share of the network reward pool. The old Splice protocol **did not validate** that this weight corresponded to actual app activity — it accepted whatever value the validator submitted.
 
-**Direct proof of inflation — single-beneficiary FA comparison (BigQuery-verified):**
+**Direct proof of inflation (BigQuery-verified):**
 
-| FA Provider | Transfers (during FA period) | Marker Weight | Ratio (Weight/Transfers) |
-|---|---:|---:|---:|
-| `arcane-mainnet-1` | 135 | 145 | **1.07×** |
-| `kora-app` | ~5,000 | ~5,000 | **~1.0×** |
-| `goldacorn` (CoinAegis) | **0** | 193,706 | **∞ (no transfers)** |
-
-Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn claimed 193,706 in marker weight with **zero on-chain transfers** during its active FA period (Apr 20–25, verified via BigQuery `acting_parties` filter).
+BigQuery confirms **zero transfers** involving goldacorn as an acting party during its entire active FA period (Apr 20–25). Yet the validator created 919 markers claiming a cumulative weight of 193,706. The marker weight was fabricated with no corresponding on-chain transfer activity.
 
 **Marker creation frequency (BigQuery-verified):**
 
-| FA | Total Markers | Avg Interval | vs Normal (~10 min) |
-|---|---:|---:|---:|
-| `goldacorn` (CoinAegis) | 919 | 31.9 seconds | **19× faster** |
-| `aevumWallet` (CoinAegis) | 88,340 | 18.6 seconds | **32× faster** |
-| `kora-app` (legitimate) | — | 602.7 seconds (~10 min) | Baseline |
+| FA | Total Markers | Avg Interval |
+|---|---:|---:|
+| `goldacorn` (CoinAegis) | 919 | 31.9 seconds |
+| `aevumWallet` (CoinAegis) | 88,340 | 18.6 seconds |
+| `kora-app` (legitimate) | 1,886,792 | ~10 minutes |
 
 **Marker payload structure** (from BigQuery exercise events):
 ```json
