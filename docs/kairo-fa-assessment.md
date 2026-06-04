@@ -7,8 +7,8 @@
 1. **16 wallets share the same namespace root key, operated by the same entity.** Wallets include `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-executor`, `kairo-dex-lp-1`, `kairo-dex-lp-2`, `sanctum-mainnet`, `sanc-oct`, `sanc-octlabs`, and others (Section 1).
    <br><sub>Source: `events_parsed` — distinct party IDs ending in `::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060` across `signatories`, `acting_parties`, `witness_parties`, `observers` columns</sub>
 
-2. **779,030 receiverless self-transfers across all entity wallets.** Every `AmuletRules_Transfer` event across all 16 wallets has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers, independently confirmed as `receivers: []` via Scan API (Section 2).
-   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL`; Scan API `GET /v0/activities` — `transfer.receivers: []`</sub>
+2. **362,456 receiverless transfers across all entity wallets.** Every `AmuletRules_Transfer` event where an entity wallet is the sender has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 362,456 transfers, independently confirmed as `receivers: []` via Scan API (Section 2).
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.sender')` matching namespace key, `JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL`; Scan API `GET /v0/activities` — `transfer.receivers: []`</sub>
 
 3. **These transfers generated 19,405,516 CC in FA rewards.** Only `kairo-mainnet` earned AppRewardCoupons. 732,710 coupons, all tagged `featured = true`, zero unfeatured (Section 3).
    <br><sub>Source: Scan API `GET /v0/top-providers-by-app-rewards?round=98727`; `events_parsed` — `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.provider')` matching namespace key</sub>
@@ -19,8 +19,8 @@
 5. **Zero DEX-specific contracts on-chain.** All contract templates are standard Splice/Amulet infrastructure. Zero external (non-entity) parties appear as witnesses or observers. All 775,587 `Allocation_ExecuteTransfer` events have zero receivers (Section 5).
    <br><sub>Source: `events_parsed` — `template_id` column on all entity events; `witness_parties` and `observers` columns; `JSON_VALUE(payload, '$.receiver')` on `Allocation%` choices</sub>
 
-6. **Transfer activity migrated across wallets around the Apr 20, 2026 compliance deadline.** `kairo-mainnet` volume dropped from 126,075/week (week of Mar 16) to 218/week (week of Apr 13), while `kairo-dex-executor` appeared with 40,482 transfers that same week (Section 6).
-   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `effective_at` grouped by week, `acting_parties` per wallet</sub>
+6. **Sender activity migrated across wallets around the Apr 20, 2026 compliance deadline.** `kairo-mainnet` sender volume dropped from 43,939/week (week of Mar 16) to 221/week (week of Apr 13), while `kairo-dex-lp-1` and `kairo-dex-lp-2` appeared as senders starting week of Mar 30. `kairo-dex-executor` appeared as an acting party on 101,286 transfer events but had zero transfers as sender (Section 6).
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.sender')` grouped by week</sub>
 
 7. **Kairo's FA has been removed.** Not present in the current `featured-apps` list (154 FAs exist as of June 4, 2026).
    <br><sub>Source: Scan API `GET /v0/featured-apps` — `featured_apps[].payload.provider` contains no match for namespace key `1220516244`</sub>
@@ -30,7 +30,7 @@
 | FA Approval Date | 2025-12-16 | `GET /v0/featured-apps` → `created_at` |
 | FA Status (June 4, 2026) | Removed | `GET /v0/featured-apps` → no matching provider |
 | Entity wallets (same namespace key) | 16 | `events_parsed` → distinct party IDs matching fingerprint |
-| Entity-wide receiverless transfers | 779,030 | `events_parsed` → `choice`, `payload → $.transfer.receivers[0].party` |
+| Entity-wide receiverless transfers (by sender) | 362,456 | `events_parsed` → `payload → $.transfer.sender` matching namespace key, `$.transfer.receivers[0].party` NULL |
 | Cumulative CC credited (kairo-mainnet) | 19,405,516 | `GET /v0/top-providers-by-app-rewards?round=98727` → `rewards` |
 | Cumulative traffic CC spent (angelhack) | 17,666,162 | `POST /v0/round-party-totals` → `cumulative_traffic_cc_spent` |
 | Current holdings (4 wallets, June 3) | 3,510,098 | `POST /v0/holdings/summary` → `total_balance` |
@@ -49,10 +49,10 @@ The on-chain vote reason for Kairo's FA grant states:
 |--------|------|
 | `kairo-mainnet` | FA provider, primary transfer wallet |
 | `angelhack-mainnet-1` | Validator, traffic purchaser |
-| `kairo-dex-executor` | Receiverless transfers (Apr–May 2026) |
+| `kairo-dex-executor` | Transfer executor only, zero sender transfers (Apr–May 2026) |
 | `kairo-dex-lp-1` | Receiverless transfers (Apr 2026) |
 | `kairo-dex-lp-2` | Receiverless transfers (Apr–May 2026) |
-| `sanctum-mainnet` | Receiverless transfers (Apr–May 2026) |
+| `sanctum-mainnet` | Receiverless transfers (May 2026) |
 | `sanc-oct` | Receiverless transfers (May 2026) |
 | `sanc-octlabs` | Receiverless transfers (May–Jun 2026) |
 | `sanc-zod` | No transfer activity (Dec 2025 – Jun 2026) |
@@ -82,22 +82,24 @@ DEX and sanctum wallets returned null from Scan API `round-party-totals` (rounds
 
 ## 2. Transfer Pattern
 
-779,030 `AmuletRules_Transfer` events across all entity wallets. `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (`events_parsed`). Independently confirmed as `receivers: []` via Scan API.
+362,456 `AmuletRules_Transfer` events where an entity wallet is the sender (`JSON_VALUE(payload, '$.transfer.sender')` matching namespace key). `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 362,456 transfers (`events_parsed`). Independently confirmed as `receivers: []` via Scan API.
 
-**Monthly breakdown by wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, grouped by `acting_parties` wallet name):
+**Monthly breakdown by sender wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, grouped by `JSON_VALUE(payload, '$.transfer.sender')`):
 
-| Month | angelhack | kairo-mainnet | dex-executor | dex-lp-1 | dex-lp-2 | Others | Total |
-|-------|-----------|--------------|-------------|----------|----------|--------|-------|
-| 2025-12 | 4,345 | 265 | — | — | — | — | 4,610 |
-| 2026-01 | 4,429 | 6,556 | — | — | — | — | 10,985 |
-| 2026-02 | 3,448 | 109,743 | — | — | — | — | 113,191 |
-| 2026-03 | 2,365 | 386,128 | — | — | — | — | 388,493 |
-| 2026-04 | 3,142 | 70,232 | 98,295 | 42,081 | 36,728 | 1 | 250,479 |
-| 2026-05 | 3,673 | 2,571 | 2,991 | — | 374 | 892 | 10,501 |
-| 2026-06 | 363 | 190 | — | — | — | 218 | 771 |
-| **Total** | **21,765** | **575,685** | **101,286** | **42,081** | **37,102** | **1,111** | **779,030** |
+| Month | angelhack | kairo-mainnet | dex-lp-1 | dex-lp-2 | Others | Total |
+|-------|-----------|--------------|----------|----------|--------|-------|
+| 2025-12 | 4,322 | 134 | — | — | — | 4,456 |
+| 2026-01 | 4,326 | 4,335 | — | — | — | 8,661 |
+| 2026-02 | 3,189 | 75,233 | — | — | — | 78,422 |
+| 2026-03 | 2,246 | 186,143 | — | — | — | 188,389 |
+| 2026-04 | 3,130 | 1,753 | 30,639 | 38,351 | — | 73,873 |
+| 2026-05 | 3,673 | 2,571 | — | 748 | 892 | 7,884 |
+| 2026-06 | 363 | 190 | — | — | 218 | 771 |
+| **Total** | **21,249** | **270,359** | **30,639** | **39,099** | **1,110** | **362,456** |
 
-"Others" includes `sanctum-mainnet` (81), `sanc-octlabs` (862), `sanc-oct` (161), `sanctum-collection` (3), `c862121b` (4).
+"Others" includes `sanc-octlabs` (862), `sanc-oct` (161), `sanctum-mainnet` (80), `c862121b` (4), `sanctum-collection` (3).
+
+`kairo-dex-executor` does not appear in this table because it had zero sender transfers. It appeared as an `acting_party` on 101,286 transfer events in Apr–May 2026, executing transfers on behalf of other entity wallets.
 
 Every transfer has:
 - **Sender** (`$.transfer.sender`): entity wallet's own party ID
@@ -150,7 +152,7 @@ For comparison, a transfer from a different app in the same round:
 
 | Source | Scope | Result |
 |--------|-------|--------|
-| BigQuery | 100% of 779,030 entity transfers | All receivers NULL |
+| BigQuery | 100% of 362,456 entity sender transfers | All receivers NULL |
 | Scan API (`/v0/activities`) | Live sample, June 3, 2026 | `receivers: []` |
 
 As of June 4, 2026, zero entity transfers appear in the latest 1,000 network-wide activities (Scan API `/v0/activities`).
@@ -164,7 +166,7 @@ Only `kairo-mainnet` earned AppRewardCoupons across the entity. No other entity 
 | Metric | Value | Source |
 |--------|-------|--------|
 | Total reward coupons | 732,710 | `events_parsed` → `template_id` containing `AppRewardCoupon`, `event_type = 'created'` |
-| Total coupon amount (Amulet units) | 44,376,891 | `events_parsed` → `payload → $.amount` |
+| Total coupon amount (Amulet units) | 44,376,891.48 | `events_parsed` → `payload → $.amount` |
 | Featured coupons | 732,710 (100%) | `events_parsed` → `payload → $.featured = 'true'` |
 | Unfeatured coupons | 0 | `events_parsed` → `payload → $.featured != 'true'` |
 | First coupon | 2025-12-19 | `events_parsed` → `effective_at` |
@@ -174,14 +176,14 @@ Monthly coupon breakdown (`events_parsed`):
 
 | Month | Reward Coupons | Coupon Amount (Amulet units) |
 |-------|---------------|------------------------------|
-| 2025-12 | 737 | 5,565 |
-| 2026-01 | 36,443 | 265,065 |
-| 2026-02 | 214,134 | 4,671,441 |
-| 2026-03 | 442,771 | 20,544,805 |
-| 2026-04 | 34,689 | 10,305,771 |
-| 2026-05 | 3,650 | 8,081,166 |
-| 2026-06 (partial) | 286 | 503,079 |
-| **Total** | **732,710** | **44,376,891** |
+| 2025-12 | 737 | 5,565.44 |
+| 2026-01 | 36,443 | 265,064.69 |
+| 2026-02 | 214,134 | 4,671,440.72 |
+| 2026-03 | 442,771 | 20,544,805.34 |
+| 2026-04 | 34,689 | 10,305,771.01 |
+| 2026-05 | 3,650 | 8,081,165.78 |
+| 2026-06 (partial) | 286 | 503,078.50 |
+| **Total** | **732,710** | **44,376,891.48** |
 
 ## 4. Traffic-to-Reward Correlation
 
@@ -193,13 +195,13 @@ Traffic is purchased via `AmuletRules_BuyMemberTraffic`. Each purchase buys traf
 
 | Month | Traffic Events | Traffic Amount (bytes) | Reward Coupons | Reward Coupon Amount |
 |-------|---------------|----------------------|----------------|---------------------|
-| 2025-12 | 3 | 5,999,400 | 737 | 5,565 |
-| 2026-01 | 51 | 101,989,800 | 36,443 | 265,065 |
-| 2026-02 | 2,995 | 5,989,401,000 | 214,134 | 4,671,441 |
-| 2026-03 | 10,461 | 22,840,467,600 | 442,771 | 20,544,805 |
-| 2026-04 | 2,433 | 13,377,600,000 | 34,689 | 10,305,771 |
-| 2026-05 | 2,197 | 12,975,600,000 | 3,650 | 8,081,166 |
-| 2026-06 | 163 | 978,000,000 | 286 | 503,079 |
+| 2025-12 | 3 | 5,999,400 | 737 | 5,565.44 |
+| 2026-01 | 51 | 101,989,800 | 36,443 | 265,064.69 |
+| 2026-02 | 2,995 | 5,989,401,000 | 214,134 | 4,671,440.72 |
+| 2026-03 | 10,461 | 22,840,467,600 | 442,771 | 20,544,805.34 |
+| 2026-04 | 2,433 | 13,377,600,000 | 34,689 | 10,305,771.01 |
+| 2026-05 | 2,197 | 12,975,600,000 | 3,650 | 8,081,165.78 |
+| 2026-06 | 163 | 978,000,000 | 286 | 503,078.50 |
 
 **CC-level comparison** (Scan API, round 98,727):
 
@@ -251,21 +253,23 @@ All allocation events have zero receivers and zero providers — `JSON_VALUE(pay
 
 The on-chain vote set a compliance deadline of April 20, 2026, 5 PM ET.
 
-**Weekly transfer volume by wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, `effective_at` between `2026-03-15` and `2026-05-15`, grouped by `FORMAT_TIMESTAMP('%Y-%W', effective_at)` and wallet):
+**Weekly sender volume by wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.sender')` matching namespace key, `effective_at` between `2026-03-15` and `2026-05-15`, grouped by `FORMAT_TIMESTAMP('%Y-%W', effective_at)` and sender wallet):
 
-| Week | Dates (approx) | kairo-mainnet | dex-executor | dex-lp-1 | dex-lp-2 | angelhack | Entity Total |
-|------|----------------|--------------|-------------|----------|----------|-----------|-------------|
-| 11 | Mar 16–22 | 126,075 | — | — | — | 515 | 126,590 |
-| 12 | Mar 23–29 | 113,931 | — | — | — | 522 | 114,453 |
-| 13 | Mar 30–Apr 5 | 71,334 | — | 38,921 | 26,278 | 632 | 137,166 |
-| 14 | Apr 6–12 | 2,106 | 21,096 | 1,219 | 2,633 | 738 | 27,792 |
-| 15 | Apr 13–19 | 218 | 40,482 | 1,941 | 3,430 | 730 | 46,801 |
-| **16** | **Apr 20–26** | 228 | 25,567 | — | 3,140 | 917 | 29,852 |
-| 17 | Apr 27–May 3 | 97 | 12,523 | — | 1,414 | 730 | 14,764 |
-| 18 | May 4–10 | 405 | 1,618 | — | 207 | 904 | 3,136 |
-| 19 | May 11–17 | 401 | — | — | — | 634 | 1,051 |
+| Week | Dates (approx) | kairo-mainnet | dex-lp-1 | dex-lp-2 | angelhack | Others | Entity Total |
+|------|----------------|--------------|----------|----------|-----------|--------|-------------|
+| 11 | Mar 16–22 | 43,939 | — | — | 410 | — | 44,349 |
+| 12 | Mar 23–29 | 42,196 | — | — | 515 | — | 42,711 |
+| 13 | Mar 30–Apr 5 | 4,437 | 25,958 | 17,499 | 618 | — | 48,512 |
+| 14 | Apr 6–12 | 525 | 808 | 5,261 | 738 | — | 7,332 |
+| 15 | Apr 13–19 | 221 | 3,873 | 6,850 | 727 | — | 11,671 |
+| **16** | **Apr 20–26** | 228 | — | 6,253 | 917 | — | 7,398 |
+| 17 | Apr 27–May 3 | 97 | — | 2,822 | 730 | — | 3,649 |
+| 18 | May 4–10 | 405 | — | 414 | 904 | 2 | 1,725 |
+| 19 | May 11–17 | 321 | — | — | 508 | 11 | 840 |
 
-Week 16 (starting Apr 20) is the compliance deadline week. `kairo-mainnet` dropped from 126,075 transfers/week (week 11) to 218 (week 15). `kairo-dex-executor` appeared in week 14 with 21,096 transfers and peaked at 40,482 in week 15. `kairo-dex-lp-1` and `kairo-dex-lp-2` appeared in week 13.
+"Others" in weeks 18–19: `sanctum-mainnet` (2 + 9), `c862121b` (2).
+
+Week 16 (starting Apr 20) is the compliance deadline week. `kairo-mainnet` sender volume dropped from 43,939/week (week 11) to 221 (week 15). `kairo-dex-lp-1` and `kairo-dex-lp-2` appeared as senders in week 13 with 25,958 and 17,499 transfers respectively. `kairo-dex-executor` had zero sender transfers across the entire period despite appearing as an acting party on 101,286 transfer events.
 
 All transfers across all wallets and all weeks are 100% receiverless.
 
