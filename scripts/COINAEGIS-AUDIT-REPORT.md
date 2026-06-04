@@ -90,7 +90,7 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 | 2026-05-28 20:00:01 | **AevumWallet pause vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the AevumWallet App due to recent on-chain activity that needs further investigation" |
 | 2026-05-28 21:41:43 | **AevumWallet FA revoked** | 10 for / 0 against, 3 abstaining (C7-Technology-Services-Limited, SV-Nodeops-Limited, Tradeweb-Markets-1) |
 | 2026-05-28 21:42:17 | **Last aevumWallet AppRewardCoupon** | Round 97923 — 34 seconds after revoke |
-| 2026-05-28 22:12:56 | 665K CC consolidated | Pre-existing amulets (635K) + harvested rewards (29.7K) merged |
+| 2026-05-28 22:12:56 | 665K CC consolidated | Multiple amulets merged into single holding |
 | 2026-05-29 09:15:17 | **Coinaegis revoke vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the Coinaegis App due to recent on-chain activity that needs further investigation" |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
 | 2026-05-29 20:49:56 | **Coinaegis FA revoked** | 9 for / 0 against, 4 abstaining (Cumberland-1, Cumberland-2, Digital-Asset-1, SV-Nodeops-Limited) |
