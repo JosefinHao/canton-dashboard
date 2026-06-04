@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
+CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** all controlled by the same cryptographic key, through two mechanisms across two phases:
 
 **Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding app activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers involving the goldacorn party ID** during its active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key transfers during this window were 810 single-party validator self-operations and 10 extraction transfers to quokka — none constituting goldacorn app usage. Yet the validator claimed a cumulative marker weight of 193,706. In ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
 
@@ -36,7 +36,7 @@ This proves single-entity control over all 44 party IDs.
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
 | `coinaegisVault` | Featured App (provider) | Minor | Not verified (revoked Jun 3) | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
 | `cryptolegacy-validator-1` | Validator + designated marker `beneficiary` | Both | Reward harvesting | — | — | — | — | — | 2,598,113.64 (harvested) | — |
-| 40 `auth0_*` parties | Wash trade endpoints | 2 | Self-transfer recipients | 253,397 (endpoints) | — | — | — | — | ~39,001.13 (harvested) | — |
+| 40 `auth0_*` parties | Self-transfer counterparties | 2 | Self-transfer recipients | 253,397 (endpoints) | — | — | — | — | ~39,001.13 (harvested) | — |
 | **TOTAL** | | | | | **89,259** | | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
 
 **Key observations:**
@@ -125,7 +125,7 @@ The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42
 |---|---:|---|
 | `cryptolegacy-validator-1` (app rewards) | ~348,535 | Pre-existing coupons claimed via transfers/BuyMemberTraffic |
 | `aevumWallet` | ~5,610 | Pre-existing coupons claimed |
-| `coinaegisVault` (active until Jun 3) | unknown portion of 4,233 | Generated NEW coupons until revoke |
+| `coinaegisVault` (active until Jun 3) | unknown portion of 4,233 | FA remained active; could generate new coupons |
 | auth0 parties | unknown portion | Pre-existing coupons claimed |
 | **Minimum post-pause total** | **~354,145 CC** | |
 
@@ -141,7 +141,7 @@ The same entity (same key) applied for and received FA status under at least 3 d
 - Aevum Extension Wallet ("non-custodial browser gateway")
 - Goldacorn ("OTC/P2P swapping platform")
 
-These were presented as separate companies/products in the governance vote reasons.
+Each application had a distinct name, description, and URL in the governance vote reasons.
 
 ### 2. Activity Marker Weight Inflation (PRIMARY Exploit Mechanism)
 
@@ -149,7 +149,7 @@ The operator exploited a protocol vulnerability in how FeaturedAppActivityMarker
 
 **Direct proof of inflation (BigQuery-verified):**
 
-BigQuery confirms **zero transfers involving the goldacorn party ID** during its entire active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key activity during this window consisted of 810 single-party validator self-operations (reward claiming/consolidation) and 10 extraction transfers to quokka — none representing goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706, with no corresponding app transfer activity.
+BigQuery confirms **zero transfers involving the goldacorn party ID** during its entire active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key activity during this window consisted of 810 single-party validator operations and 10 extraction transfers to quokka — none representing goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706, with no corresponding app transfer activity.
 
 **Marker payload structure** (from BigQuery exercise events):
 ```json
@@ -194,11 +194,11 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 `cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused) and `coinaegisVault` (not revoked until Jun 3).
 
 ### 5. Funds Extracted — Complete Money Trail
-57.6% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.4% (~1.3M CC) was consumed via BuyMemberTraffic. Only 0.4% (~10.9K CC) remains in wallets.
+57.6% of all CC (~1.77M CC) was transferred to external parties — 1,065,002 CC to fba188 (ByBit), 700,001 CC to Gate (Gate.io), and 4,234 CC to quokka-validator-1. An additional 42.4% (~1.3M CC) was consumed via BuyMemberTraffic. Only 0.4% (~10.9K CC) remains in wallets.
 
 #### Transfer Destinations (BigQuery-confirmed)
 
-CoinAegis used a three-phase extraction strategy with `quokka-validator-1` as an intermediary:
+Transfers to external parties occurred in three phases, with `quokka-validator-1` as an intermediary in Phase 1:
 
 **Phase 1 — Via quokka intermediary (Apr 24-25, 2026):**
 
@@ -215,7 +215,7 @@ CoinAegis (`cryptolegacy-validator-1`) transferred CC to two auth0 party IDs con
 | 7 | 2026-04-25 05:14:14 | `cryptolegacy-validator-1` | `auth0_007c69ec1703...` (quokka) | 250,000.00 | quokka-validator-1 | `12207dd007...d612:2` |
 | | | | **Phase 1 subtotal** | **1,100,030.00** | | |
 
-Quokka intermediary forwarding — same day, hours later. Note the small transactions (1 CC, 2 CC) before large transfers:
+Quokka intermediary forwarding (Apr 25–26). Note the small transactions (1 CC, 2 CC) before large transfers:
 
 | # | Timestamp (UTC) | Sender | Receiver | Amount (CC) | Provider | Event ID |
 |---|---|---|---|---:|---|---|
@@ -293,7 +293,7 @@ CoinAegis executed 1,929 `BuyMemberTraffic` operations consuming ~1.3M CC. These
 
 - **Full party ID:** `fba188::1220b5c7e1c4c31c691712a9e660bc611ad91ee0aad58580108db04b84b560b3aa31`
 - **Hosted on:** ByBit-MainNetValidator-1 (confirmed by `provider` field in transfer payloads)
-- **Status:** Reported frozen by ByBit
+- **Status:** Frozen (per internal report from ByBit)
 - **Received:** ~1,065,002 CC from CoinAegis (largest single recipient)
 
 #### Key Entity: Gate
