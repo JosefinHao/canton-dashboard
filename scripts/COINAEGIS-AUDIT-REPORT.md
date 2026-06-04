@@ -6,9 +6,9 @@
 
 CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters disproportionate to actual activity when creating FeaturedAppActivityMarkers for the goldacorn FA. The app processed only ~134 transfers, but the validator claimed a cumulative weight of 193,706 — **1,336× the ratio** observed in legitimate single-beneficiary apps like `arcane-mainnet-1` (135 transfers → 145 weight, ratio 1.07×). In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters disproportionate to actual activity when creating FeaturedAppActivityMarkers for the goldacorn FA. The app processed only ~134 transfers, but the validator claimed a cumulative weight of 193,706 — a **1,446× weight-to-transfer ratio** vs 1.07× for legitimate single-beneficiary apps like `arcane-mainnet-1` (135 transfers → 145 weight). In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
 
-**Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** The operator executed 253,397 self-transfers (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers at 18.6-second intervals (32× faster than the ~10-minute norm). 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
+**Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** The operator executed 253,397 self-transfers (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers at 18.6-second intervals (32× faster than `kora-app`'s ~10-minute interval). 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
 
 **Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's exploitation window (April–May 2026).
 
@@ -134,7 +134,7 @@ Note: `coinaegisVault` FA was never paused and can still generate new AppRewardC
 
 ## Violations Identified
 
-### 1. Identity Fraud — Multiple FA Applications Under Different Names
+### 1. Multiple FA Applications Under Different Names (Same Key)
 The same entity (same key) applied for and received FA status under at least 3 different identities:
 - CoinAegis ("Dual-Vault RWA yield engine")
 - Aevum Extension Wallet
@@ -154,7 +154,7 @@ The operator exploited a protocol vulnerability in how FeaturedAppActivityMarker
 | `kora-app` | ~5,000 | ~5,000 | **~1.0×** |
 | `goldacorn` (CoinAegis) | ~134 | 193,706 | **1,446×** |
 
-Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn's weight was **1,336× higher than the arcane baseline** relative to its transfer count.
+Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn's weight-to-transfer ratio (1,446×) was **1,350× higher than arcane's** (1.07×).
 
 **Marker creation frequency (BigQuery-verified):**
 
@@ -186,9 +186,9 @@ Created 40 `auth0_*` party IDs all controlled by the same key. Used them to exec
 | May 10–17 | 21,832 | 175,731 | Ramp-up |
 | May 18 | 17,819 | 161,239 | First big burst |
 | May 19–21 | 6,155 | 40,694 | Quiet period |
-| **May 22** | **100,135** | **675,031** | **Massive burst #1** |
+| **May 22** | **100,135** | **675,031** | **Peak day #1** |
 | May 23–27 | 4,078 | 21,892 | Low activity |
-| **May 28** | **103,294** | **472,427** | **Massive burst #2 — day of governance vote** |
+| **May 28** | **103,294** | **472,427** | **Peak day #2 — day of governance vote** |
 | May 29 | 59 | 8,687 | FA paused — scheme stopped |
 
 80% of all self-transfers occurred on just two days (May 22 and May 28). On May 29, after the FA pause, activity dropped to 59 transfers.
@@ -245,7 +245,7 @@ Quokka intermediary forwarding — same day, hours later. Note the small transac
 
 **Phase 2 — Small drip transfers to quokka (May 27, 2026):**
 
-`coinaegisVault` and one auth0 party sent 26 small transfers (117–207 CC each) to `quokka-validator-1` over ~6.5 hours (08:45–15:18 UTC). **Phase 2 subtotal: 4,233.76 CC.**
+`coinaegisVault` and one auth0 party sent 26 small transfers (1–207 CC each) to `quokka-validator-1` over ~6.5 hours (08:45–15:18 UTC). **Phase 2 subtotal: 4,233.76 CC.**
 
 **Phase 3 — Direct large transfers to exchanges (May 29, 2026):**
 
