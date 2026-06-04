@@ -6,7 +6,7 @@
 
 CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters disproportionate to actual activity when creating FeaturedAppActivityMarkers for the goldacorn FA. The app processed only ~134 transfers, but the validator claimed a cumulative weight of 193,706 — a **1,446× weight-to-transfer ratio** vs 1.07× for legitimate single-beneficiary apps like `arcane-mainnet-1` (135 transfers → 145 weight). In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding on-chain activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers** involving goldacorn during its active FA period (Apr 20–25), yet the validator claimed a cumulative marker weight of 193,706. For comparison, legitimate FA `arcane-mainnet-1` shows 135 transfers → 145 weight (1.07× ratio). In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
 
 **Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** The operator executed 253,397 self-transfers (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers at 18.6-second intervals (32× faster than `kora-app`'s ~10-minute interval). 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
 
@@ -31,7 +31,7 @@ This proves single-entity control over all 44 party IDs.
 
 | Party | Role | Phase | Scheme | Transfers | Markers | Marker Interval | Total Weight | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|
-| `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Inflated marker weights** | ~134 | 919 | 31.9s (19× norm) | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
+| `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Inflated marker weights** | 0 (during FA period) | 919 | 31.9s (19× norm) | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
 | `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **High-frequency markers + wash trading** | 253,397 self-transfers | 88,340 | 18.6s (32× norm) | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
 | `coinaegisVault` | Featured App (provider) | Minor | Not verified (revoked Jun 3) | — | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
@@ -149,13 +149,13 @@ The operator exploited a protocol vulnerability in how FeaturedAppActivityMarker
 
 **Direct proof of inflation — single-beneficiary FA comparison (BigQuery-verified):**
 
-| FA Provider | Transfers | Marker Weight | Ratio (Weight/Transfers) |
+| FA Provider | Transfers (during FA period) | Marker Weight | Ratio (Weight/Transfers) |
 |---|---:|---:|---:|
 | `arcane-mainnet-1` | 135 | 145 | **1.07×** |
 | `kora-app` | ~5,000 | ~5,000 | **~1.0×** |
-| `goldacorn` (CoinAegis) | ~134 | 193,706 | **1,446×** |
+| `goldacorn` (CoinAegis) | **0** | 193,706 | **∞ (no transfers)** |
 
-Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn's weight-to-transfer ratio (1,446×) was **1,350× higher than arcane's** (1.07×).
+Legitimate single-beneficiary apps show weight tracking transfers at approximately 1:1. Goldacorn claimed 193,706 in marker weight with **zero on-chain transfers** during its active FA period (Apr 20–25, verified via BigQuery `acting_parties` filter).
 
 **Marker creation frequency (BigQuery-verified):**
 
@@ -172,7 +172,7 @@ Legitimate single-beneficiary apps show weight tracking transfers at approximate
   "weight": "376.0"
 }
 ```
-The outer `weight` (376.0) is the value the validator submitted per marker. For comparison, legitimate app `arcane-mainnet-1` averaged ~1.07 weight per transfer. The `beneficiary` is `cryptolegacy-validator-1`, which is where the resulting AppRewardCoupons were attributed.
+The outer `weight` (376.0) is the value the validator submitted per marker — with no corresponding transfer activity. The `beneficiary` is `cryptolegacy-validator-1`, which is where the resulting AppRewardCoupons were attributed.
 
 **CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's exploitation window (April–May 2026), leaving the protocol open to arbitrary weight claims.
 
