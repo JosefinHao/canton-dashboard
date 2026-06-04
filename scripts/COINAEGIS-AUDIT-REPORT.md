@@ -6,7 +6,7 @@
 
 CoinAegis operated a large-scale reward farming scheme on the Canton Network using **44 party IDs** all controlled by the same cryptographic key. The scheme exploited two mechanisms across two phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding on-chain activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers** involving goldacorn during its active FA period (Apr 20–25), yet the validator claimed a cumulative marker weight of 193,706. In just ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding app activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers involving the goldacorn party ID** during its active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key transfers during this window were 810 single-party validator self-operations and 10 extraction transfers to quokka — none constituting goldacorn app usage. Yet the validator claimed a cumulative marker weight of 193,706. In ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was extracted via quokka intermediaries to ByBit and Gate.io.
 
 **Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** The operator executed 253,397 self-transfers (80.3% of all transfers) shuttling tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers. 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
 
@@ -31,7 +31,7 @@ This proves single-entity control over all 44 party IDs.
 
 | Party | Role | Phase | Scheme | Transfers | Markers | Total Weight | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Fabricated marker weights** | 0 (during FA period) | 919 | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
+| `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Fabricated marker weights** | 0 as goldacorn party | 919 | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
 | `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **Wash trading** | 253,397 self-transfers | 88,340 | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
 | `coinaegisVault` | Featured App (provider) | Minor | Not verified (revoked Jun 3) | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
@@ -149,7 +149,7 @@ The operator exploited a protocol vulnerability in how FeaturedAppActivityMarker
 
 **Direct proof of inflation (BigQuery-verified):**
 
-BigQuery confirms **zero transfers** involving goldacorn as an acting party during its entire active FA period (Apr 20–25). Yet the validator created 919 markers claiming a cumulative weight of 193,706. The marker weight was fabricated with no corresponding on-chain transfer activity.
+BigQuery confirms **zero transfers involving the goldacorn party ID** during its entire active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key activity during this window consisted of 810 single-party validator self-operations (reward claiming/consolidation) and 10 extraction transfers to quokka — none representing goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706, with no corresponding app transfer activity.
 
 **Marker payload structure** (from BigQuery exercise events):
 ```json
