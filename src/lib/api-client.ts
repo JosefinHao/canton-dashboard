@@ -742,7 +742,7 @@ export const scanApi = {
     return scanGet("/v0/scans");
   },
 
-  // GET /_sv-node-status - fetch SV status from status.v2.json endpoints
+  // GET /_sv-node-status - fetch SV node status per environment
   async fetchSvNodeStatus(): Promise<SvNodeStatusResponse> {
     return scanGet("/_sv-node-status");
   },
