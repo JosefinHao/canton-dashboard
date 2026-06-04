@@ -68,37 +68,28 @@ router.post('/_endpoint', (req, res) => {
   }
 });
 
-const SV_STATUS_BASE_URLS = {
-  dev:  'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime',
-  test: 'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime',
-  main: 'https://info.sv.global.canton.network.sv-nodeops.com/runtime',
+const SV_STATUS_URLS = {
+  dev:  'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime/status.json',
+  test: 'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime/status.json',
+  main: 'https://info.sv.global.canton.network.sv-nodeops.com/runtime/status.json',
 };
-
-async function fetchSvStatus(env, baseUrl) {
-  const fetchOpts = { method: 'GET', headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(15000) };
-  // Try status.json first; fall back to status.v2.json for environments that haven't migrated yet.
-  for (const file of ['status.json', 'status.v2.json']) {
-    const url = `${baseUrl}/${file}`;
-    const resp = await fetch(url, fetchOpts);
-    if (resp.status === 404) continue;
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await readBodyWithLimit(resp, 256 * 1024);
-    const data = JSON.parse(text);
-    console.log(`[Scan Proxy] SV status ${env}: loaded from ${file}`);
-    return data.status;
-  }
-  throw new Error('HTTP 404 (status.json and status.v2.json)');
-}
 
 // GET /_sv-node-status - Fetch aggregated SV status per environment
 router.get('/_sv-node-status', async (req, res) => {
   console.log('[Scan Proxy] Fetching SV node status');
 
   const results = await Promise.all(
-    Object.entries(SV_STATUS_BASE_URLS).map(async ([env, baseUrl]) => {
+    Object.entries(SV_STATUS_URLS).map(async ([env, url]) => {
       try {
-        const status = await fetchSvStatus(env, baseUrl);
-        return { env, status, error: null };
+        const resp = await fetch(url, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await readBodyWithLimit(resp, 256 * 1024);
+        const data = JSON.parse(text);
+        return { env, status: data.status, error: null };
       } catch (err) {
         console.warn(`[Scan Proxy] SV status ${env}: ${err.message}`);
         return { env, status: null, error: err.message };
