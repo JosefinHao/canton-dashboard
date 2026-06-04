@@ -1,4 +1,4 @@
-# Kairo FA Assessment — Data Summary for Tokenomics Committee
+# Kairo FA Assessment
 
 ---
 
