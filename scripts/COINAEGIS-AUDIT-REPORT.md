@@ -125,11 +125,11 @@ The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42
 |---|---:|---|
 | `cryptolegacy-validator-1` (app rewards) | ~348,535 | Pre-existing coupons claimed via transfers/BuyMemberTraffic |
 | `aevumWallet` | ~5,610 | Pre-existing coupons claimed |
-| `coinaegisVault` (still active) | unknown portion of 4,233 | May still generate NEW coupons |
+| `coinaegisVault` (active until Jun 3) | unknown portion of 4,233 | Generated NEW coupons until revoke |
 | auth0 parties | unknown portion | Pre-existing coupons claimed |
 | **Minimum post-pause total** | **~354,145 CC** | |
 
-Note: `coinaegisVault` FA was not paused until June 3 and could generate new AppRewardCoupons during the May 28 – Jun 3 window. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
+Note: `coinaegisVault` FA was not revoked until June 3 and continued generating new AppRewardCoupons during the May 28 – Jun 3 window. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
 
 ---
 
@@ -314,7 +314,7 @@ CoinAegis executed 1,929 `BuyMemberTraffic` operations consuming ~1.3M CC. These
 
 ## Data Sources
 
-All data queried from Canton Scan API and BigQuery on 2026-06-01 and 2026-06-02:
+All data queried from Canton Scan API and BigQuery on 2026-06-01 through 2026-06-03:
 
 **Canton Scan API:**
 - `v0/round-of-latest-data` — current round (98443)
@@ -337,7 +337,7 @@ All data queried from Canton Scan API and BigQuery on 2026-06-01 and 2026-06-02:
 - **Activity marker analysis** via `FeaturedAppRight_CreateActivityMarker` exercise events — weight parameter, beneficiary, provider, creation frequency
 - **Marker weight validation** via cross-referencing marker weight against transfer count per FA provider
 - Template: `c208d7ead1e4e9b610fc2054d0bf00716144ad444011bce0b02dcd6cd0cb8a23:Splice.AmuletRules:AmuletRules`
-- Date range: 2026-04-20 to 2026-06-01, migration_id = 4
+- Date range: 2026-04-20 to 2026-06-03, migration_id = 4
 - Verification queries: `scripts/bigquery-fee-burn-verification.sql`
 
 **Canton Improvement Proposals:**
