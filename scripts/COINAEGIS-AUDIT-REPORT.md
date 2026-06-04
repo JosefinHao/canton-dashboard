@@ -40,26 +40,15 @@ This proves single-entity control over all 44 party IDs.
 | **TOTAL** | | | | | **89,259 markers** | | | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
 
 **Key observations:**
-- `cryptolegacy-validator-1` never created markers itself — it was the designated `beneficiary` receiving coupons from goldacorn and aevumWallet markers
-- goldacorn's ~134 transfers generated 193,706 in marker weight (1,446× weight-to-transfer ratio vs 1.07× for legitimate app `arcane-mainnet-1`)
-- 78.9% of aevumWallet's 3,292,568 CC in coupons expired unclaimed
 - 100% of AppRewardCoupons are `featured=true` — all rewards came through the FeaturedAppActivityMarker mechanism, not directly from transfers
-- goldacorn: 855 coupons, 100% claimed, 2.09M CC. 1.1M CC transferred to exchanges within hours of generation
+- Claim/expire status verified via BigQuery exercise choice: "Archive" = claimed, "AppRewardCoupon_DsoExpire" = expired
+- The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn
 
 ---
 
-## Total CC Mined (All Entities)
+## auth0 Party Breakdown
 
-| Party ID | App Rewards Harvested (CC) | Type |
-|---|---:|---|
-| `cryptolegacy-validator-1` | 2,598,113.64 | Validator — designated `beneficiary` in goldacorn FA markers (verified) |
-| `aevumWallet` | 155,970.47 | FA (revoked May 28) |
-| `coinaegis` | 7,201.82 | FA (revoked May 29) |
-| `coinaegisVault` | 4,232.76 | FA (**STILL ACTIVE**) |
-| 40 `auth0_*` party IDs | ~39,001.13 | Not FAs |
-| **TOTAL** | **~2,804,520 CC** | |
-
-### auth0 Party Breakdown
+The 40 `auth0_*` party IDs collectively harvested ~39,001 CC in app rewards:
 
 | Group | Count | Total CC |
 |---|---:|---:|
@@ -104,7 +93,7 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 | 2026-05-28 22:12:56 | 665K CC consolidated | Pre-existing amulets (635K) + harvested rewards (29.7K) merged |
 | 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
-| 2026-06-02 | `coinaegisVault` | **STILL ACTIVE** — confirmed via live API: 199.89 CC holdings |
+| 2026-06-02 | `coinaegisVault` | **STILL ACTIVE** — confirmed via live API: 199.99 CC holdings |
 
 ---
 
@@ -123,26 +112,13 @@ This validator was the designated `beneficiary` in goldacorn FA markers (verifie
 | ~May 29 | 98000 | ~2,300,000 | ~295,000 | **Day of second pause** |
 | Jun 1 | 98443 | **2,598,114** | >292,000 (last measured 292,142 at round 97910) | **Still mining** |
 
-### Mining rate
-- Rounds 96000-97000 (~7 days): ~290,000 CC total (~290,000 CC/week)
-- Rounds 97000-97900 (~6 days): ~817,000 CC total (~950,000 CC/week, accelerating)
-- Rounds 97900-98443 (~3 days): ~349,000 CC total (post-pause period)
-
 ---
 
 ## Post-Pause Reward Harvesting
 
 ### After aevumWallet pause (May 28 21:41:38 UTC)
 
-The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42:17 UTC, 39 seconds after threshold). However, previously-generated coupons could still be harvested during transfers and BuyMemberTraffic. The Scan API cumulative counters continued increasing as pre-existing coupons were claimed:
-
-At round ~97900 (May 28):
-- `cryptolegacy-validator-1` app_cc: 2,249,579
-- `aevumWallet` app_cc: 150,360
-
-Current (round 98443, Jun 1):
-- `cryptolegacy-validator-1` app_cc: 2,598,114
-- `aevumWallet` app_cc: 155,970
+The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42:17 UTC, 39 seconds after threshold). However, previously-generated coupons could still be harvested during transfers and BuyMemberTraffic:
 
 | Party | CC harvested after May 28 pause | Source |
 |---|---:|---|
@@ -228,14 +204,9 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 ```
 
 ### 4. Validator Used as Primary Reward Harvester
-`cryptolegacy-validator-1` earned **2.6M CC in app rewards** despite never being registered as a Featured App. BigQuery exercise payloads confirm the validator was designated as the `beneficiary` in goldacorn FeaturedAppActivityMarkers. The coupons were claimed into amulets during transfers and BuyMemberTraffic operations. `cryptolegacy-validator-1` earned more app rewards than any registered FA in the network.
+`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused) and `coinaegisVault` (FA never revoked).
 
-### 5. Continued Mining After Pause
-After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through:
-- `cryptolegacy-validator-1` (never paused — not an FA)
-- `coinaegisVault` (FA never revoked)
-
-### 6. Funds Extracted — Complete Money Trail
+### 5. Funds Extracted — Complete Money Trail
 57.6% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.4% (~1.3M CC) was consumed via BuyMemberTraffic. Only 0.4% (~10.9K CC) remains in wallets.
 
 #### Transfer Destinations (BigQuery-confirmed)
@@ -274,37 +245,7 @@ Quokka intermediary forwarding — same day, hours later. Note the small transac
 
 **Phase 2 — Small drip transfers to quokka (May 27, 2026):**
 
-`coinaegisVault` and one auth0 party sent 26 small transfers to `quokka-validator-1` over ~6.5 hours:
-
-| # | Timestamp (UTC) | Sender | Amount (CC) | Event ID |
-|---|---|---|---:|---|
-| 8 | 2026-05-27 08:45:36 | `auth0_007c6a07b6...` (CoinAegis) | 1.00 | `1220816a83...3833:1` |
-| 9 | 2026-05-27 08:47:54 | `auth0_007c6a07b6...` (CoinAegis) | 200.00 | `122001f9c2...5061:1` |
-| 10 | 2026-05-27 10:56:36 | `coinaegisVault` | 190.31 | `1220fa2544...49c2:2` |
-| 11 | 2026-05-27 11:25:50 | `coinaegisVault` | 155.83 | `1220db7c14...6c71:2` |
-| 12 | 2026-05-27 11:33:59 | `coinaegisVault` | 207.20 | `12208676...cf61:2` |
-| 13 | 2026-05-27 11:48:07 | `coinaegisVault` | 117.99 | `1220fe1f...a093:2` |
-| 14 | 2026-05-27 11:54:11 | `coinaegisVault` | 178.25 | `1220907e...9644:2` |
-| 15 | 2026-05-27 12:08:19 | `coinaegisVault` | 202.34 | `1220d6da...5a4:2` |
-| 16 | 2026-05-27 12:18:25 | `coinaegisVault` | 152.17 | `1220f2b2...4efa:2` |
-| 17 | 2026-05-27 12:28:31 | `coinaegisVault` | 176.78 | `12204f4c...e446:2` |
-| 18 | 2026-05-27 12:36:38 | `coinaegisVault` | 160.31 | `1220d451...d986:2` |
-| 19 | 2026-05-27 12:48:45 | `coinaegisVault` | 182.37 | `1220402f...29e2:2` |
-| 20 | 2026-05-27 12:58:51 | `coinaegisVault` | 158.88 | `12203c37...a69c:2` |
-| 21 | 2026-05-27 13:08:58 | `coinaegisVault` | 174.19 | `122098fd...307d:2` |
-| 22 | 2026-05-27 13:19:04 | `coinaegisVault` | 174.30 | `1220ec16...e34c:2` |
-| 23 | 2026-05-27 13:27:11 | `coinaegisVault` | 181.52 | `12202372...c2d4:2` |
-| 24 | 2026-05-27 13:35:16 | `coinaegisVault` | 150.54 | `12204409...592f:2` |
-| 25 | 2026-05-27 13:47:24 | `coinaegisVault` | 158.41 | `1220ca5c...6b85:2` |
-| 26 | 2026-05-27 14:01:32 | `coinaegisVault` | 158.34 | `1220bfdc...ed94:2` |
-| 27 | 2026-05-27 14:19:41 | `coinaegisVault` | 144.31 | `1220c6de...fd43:2` |
-| 28 | 2026-05-27 14:27:53 | `coinaegisVault` | 137.51 | `1220743f...2e9e:2` |
-| 29 | 2026-05-27 14:42:01 | `coinaegisVault` | 183.92 | `12201d3d...8b20:2` |
-| 30 | 2026-05-27 14:52:08 | `coinaegisVault` | 181.95 | `12209528...d5b1:2` |
-| 31 | 2026-05-27 15:02:15 | `coinaegisVault` | 139.84 | `122038cb...3fea:2` |
-| 32 | 2026-05-27 15:12:21 | `coinaegisVault` | 169.66 | `1220c897...c5c3:2` |
-| 33 | 2026-05-27 15:18:27 | `coinaegisVault` | 195.84 | `1220af5f...8702:2` |
-| | | **Phase 2 subtotal** | **4,233.76** | |
+`coinaegisVault` and one auth0 party sent 26 small transfers (117–207 CC each) to `quokka-validator-1` over ~6.5 hours (08:45–15:18 UTC). **Phase 2 subtotal: 4,233.76 CC.**
 
 **Phase 3 — Direct large transfers to exchanges (May 29, 2026):**
 
@@ -360,46 +301,6 @@ CoinAegis executed 1,929 `BuyMemberTraffic` operations consuming ~1.3M CC. These
 | **Total input** | **153,996,549** |
 | Returned as change (`senderChangeAmount`) | -152,695,010 |
 | **Net CC consumed for traffic** | **1,301,539** |
-
-**Observed data flow:** Activity markers were created with inflated weights (proven for goldacorn) → markers converted to app reward coupons at round boundaries → reward coupons were consumed during transfers and BuyMemberTraffic operations.
-
-**BuyMemberTraffic timeline:** CoinAegis made 1,929 BuyMemberTraffic purchases. The first purchase was at 2026-04-24 22:27 UTC — nearly 5 hours after goldacorn's first activity marker (17:32 UTC). Marker creation frequency increased from ~1/min to 3–5/min after the first BuyMemberTraffic purchase (correlation observed, causation not established).
-
-#### On-Chain Activity (BigQuery-verified)
-
-| Activity | Count | Notes |
-|---|---:|---|
-| `AmuletRules_Transfer` | 315,418 | 253,397 wash trades + 61,985 consolidations + 36 external |
-| `AmuletRules_BuyMemberTraffic` | 1,929 | Consumed ~1.3M CC for network traffic |
-| `AmuletRules_Fetch` | 1,929 | Config reads — does not consume CC |
-| `AmuletRules_CreateTransferPreapproval` | 43 | Preapproving transfers |
-| **Total on-chain actions (AmuletRules)** | **319,319** |
-
-Of the 315,418 transfers:
-- **253,397** (80.3%) were wash trades — sender and receiver both have the CoinAegis key
-- **61,985** (19.7%) had NULL receivers — consolidation/merge-split operations
-- **36** (0.01%) were genuine external transfers to 5 recipients (ByBit, Gate, quokka, and 2 intermediary wallets)
-
-#### AppRewardCoupon Generation by Featured App (BigQuery-verified)
-
-AppRewardCoupons were generated through FeaturedAppActivityMarkers (all coupons are `featured=true`). The marker weight determined each FA's share of the network reward pool:
-
-| FA (provider) | Coupons | CC Created | CC Claimed | CC Expired |
-|---|---:|---:|---:|---:|
-| `aevumWallet` | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
-| `goldacorn` | 855 | 2,090,600.71 | 2,090,600.71 (all claimed) | 0 |
-| `coinaegis` | 11 | 11,979.16 | 11,979.16 (all claimed) | 0 |
-| `coinaegisVault` | 30 | 7,564.14 | 7,564.14 (all claimed) | 0 |
-| **Total** | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
-
-Key observations:
-- `aevumWallet` generated 78,717 coupons (~42 CC each) — **78.9% expired unclaimed**
-- `goldacorn` generated only 855 coupons but at ~2,445 CC each — these came from **inflated marker weights** (193,706 total weight from ~134 actual transfers, a 1,446× weight-to-transfer ratio vs 1.07× for legitimate apps), not from large-value transfers — **all claimed**
-- `coinaegis` and `coinaegisVault` coupons were all claimed
-- Claim/expire status verified via BigQuery exercise choice: "Archive" = claimed, "AppRewardCoupon_DsoExpire" = expired
-- The Scan API's `v0/top-providers-by-app-rewards` attributes 2,598,114 CC to `cryptolegacy-validator-1` because that validator HARVESTED the rewards (via transfers and BuyMemberTraffic). The FAs that GENERATED the coupons were aevumWallet and goldacorn.
-
-Note: the 2,804,520 CC total reflects **app rewards claimed into amulets**. Validator rewards (~268,325 CC harvested, ~292,000 CC earned) are separate. An additional 2,598,192 CC in AppRewardCoupons were generated but expired unclaimed.
 
 #### Key Entity: fba188
 
