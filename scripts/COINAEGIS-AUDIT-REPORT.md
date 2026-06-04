@@ -12,7 +12,7 @@ CoinAegis operated a large-scale reward farming scheme on the Canton Network usi
 
 **Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's exploitation window (April–May 2026).
 
-The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). After the AevumWallet pause vote reached threshold on May 28 at 21:41:38 UTC, the last reward coupon was generated **39 seconds later** (round 97923). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. As of June 2, 2026, `coinaegisVault` remains an active Featured App with 199.99 CC in holdings.
+The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). After the AevumWallet FA was revoked on May 28 at 21:41:43 UTC, the last reward coupon was generated **34 seconds later** (round 97923). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. As of June 3, 2026, `coinaegisVault` has also been revoked (effective 2026-06-03T15:22:33 UTC, 9 for / 0 against, 4 abstaining).
 
 ---
 
@@ -34,7 +34,7 @@ This proves single-entity control over all 44 party IDs.
 | `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Inflated marker weights** | ~134 | 919 | 31.9s (19× norm) | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
 | `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **High-frequency markers + wash trading** | 253,397 self-transfers | 88,340 | 18.6s (32× norm) | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
-| `coinaegisVault` | Featured App (provider) | Minor | Not verified (still active) | — | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
+| `coinaegisVault` | Featured App (provider) | Minor | Not verified (revoked Jun 3) | — | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
 | `cryptolegacy-validator-1` | Validator + designated marker `beneficiary` | Both | Reward harvesting | — | — (beneficiary, not creator) | — | — | — | — | 2,598,113.64 (harvested) | — |
 | 40 `auth0_*` parties | Wash trade endpoints | 2 | Self-transfer recipients | 253,397 (endpoints) | — | — | — | — | — | ~39,001.13 (harvested) | — |
 | **TOTAL** | | | | | **89,259 markers** | | | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
@@ -88,12 +88,13 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 | 2026-04-25 06:35:24 | **Goldacorn FA revoked** | Vote threshold reached: 9 for / 0 against, 4 abstaining (C7-Technology-Services-Limited, Proof-Group-1, SV-Nodeops-Limited, Tradeweb-Markets-1). Effective immediately. Last vote: Digital-Asset-1 at 06:35:15 |
 | 2026-05-01 | FA granted: `coinaegisVault` | "2nd partyID" for CoinAegis |
 | 2026-05-28 20:00:01 | **AevumWallet pause vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the AevumWallet App due to recent on-chain activity that needs further investigation" |
-| 2026-05-28 21:41:38 | **AevumWallet pause vote reached threshold** | 10 SVs voted to pause |
-| 2026-05-28 21:42:17 | **Last aevumWallet AppRewardCoupon** | Round 97923 — 39 seconds after vote threshold |
+| 2026-05-28 21:41:43 | **AevumWallet FA revoked** | 10 for / 0 against, 3 abstaining (C7-Technology-Services-Limited, SV-Nodeops-Limited, Tradeweb-Markets-1) |
+| 2026-05-28 21:42:17 | **Last aevumWallet AppRewardCoupon** | Round 97923 — 34 seconds after revoke |
 | 2026-05-28 22:12:56 | 665K CC consolidated | Pre-existing amulets (635K) + harvested rewards (29.7K) merged |
-| 2026-05-29 09:15:17 | **Coinaegis pause vote initiated** | Same reason |
+| 2026-05-29 09:15:17 | **Coinaegis revoke vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the Coinaegis App due to recent on-chain activity that needs further investigation" |
 | 2026-05-29 10:38–10:45 | **Final extraction** | 415K to ByBit + 250K to Gate in 7 minutes (83 min after coinaegis vote) |
-| 2026-06-02 | `coinaegisVault` | **STILL ACTIVE** — confirmed via live API: 199.99 CC holdings |
+| 2026-05-29 20:49:56 | **Coinaegis FA revoked** | 9 for / 0 against, 4 abstaining (Cumberland-1, Cumberland-2, Digital-Asset-1, SV-Nodeops-Limited) |
+| 2026-06-03 15:22:33 | **CoinaegisVault FA revoked** | 9 for / 0 against, 4 abstaining (Digital-Asset-1, Proof-Group-1, SV-Nodeops-Limited, Tradeweb-Markets-1). Last CoinAegis FA revoked |
 
 ---
 
@@ -116,9 +117,9 @@ This validator was the designated `beneficiary` in goldacorn FA markers (verifie
 
 ## Post-Pause Reward Harvesting
 
-### After aevumWallet pause (May 28 21:41:38 UTC)
+### After aevumWallet revoke (May 28 21:41:43 UTC)
 
-The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42:17 UTC, 39 seconds after threshold). However, previously-generated coupons could still be harvested during transfers and BuyMemberTraffic:
+The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42:17 UTC, 34 seconds after revoke). However, previously-generated coupons could still be harvested during transfers and BuyMemberTraffic:
 
 | Party | CC harvested after May 28 pause | Source |
 |---|---:|---|
@@ -128,7 +129,7 @@ The governance vote stopped NEW AppRewardCoupon generation (last coupon at 21:42
 | auth0 parties | unknown portion | Pre-existing coupons claimed |
 | **Minimum post-pause total** | **~354,145 CC** | |
 
-Note: `coinaegisVault` FA was never paused and can still generate new AppRewardCoupons. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
+Note: `coinaegisVault` FA was not paused until June 3 and could generate new AppRewardCoupons during the May 28 – Jun 3 window. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
 
 ---
 
@@ -137,7 +138,7 @@ Note: `coinaegisVault` FA was never paused and can still generate new AppRewardC
 ### 1. Multiple FA Applications Under Different Names (Same Key)
 The same entity (same key) applied for and received FA status under at least 3 different identities:
 - CoinAegis ("Dual-Vault RWA yield engine")
-- Aevum Extension Wallet
+- Aevum Extension Wallet ("non-custodial browser gateway")
 - Goldacorn ("OTC/P2P swapping platform")
 
 These were presented as separate companies/products in the governance vote reasons.
@@ -204,7 +205,7 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 ```
 
 ### 4. Validator Used as Primary Reward Harvester
-`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee paused two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused) and `coinaegisVault` (FA never revoked).
+`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused) and `coinaegisVault` (not revoked until Jun 3).
 
 ### 5. Funds Extracted — Complete Money Trail
 57.6% of all CC (~1.77M CC) was transferred to external exchange wallets (fba188/ByBit and Gate.io). An additional 42.4% (~1.3M CC) was consumed via BuyMemberTraffic. Only 0.4% (~10.9K CC) remains in wallets.
