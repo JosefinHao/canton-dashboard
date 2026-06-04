@@ -5,23 +5,29 @@ set -euo pipefail
 # deploy-frontend.sh - Build and deploy Vite React SPA to nginx
 #
 # Usage:
-#   ./deploy/deploy-frontend.sh              # Deploy to production (/var/www/html)
-#   ./deploy/deploy-frontend.sh --staging    # Deploy to staging (/var/www/staging)
+#   ./deploy/deploy-frontend.sh              # Deploy to both production and staging
+#   ./deploy/deploy-frontend.sh --production # Deploy to production only (/var/www/html)
+#   ./deploy/deploy-frontend.sh --staging    # Deploy to staging only (/var/www/staging)
 # =============================================================================
 
-STAGING=false
-if [[ "${1:-}" == "--staging" ]]; then
-    STAGING=true
+MODE="${1:---all}"
+
+if [[ "$MODE" == "--all" ]]; then
+    echo "Deploying production + staging..."
+    "$0" --production && "$0" --staging
+    exit $?
 fi
 
-if [ "$STAGING" = true ]; then
+if [[ "$MODE" == "--staging" ]]; then
     DEPLOY_DIR="/var/www/staging"
     BACKUP_DIR="/var/www/staging.backup.$(date +%Y%m%d_%H%M%S)"
     ENV_LABEL="STAGING"
+    STAGING=true
 else
     DEPLOY_DIR="/var/www/html"
     BACKUP_DIR="/var/www/html.backup.$(date +%Y%m%d_%H%M%S)"
     ENV_LABEL="PRODUCTION"
+    STAGING=false
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
