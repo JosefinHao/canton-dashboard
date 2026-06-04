@@ -6,7 +6,7 @@
 
 1. **16 wallets share the same namespace root key, operated by the same entity.** Wallets include `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-executor`, `kairo-dex-lp-1`, `kairo-dex-lp-2`, `sanctum-mainnet`, `sanc-oct`, `sanc-octlabs`, and others (Section 1). Source: BigQuery, filtered by namespace key fingerprint `12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060`.
 
-2. **779,030 receiverless self-transfers across all entity wallets.** Every `AmuletRules_Transfer` event across all 16 wallets has zero receivers — verified across 100% of transfers (BigQuery) and independently confirmed via Scan API (Section 2). Source: BigQuery entity-wide query, `choice = 'AmuletRules_Transfer'`, `transfers = receiverless_transfers` on every row.
+2. **779,030 receiverless self-transfers across all entity wallets.** Every `AmuletRules_Transfer` event across all 16 wallets has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (BigQuery) and independently confirmed as `receivers: []` via Scan API (Section 2).
 
 3. **These transfers generated 19,405,516 CC in FA rewards.** Only `kairo-mainnet` earned AppRewardCoupons. 732,710 coupons, all tagged `featured = true`, zero unfeatured (Section 3). Source: Scan API `top-providers-by-app-rewards` and `round-party-totals` at round 98,727; BigQuery `AppRewardCoupon` created events filtered by provider.
 
@@ -75,7 +75,7 @@ DEX and sanctum wallets returned null from Scan API `round-party-totals` (rounds
 
 ## 2. Transfer Pattern
 
-779,030 `AmuletRules_Transfer` events across all entity wallets. Every one has zero receivers (`transfers` = `receiverless_transfers` on every row).
+779,030 `AmuletRules_Transfer` events across all entity wallets. `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (BigQuery). Independently confirmed as `receivers: []` via Scan API.
 
 **Monthly breakdown by wallet** (BigQuery, entity-wide query):
 
