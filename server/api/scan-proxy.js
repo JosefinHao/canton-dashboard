@@ -68,16 +68,15 @@ router.post('/_endpoint', (req, res) => {
   }
 });
 
-// SV Status v2 endpoints per environment
 const SV_STATUS_URLS = {
-  dev:  'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime/status.v2.json',
-  test: 'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime/status.v2.json',
-  main: 'https://info.sv.global.canton.network.sv-nodeops.com/runtime/status.v2.json',
+  dev:  'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime/status.json',
+  test: 'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime/status.json',
+  main: 'https://info.sv.global.canton.network.sv-nodeops.com/runtime/status.json',
 };
 
-// GET /_sv-node-status - Fetch aggregated SV status from status.v2.json per environment
+// GET /_sv-node-status - Fetch aggregated SV status per environment
 router.get('/_sv-node-status', async (req, res) => {
-  console.log('[Scan Proxy] Fetching SV status from status.v2.json endpoints');
+  console.log('[Scan Proxy] Fetching SV node status');
 
   const results = await Promise.all(
     Object.entries(SV_STATUS_URLS).map(async ([env, url]) => {
@@ -87,10 +86,7 @@ router.get('/_sv-node-status', async (req, res) => {
           headers: { Accept: 'application/json' },
           signal: AbortSignal.timeout(15000),
         });
-        if (!resp.ok) {
-          console.warn(`[Scan Proxy] SV status ${env}: HTTP ${resp.status}`);
-          return { env, status: null, error: `HTTP ${resp.status}` };
-        }
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const text = await readBodyWithLimit(resp, 256 * 1024);
         const data = JSON.parse(text);
         return { env, status: data.status, error: null };

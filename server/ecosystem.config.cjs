@@ -18,45 +18,45 @@
  *   pm2 save
  */
 
+const SHARED_APP_CONFIG = {
+  script: 'server.js',
+  cwd: __dirname,
+  node_args: '--max-old-space-size=2048',
+  autorestart: true,
+  watch: false,
+  max_restarts: 10,
+  min_uptime: '10s',
+  restart_delay: 5000,
+  exp_backoff_restart_delay: 1000,
+  max_memory_restart: '1536M',
+  log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+  merge_logs: true,
+};
+
 module.exports = {
   apps: [
     {
+      ...SHARED_APP_CONFIG,
       name: 'duckdb-api',
-      script: 'server.js',
-      cwd: __dirname,
-      
-      // Interpreter settings
-      node_args: '--max-old-space-size=2048',
-      
-      // Restart behavior
-      autorestart: true,
-      watch: false,
-      max_restarts: 10,
-      min_uptime: '10s',
-      restart_delay: 5000,
-      
-      // Crash recovery
-      exp_backoff_restart_delay: 1000,
-      
-      // Memory management - lower limit since no ingestion
-      max_memory_restart: '1536M',
-      
-      // Logging
-      log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: './logs/pm2-error.log',
       out_file: './logs/pm2-out.log',
-      merge_logs: true,
-      
-      // Environment variables (defaults)
       env: {
         NODE_ENV: 'development',
         PORT: 3001,
       },
-      
-      // Production environment
       env_production: {
         NODE_ENV: 'production',
         PORT: 3001,
+      },
+    },
+    {
+      ...SHARED_APP_CONFIG,
+      name: 'duckdb-api-staging',
+      error_file: './logs/pm2-staging-error.log',
+      out_file: './logs/pm2-staging-out.log',
+      env: {
+        NODE_ENV: 'staging',
+        PORT: 3002,
       },
     },
   ],

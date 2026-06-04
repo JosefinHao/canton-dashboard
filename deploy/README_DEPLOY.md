@@ -165,6 +165,23 @@ The deploy script (`./deploy/deploy-frontend.sh --staging`) sets these automatic
 
 PM2 auto-starts on boot via systemd (configured with `pm2 startup` + `pm2 save`).
 
+### Staging backend
+
+The staging backend runs on port 3002 (nginx routes `/staging/api/` there).
+
+```bash
+# Start staging backend from a feature branch
+cd ~/amulet-scan-port/server
+pm2 start ecosystem.config.cjs --only duckdb-api-staging
+
+# View staging logs
+pm2 logs duckdb-api-staging --lines 20 --nostream
+
+# Restart / stop staging
+pm2 restart duckdb-api-staging
+pm2 stop duckdb-api-staging
+```
+
 ## Health Checks
 
 ```bash

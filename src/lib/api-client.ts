@@ -5,8 +5,9 @@
 // CRITICAL: Frontend must NEVER know the real Scan URL — only /api/scan-proxy
 
 // Backend proxy base URL - all Scan API calls go through here
-// Hard-coded to prevent any env variable leakage (e.g., VITE_SCAN_API_URL)
-const API_BASE = "/api/scan-proxy";
+// VITE_BASE_PATH is set at build time for staging ("/staging") so requests
+// hit /staging/api/… → nginx → port 3002 instead of /api/… → port 3001.
+const API_BASE = `${import.meta.env.VITE_BASE_PATH || ""}/api/scan-proxy`;
 
 /* =========================
  *    CORE SCAN HELPERS
@@ -742,7 +743,7 @@ export const scanApi = {
     return scanGet("/v0/scans");
   },
 
-  // GET /_sv-node-status - fetch SV status from status.v2.json endpoints
+  // GET /_sv-node-status - fetch SV node status per environment
   async fetchSvNodeStatus(): Promise<SvNodeStatusResponse> {
     return scanGet("/_sv-node-status");
   },
