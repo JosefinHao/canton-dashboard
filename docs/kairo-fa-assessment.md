@@ -4,29 +4,36 @@
 
 ## Key Findings
 
-1. **16 wallets share the same namespace root key, operated by the same entity.** Wallets include `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-executor`, `kairo-dex-lp-1`, `kairo-dex-lp-2`, `sanctum-mainnet`, `sanc-oct`, `sanc-octlabs`, and others (Section 1). Source: BigQuery, filtered by namespace key fingerprint `12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060`.
+1. **16 wallets share the same namespace root key, operated by the same entity.** Wallets include `kairo-mainnet`, `angelhack-mainnet-1`, `kairo-dex-executor`, `kairo-dex-lp-1`, `kairo-dex-lp-2`, `sanctum-mainnet`, `sanc-oct`, `sanc-octlabs`, and others (Section 1).
+   <br><sub>Source: `events_parsed` — distinct party IDs ending in `::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060` across `signatories`, `acting_parties`, `witness_parties`, `observers` columns</sub>
 
-2. **779,030 receiverless self-transfers across all entity wallets.** Every `AmuletRules_Transfer` event across all 16 wallets has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (BigQuery) and independently confirmed as `receivers: []` via Scan API (Section 2).
+2. **779,030 receiverless self-transfers across all entity wallets.** Every `AmuletRules_Transfer` event across all 16 wallets has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers, independently confirmed as `receivers: []` via Scan API (Section 2).
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL`; Scan API `GET /v0/activities` — `transfer.receivers: []`</sub>
 
-3. **These transfers generated 19,405,516 CC in FA rewards.** Only `kairo-mainnet` earned AppRewardCoupons. 732,710 coupons, all tagged `featured = true`, zero unfeatured (Section 3). Source: Scan API `top-providers-by-app-rewards` and `round-party-totals` at round 98,727; BigQuery `AppRewardCoupon` created events filtered by provider.
+3. **These transfers generated 19,405,516 CC in FA rewards.** Only `kairo-mainnet` earned AppRewardCoupons. 732,710 coupons, all tagged `featured = true`, zero unfeatured (Section 3).
+   <br><sub>Source: Scan API `GET /v0/top-providers-by-app-rewards?round=98727`; `events_parsed` — `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.provider')` matching namespace key</sub>
 
-4. **Traffic purchased by `angelhack-mainnet-1` correlates with FA reward generation.** Both rise and fall together month-over-month (Section 4). Source: BigQuery, monthly traffic events and AppRewardCoupon events joined by month.
+4. **Traffic purchased by `angelhack-mainnet-1` correlates with FA reward generation.** Both rise and fall together month-over-month (Section 4).
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_BuyMemberTraffic'`, `JSON_VALUE(payload, '$.trafficAmount')`; `template_id` containing `AppRewardCoupon`, `JSON_VALUE(payload, '$.amount')`</sub>
 
-5. **Zero DEX-specific contracts on-chain.** All contract templates are standard Splice/Amulet infrastructure. Zero external (non-entity) parties appear as witnesses or observers. All 775,587 `Allocation_ExecuteTransfer` events have zero receivers (Section 5). Source: BigQuery, `template_id` and `witness_parties`/`observers` queries.
+5. **Zero DEX-specific contracts on-chain.** All contract templates are standard Splice/Amulet infrastructure. Zero external (non-entity) parties appear as witnesses or observers. All 775,587 `Allocation_ExecuteTransfer` events have zero receivers (Section 5).
+   <br><sub>Source: `events_parsed` — `template_id` column on all entity events; `witness_parties` and `observers` columns; `JSON_VALUE(payload, '$.receiver')` on `Allocation%` choices</sub>
 
-6. **Transfer activity migrated across wallets around the Apr 20, 2026 compliance deadline.** `kairo-mainnet` volume dropped from 126,075/week (week of Mar 16) to 218/week (week of Apr 13), while `kairo-dex-executor` appeared with 40,482 transfers that same week (Section 6). Source: BigQuery, weekly transfer counts by wallet.
+6. **Transfer activity migrated across wallets around the Apr 20, 2026 compliance deadline.** `kairo-mainnet` volume dropped from 126,075/week (week of Mar 16) to 218/week (week of Apr 13), while `kairo-dex-executor` appeared with 40,482 transfers that same week (Section 6).
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `effective_at` grouped by week, `acting_parties` per wallet</sub>
 
-7. **Kairo's FA has been removed.** Not present in the current `featured-apps` list (154 FAs exist as of June 4, 2026). Source: Scan API `GET /v0/featured-apps`.
+7. **Kairo's FA has been removed.** Not present in the current `featured-apps` list (154 FAs exist as of June 4, 2026).
+   <br><sub>Source: Scan API `GET /v0/featured-apps` — `featured_apps[].payload.provider` contains no match for namespace key `1220516244`</sub>
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| FA Approval Date | 2025-12-16 | Scan API `featured-apps` |
-| FA Status (June 4, 2026) | Removed | Scan API `featured-apps` |
-| Entity wallets (same namespace key) | 16 | BigQuery |
-| Entity-wide receiverless transfers | 779,030 | BigQuery |
-| Cumulative CC credited (kairo-mainnet) | 19,405,516 | Scan API `top-providers-by-app-rewards`, round 98,727 |
-| Cumulative traffic CC spent (angelhack) | 17,666,162 | Scan API `round-party-totals` |
-| Current holdings (4 wallets, June 3) | 3,510,098 | Scan API `holdings/summary` |
+| FA Approval Date | 2025-12-16 | `GET /v0/featured-apps` → `created_at` |
+| FA Status (June 4, 2026) | Removed | `GET /v0/featured-apps` → no matching provider |
+| Entity wallets (same namespace key) | 16 | `events_parsed` → distinct party IDs matching fingerprint |
+| Entity-wide receiverless transfers | 779,030 | `events_parsed` → `choice`, `payload → $.transfer.receivers[0].party` |
+| Cumulative CC credited (kairo-mainnet) | 19,405,516 | `GET /v0/top-providers-by-app-rewards?round=98727` → `rewards` |
+| Cumulative traffic CC spent (angelhack) | 17,666,162 | `POST /v0/round-party-totals` → `cumulative_traffic_cc_spent` |
+| Current holdings (4 wallets, June 3) | 3,510,098 | `POST /v0/holdings/summary` → `total_balance` |
 
 The on-chain vote reason for Kairo's FA grant states:
 
@@ -48,16 +55,16 @@ The on-chain vote reason for Kairo's FA grant states:
 | `sanctum-mainnet` | Receiverless transfers (Apr–May 2026) |
 | `sanc-oct` | Receiverless transfers (May 2026) |
 | `sanc-octlabs` | Receiverless transfers (May–Jun 2026) |
-| `sanc-zod` | No transfer activity in observation period |
+| `sanc-zod` | No transfer activity (Dec 2025 – Jun 2026) |
 | `sanctum-collection` | Receiverless transfers (May 2026) |
-| `kairo-distro` | No transfer activity in observation period |
-| `kairo-faucet-0` | No transfer activity in observation period |
-| `kairo-funding-wallet` | No transfer activity in observation period |
-| `23020500-79eb-...` | No transfer activity in observation period |
-| `6a5eaaa6-7418-...` | No transfer activity in observation period |
+| `kairo-distro` | No transfer activity (Dec 2025 – Jun 2026) |
+| `kairo-faucet-0` | No transfer activity (Dec 2025 – Jun 2026) |
+| `kairo-funding-wallet` | No transfer activity (Dec 2025 – Jun 2026) |
+| `23020500-79eb-...` | No transfer activity (Dec 2025 – Jun 2026) |
+| `6a5eaaa6-7418-...` | No transfer activity (Dec 2025 – Jun 2026) |
 | `c862121b-3dfc-...` | Receiverless transfers (May 2026, 4 events) |
 
-Source: BigQuery, all distinct parties matching the namespace key across `signatories`, `acting_parties`, `witness_parties`, and `observers` arrays, `effective_at >= '2025-12-01'`.
+<sub>Source: `events_parsed` — all distinct party IDs matching namespace key `1220516244...060` across `signatories`, `acting_parties`, `witness_parties`, `observers` arrays, filtered `effective_at >= '2025-12-01'`.</sub>
 
 On the Canton Network, a party ID has the format `name::fingerprint`. The fingerprint is the SHA-256 hash of the namespace root public key. Parties sharing the same fingerprint were created under the same root key, meaning the root key holder retains administrative control over all parties in that namespace ([source](https://docs.daml.com/canton/usermanual/identity_management.html)).
 
@@ -75,9 +82,9 @@ DEX and sanctum wallets returned null from Scan API `round-party-totals` (rounds
 
 ## 2. Transfer Pattern
 
-779,030 `AmuletRules_Transfer` events across all entity wallets. `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (BigQuery). Independently confirmed as `receivers: []` via Scan API.
+779,030 `AmuletRules_Transfer` events across all entity wallets. `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 779,030 transfers (`events_parsed`). Independently confirmed as `receivers: []` via Scan API.
 
-**Monthly breakdown by wallet** (BigQuery, entity-wide query):
+**Monthly breakdown by wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, grouped by `acting_parties` wallet name):
 
 | Month | angelhack | kairo-mainnet | dex-executor | dex-lp-1 | dex-lp-2 | Others | Total |
 |-------|-----------|--------------|-------------|----------|----------|--------|-------|
@@ -152,18 +159,18 @@ As of June 4, 2026, zero entity transfers appear in the latest 1,000 network-wid
 
 **Total credited CC: 19,405,516** (Scan API, `top-providers-by-app-rewards` and `round-party-totals` at round 98,727).
 
-Only `kairo-mainnet` earned AppRewardCoupons across the entity. No other entity wallet appears as a reward coupon provider (BigQuery, `AppRewardCoupon` created events filtered by namespace key in `$.provider`).
+Only `kairo-mainnet` earned AppRewardCoupons across the entity. No other entity wallet appears as a reward coupon provider (`events_parsed`, `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.provider')` — only `kairo-mainnet::1220516244...` returned).
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| Total reward coupons | 732,710 | BigQuery, `AppRewardCoupon` created events |
-| Total coupon amount (Amulet units) | 44,376,891 | BigQuery, `SUM($.amount)` |
-| Featured coupons | 732,710 (100%) | BigQuery, `$.featured = 'true'` |
-| Unfeatured coupons | 0 | BigQuery |
-| First coupon | 2025-12-19 | BigQuery |
-| Last coupon | 2026-06-03 | BigQuery |
+| Total reward coupons | 732,710 | `events_parsed` → `template_id` containing `AppRewardCoupon`, `event_type = 'created'` |
+| Total coupon amount (Amulet units) | 44,376,891 | `events_parsed` → `payload → $.amount` |
+| Featured coupons | 732,710 (100%) | `events_parsed` → `payload → $.featured = 'true'` |
+| Unfeatured coupons | 0 | `events_parsed` → `payload → $.featured != 'true'` |
+| First coupon | 2025-12-19 | `events_parsed` → `effective_at` |
+| Last coupon | 2026-06-03 | `events_parsed` → `effective_at` |
 
-Monthly coupon breakdown (BigQuery):
+Monthly coupon breakdown (`events_parsed`):
 
 | Month | Reward Coupons | Coupon Amount (Amulet units) |
 |-------|---------------|------------------------------|
@@ -180,9 +187,9 @@ Monthly coupon breakdown (BigQuery):
 
 `angelhack-mainnet-1` is the only entity wallet purchasing traffic. `kairo-mainnet` has zero traffic purchases (Scan API `round-party-totals`).
 
-Traffic is purchased via `AmuletRules_BuyMemberTraffic` (BigQuery). Each purchase buys traffic for the shared participant node. The `trafficAmount` is in sequencer bytes. The inputs include `InputAmulet`, `InputSvRewardCoupon`, and `InputValidatorRewardCoupon` (BigQuery, sample payload from March 15, 2026).
+Traffic is purchased via `AmuletRules_BuyMemberTraffic`. Each purchase buys traffic for the shared participant node. The `trafficAmount` is in sequencer bytes. The inputs include `InputAmulet`, `InputSvRewardCoupon`, and `InputValidatorRewardCoupon` (`events_parsed`, sample payload from March 15, 2026).
 
-**Monthly comparison** (BigQuery, traffic events by entity namespace key joined with AppRewardCoupon created events by kairo-mainnet provider):
+**Monthly comparison** (`events_parsed`: traffic from `choice = 'AmuletRules_BuyMemberTraffic'`, `JSON_VALUE(payload, '$.trafficAmount')`; rewards from `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.amount')`):
 
 | Month | Traffic Events | Traffic Amount (bytes) | Reward Coupons | Reward Coupon Amount |
 |-------|---------------|----------------------|----------------|---------------------|
@@ -194,17 +201,17 @@ Traffic is purchased via `AmuletRules_BuyMemberTraffic` (BigQuery). Each purchas
 | 2026-05 | 2,197 | 12,975,600,000 | 3,650 | 8,081,166 |
 | 2026-06 | 163 | 978,000,000 | 286 | 503,079 |
 
-**CC-level comparison** (Scan API `round-party-totals`, round 98,727):
+**CC-level comparison** (Scan API, round 98,727):
 
 | Metric | CC | Source |
 |--------|-----|--------|
-| Traffic CC spent (angelhack-mainnet-1) | 17,666,162 | `round-party-totals` |
-| FA rewards credited (kairo-mainnet) | 19,405,516 | `top-providers-by-app-rewards` |
-| Validator rewards credited (angelhack-mainnet-1) | 3,521,811 | `round-party-totals` |
+| Traffic CC spent (angelhack-mainnet-1) | 17,666,162 | `POST /v0/round-party-totals` → `cumulative_traffic_cc_spent` |
+| FA rewards credited (kairo-mainnet) | 19,405,516 | `GET /v0/top-providers-by-app-rewards?round=98727` → `rewards` |
+| Validator rewards credited (angelhack-mainnet-1) | 3,521,811 | `POST /v0/round-party-totals` → `cumulative_validator_rewards` |
 
 ## 5. On-Chain Contract Analysis
 
-**All contract templates involving entity wallets** (BigQuery, all events where entity namespace key appears in `signatories` or `acting_parties`, `effective_at >= '2025-12-01'`):
+**All contract templates involving entity wallets** (`events_parsed`, all events where namespace key `1220516244...060` appears in `signatories` or `acting_parties`, `effective_at >= '2025-12-01'`):
 
 | Template | Events |
 |----------|--------|
@@ -227,9 +234,9 @@ Traffic is purchased via `AmuletRules_BuyMemberTraffic` (BigQuery). Each purchas
 
 Every template is standard Splice/Amulet infrastructure. Zero application-specific or DEX-specific contracts exist.
 
-**External party interaction:** Zero non-entity, non-DSO parties appear as `witness_parties` or `observers` on any event where the entity is the `acting_party` (BigQuery).
+**External party interaction:** Zero non-entity, non-DSO parties appear as `witness_parties` or `observers` on any event where the entity is the `acting_party` (`events_parsed`, `effective_at >= '2025-12-01'`).
 
-**Allocation activity** (BigQuery, `Allocation%` choices where entity is acting party):
+**Allocation activity** (`events_parsed`, `choice LIKE 'Allocation%'` where entity namespace key in `acting_parties`, `effective_at >= '2025-12-01'`):
 
 | Choice | Events | Unique Receivers | Unique Providers |
 |--------|--------|-----------------|-----------------|
@@ -238,13 +245,13 @@ Every template is standard Splice/Amulet infrastructure. Zero application-specif
 | Allocation_Withdraw | 4,684 | 0 | 0 |
 | Allocation_Cancel | 173 | 0 | 0 |
 
-All allocation events have zero receivers and zero providers in the payload (`$.receiver` and `$.provider` are NULL).
+All allocation events have zero receivers and zero providers — `JSON_VALUE(payload, '$.receiver')` and `JSON_VALUE(payload, '$.provider')` are NULL.
 
 ## 6. Activity Around Compliance Deadline
 
 The on-chain vote set a compliance deadline of April 20, 2026, 5 PM ET.
 
-**Weekly transfer volume by wallet** (BigQuery, `AmuletRules_Transfer` events, Mar 15 – May 15, 2026):
+**Weekly transfer volume by wallet** (`events_parsed`, `choice = 'AmuletRules_Transfer'`, `effective_at` between `2026-03-15` and `2026-05-15`, grouped by `FORMAT_TIMESTAMP('%Y-%W', effective_at)` and wallet):
 
 | Week | Dates (approx) | kairo-mainnet | dex-executor | dex-lp-1 | dex-lp-2 | angelhack | Entity Total |
 |------|----------------|--------------|-------------|----------|----------|-----------|-------------|
@@ -276,9 +283,9 @@ All transfers across all wallets and all weeks are 100% receiverless.
 
 ### 7.2 Outflows from kairo-mainnet
 
-28 outbound transfers to `angelhack-mainnet-1` totaling 13,700,262 CC (BigQuery `exercise_result` `balanceChanges`). Additional transfers via `TransferPreapproval_Send` (84 events) and `TransferPreapproval_SendV2` (10 events) between January 26 and June 1, 2026.
+28 outbound transfers to `angelhack-mainnet-1` totaling 13,700,262 CC (`events_parsed`, `exercise_result → $.balanceChanges`). Additional transfers via `TransferPreapproval_Send` (84 events) and `TransferPreapproval_SendV2` (10 events) between January 26 and June 1, 2026.
 
-**Recipients** (BigQuery `exercise_result` balanceChanges):
+**Recipients** (`events_parsed`, `exercise_result → $.balanceChanges`):
 
 | Recipient | Total CC Sent | Transfers | Period |
 |-----------|--------------|-----------|--------|
@@ -290,7 +297,7 @@ All transfers across all wallets and all weeks are 100% receiverless.
 
 ### 7.3 Outflows from angelhack-mainnet-1
 
-**Recipients** (BigQuery `exercise_result` data):
+**Recipients** (`events_parsed`, `exercise_result → $.balanceChanges`):
 
 | Date | Recipient | CC Amount |
 |------|-----------|-----------|
@@ -329,16 +336,24 @@ Primary SV: `scan.sv-2.global.canton.network.digitalasset.com/api/scan`. Endpoin
 
 Project `governence-483517`, table `transformed.events_parsed`. Partitioned by `DATE(effective_at)`, clustered by `template_id, event_type, migration_id`. All queries filtered `effective_at >= '2025-12-01'`.
 
-Key queries:
+Key columns and fields referenced in this report:
 
-- **Entity wallets**: All distinct parties matching namespace key `12205162...060` across `signatories`, `acting_parties`, `witness_parties`, `observers` arrays.
-- **Entity-wide activity**: Monthly transfer counts, traffic events, reward coupons per wallet. Filtered by namespace key in `acting_parties` or `signatories`, grouped by `SPLIT(party, '::')[OFFSET(0)]` as wallet name.
-- **Reward coupons**: `template_id LIKE '%AppRewardCoupon%' AND event_type = 'created'`, filtered by `JSON_VALUE(payload, '$.provider')` matching namespace key.
-- **Traffic-reward comparison**: `AmuletRules_BuyMemberTraffic` events by entity wallets joined with `AppRewardCoupon` events by kairo-mainnet provider, grouped by month.
-- **Contract templates**: All `template_id` values on events involving entity wallets.
-- **External users**: `witness_parties` and `observers` on entity events, excluding entity namespace key and DSO parties.
-- **Allocation activity**: `Allocation%` choices, `COUNT(DISTINCT JSON_VALUE(payload, '$.receiver'))` and `COUNT(DISTINCT JSON_VALUE(payload, '$.provider'))`.
-- **Weekly breakdown**: `AmuletRules_Transfer` events by wallet, `FORMAT_TIMESTAMP('%Y-%W', effective_at)`, Mar 15 – May 15, 2026.
+| Column / Field | Used For |
+|----------------|----------|
+| `signatories`, `acting_parties`, `witness_parties`, `observers` | Entity identification — matching namespace key `1220516244...060` |
+| `choice` | Transfer identification (`AmuletRules_Transfer`), traffic (`AmuletRules_BuyMemberTraffic`), allocations (`Allocation%`) |
+| `template_id` | Contract type identification (`AppRewardCoupon`, `Splice.Amulet%`, etc.) |
+| `event_type` | `created` / `exercised` / `archived` |
+| `effective_at` | Timestamp for monthly/weekly grouping |
+| `payload` | JSON column — accessed via `JSON_VALUE(payload, '$.path')` |
+| `payload → $.transfer.receivers[0].party` | Receiver identification (NULL = receiverless) |
+| `payload → $.transfer.sender` | Sender party |
+| `payload → $.provider` | Reward coupon provider party |
+| `payload → $.featured` | Coupon featured status (`true`/`false`) |
+| `payload → $.amount` | Reward coupon amount |
+| `payload → $.trafficAmount` | Traffic purchased (sequencer bytes) |
+| `payload → $.receiver`, `$.provider` | Allocation receiver/provider |
+| `exercise_result → $.balanceChanges` | Outbound transfer amounts and recipients |
 
 ### Reference Price
 
@@ -346,7 +361,4 @@ The CC/USD price on the query date (June 3, 2026) was **$0.149/CC**. All amounts
 
 ### Query Dates
 
-- BigQuery entity queries: June 3–4, 2026
-- Scan API balances: June 3, 2026
-- Scan API FA status check: June 4, 2026
-- Scan API activity verification: June 3 and June 4, 2026
+All data queried Jun 3–4, 2026.
