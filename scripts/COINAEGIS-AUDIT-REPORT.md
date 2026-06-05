@@ -8,7 +8,7 @@ CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** a
 
 **Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) created 919 FeaturedAppActivityMarkers for the goldacorn FA with a cumulative weight of 193,706. The old Splice protocol accepted these weights without validation (see CIP-0104). Those markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
 
-**Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** 253,397 self-transfers (80.3% of all transfers) moved tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers. 78,717 AppRewardCoupons worth 3,292,568 CC were generated. 694,376 CC was claimed; the remaining 2,598,192 CC (78.9%) expired unclaimed.
+**Phase 2 — Self-Transfers + Markers (aevumWallet FA, May 9–28):** 40 `auth0_*` party IDs (same key) executed 253,397 self-transfers (80.3% of all transfers), moving tiny amounts (0.1–4 CC) between each other. During this period, 88,340 FeaturedAppActivityMarkers were created for the aevumWallet FA, generating 78,717 AppRewardCoupons worth 3,292,568 CC. 694,376 CC was claimed; the remaining 2,598,192 CC (78.9%) expired unclaimed.
 
 **Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
 
@@ -32,11 +32,11 @@ This proves single-entity control over all 44 party IDs.
 | Party | Role | Phase | Method | Transfers | Markers | Total Weight | Coupons | CC Created | CC Claimed | CC Expired |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
 | `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Unvalidated marker weights** | — | 919 | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
-| `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **Wash trading** | 253,397 self-transfers | 88,340 | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
+| `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **Self-transfers between auth0 parties** | — | 88,340 | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
 | `coinaegisVault` | Featured App (provider) | Minor | Not verified (revoked Jun 3) | — | — | — | 30 | 7,564.14 | 7,564.14 | 0 |
 | `cryptolegacy-validator-1` | Validator + designated marker `beneficiary` | Both | Reward harvesting | — | — | — | — | — | 2,598,113.64 (harvested) | — |
-| 40 `auth0_*` parties | Self-transfer counterparties | 2 | Self-transfer recipients | 253,397 (endpoints) | — | — | — | — | ~39,001.13 (harvested) | — |
+| 40 `auth0_*` parties | Self-transfer counterparties | 2 | Self-transfer recipients | 253,397 self-transfers | — | — | — | — | ~39,001.13 (harvested) | — |
 | **TOTAL** | | | | | **89,259** | | **79,613** | **5,402,712.38** | **2,804,520.00** | **2,598,192.38** |
 
 **Key observations:**
