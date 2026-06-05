@@ -1,6 +1,6 @@
 # Canton Scan API — Useful Commands
 
-Practical reference for querying the Canton Network Scan API directly via `curl`. Based on commands used during the Kairo FA investigation (Jun 2026).
+Practical reference for querying the Canton Network Scan API directly via `curl`. Based on commands used and verified during the Kairo FA investigation (Jun 3–4, 2026).
 
 **Base URL:** `https://scan.sv-2.global.canton.network.digitalasset.com/api/scan`
 
@@ -220,32 +220,60 @@ curl -s -X POST "https://scan.sv-2.global.canton.network.digitalasset.com/api/sc
 
 ### Look up an entity's full on-chain profile
 
+**1. Check FA status:**
 ```bash
-PARTY="kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060"
-ROUND=98727
-
-# 1. Check FA status
-curl -s ".../v0/featured-apps" | jq --arg p "$PARTY" '.featured_apps[] | select(.payload.provider == $p)'
-
-# 2. Get cumulative rewards
-curl -s ".../v0/top-providers-by-app-rewards?round=$ROUND" | jq --arg p "$PARTY" '.top_providers[] | select(.provider == $p)'
-
-# 3. Get per-party totals (rewards, traffic, transfers)
-curl -s -X POST ".../v0/round-party-totals" -H "Content-Type: application/json" \
-  -d "{\"party_id\": \"$PARTY\", \"start_round\": $ROUND, \"end_round\": $ROUND}" | jq '.'
-
-# 4. Get current balance
-curl -s -X POST ".../v0/holdings/summary" -H "Content-Type: application/json" \
-  -d "{\"migration_id\": 4, \"record_time\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"owner_party_ids\": [\"$PARTY\"]}" | jq '.'
-
-# 5. Check recent activity
-curl -s -X POST ".../v0/activities" -H "Content-Type: application/json" \
-  -d '{"page_size": 1000}' | jq --arg p "$PARTY" '[.activities[] | select(.transfer.sender.party == $p)]'
+curl -s "https://scan.sv-2.global.canton.network.digitalasset.com/api/scan/v0/featured-apps" \
+  | jq '.featured_apps[] | select(.payload.provider | contains("kairo"))'
 ```
+
+**2. Get cumulative rewards:**
+```bash
+curl -s "https://scan.sv-2.global.canton.network.digitalasset.com/api/scan/v0/top-providers-by-app-rewards?round=98727" \
+  | jq '.top_providers[] | select(.provider | contains("kairo"))'
+```
+
+**3. Get per-party totals:**
+```bash
+curl -s -X POST "https://scan.sv-2.global.canton.network.digitalasset.com/api/scan/v0/round-party-totals" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "party_id": "kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060",
+    "start_round": 98727,
+    "end_round": 98727
+  }' | jq '.'
+```
+
+**4. Get current balance:**
+```bash
+curl -s -X POST "https://scan.sv-2.global.canton.network.digitalasset.com/api/scan/v0/holdings/summary" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "migration_id": 4,
+    "record_time": "2026-06-03T00:00:00Z",
+    "owner_party_ids": ["kairo-mainnet::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060"]
+  }' | jq '.'
+```
+
+**5. Check recent activity:**
+```bash
+curl -s -X POST "https://scan.sv-2.global.canton.network.digitalasset.com/api/scan/v0/activities" \
+  -H "Content-Type: application/json" \
+  -d '{"page_size": 1000}' \
+  | jq '[.activities[] | select(.transfer.sender.party | contains("kairo"))]'
+```
+
+---
+
+## BigQuery Queries
+
+The Scan API does not support namespace-level queries or bulk historical analysis. Use BigQuery for those.
+
+**Table:** `governence-483517.transformed.events_parsed`
+**Partitioned by:** `DATE(effective_at)` — always filter on `effective_at` to control scan cost.
+**Clustered by:** `template_id, event_type, migration_id`
 
 ### Identify all wallets sharing a namespace key
 
-Use BigQuery (not available via Scan API):
 ```sql
 SELECT DISTINCT party
 FROM `governence-483517.transformed.events_parsed`,
@@ -255,4 +283,159 @@ WHERE party LIKE '%<namespace_key_fingerprint>'
 ORDER BY party
 ```
 
-The Scan API does not support namespace-level queries. To find all wallets under a shared key, query BigQuery across `signatories`, `acting_parties`, `witness_parties`, and `observers`.
+For comprehensive coverage, also check `signatories`, `witness_parties`, and `observers`:
+
+```sql
+SELECT DISTINCT party
+FROM `governence-483517.transformed.events_parsed`,
+UNNEST(
+  ARRAY_CONCAT(
+    IFNULL(signatories, []),
+    IFNULL(acting_parties, []),
+    IFNULL(witness_parties, []),
+    IFNULL(observers, [])
+  )
+) AS party
+WHERE party LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+ORDER BY party
+```
+
+### Transfer counts by sender wallet (monthly)
+
+Uses `payload → $.transfer.sender` for accurate per-wallet attribution (avoids double-counting from `acting_parties` UNNEST).
+
+```sql
+SELECT
+  FORMAT_TIMESTAMP('%Y-%m', effective_at) AS month,
+  SPLIT(JSON_VALUE(payload, '$.transfer.sender'), '::')[OFFSET(0)] AS wallet,
+  COUNT(*) AS transfers
+FROM `governence-483517.transformed.events_parsed`
+WHERE choice = 'AmuletRules_Transfer'
+  AND JSON_VALUE(payload, '$.transfer.sender') LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+GROUP BY ROLLUP(month, wallet)
+ORDER BY month, transfers DESC
+```
+
+> **Important:** Do NOT use `UNNEST(acting_parties)` for transfer counts — a single transfer event can have multiple entity wallets in `acting_parties`, inflating counts. Always use `JSON_VALUE(payload, '$.transfer.sender')` for sender attribution.
+
+### Transfer counts by sender wallet (weekly)
+
+```sql
+SELECT
+  FORMAT_TIMESTAMP('%Y-%W', effective_at) AS week,
+  SPLIT(JSON_VALUE(payload, '$.transfer.sender'), '::')[OFFSET(0)] AS wallet,
+  COUNT(*) AS transfers
+FROM `governence-483517.transformed.events_parsed`
+WHERE choice = 'AmuletRules_Transfer'
+  AND JSON_VALUE(payload, '$.transfer.sender') LIKE '%<namespace_key_fingerprint>'
+  AND effective_at BETWEEN '2026-03-15' AND '2026-05-15'
+GROUP BY week, wallet
+ORDER BY week, transfers DESC
+```
+
+### Verify all transfers are receiverless
+
+```sql
+SELECT
+  COUNT(*) AS total_transfers,
+  COUNTIF(JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NOT NULL) AS with_receivers,
+  COUNTIF(JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL) AS receiverless
+FROM `governence-483517.transformed.events_parsed`
+WHERE choice = 'AmuletRules_Transfer'
+  AND JSON_VALUE(payload, '$.transfer.sender') LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+```
+
+### Reward coupons by provider (monthly)
+
+```sql
+SELECT
+  FORMAT_TIMESTAMP('%Y-%m', effective_at) AS month,
+  COUNT(*) AS reward_coupons,
+  SUM(CAST(JSON_VALUE(payload, '$.amount') AS NUMERIC)) AS coupon_amount
+FROM `governence-483517.transformed.events_parsed`
+WHERE template_id LIKE '%AppRewardCoupon%'
+  AND event_type = 'created'
+  AND JSON_VALUE(payload, '$.provider') LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+GROUP BY ROLLUP(month)
+ORDER BY month
+```
+
+### Traffic purchases by entity
+
+```sql
+SELECT
+  FORMAT_TIMESTAMP('%Y-%m', effective_at) AS month,
+  SPLIT(party, '::')[OFFSET(0)] AS wallet,
+  COUNT(*) AS traffic_events,
+  SUM(CAST(JSON_VALUE(payload, '$.trafficAmount') AS INT64)) AS traffic_bytes
+FROM `governence-483517.transformed.events_parsed`,
+UNNEST(acting_parties) AS party
+WHERE choice = 'AmuletRules_BuyMemberTraffic'
+  AND party LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+GROUP BY month, wallet
+ORDER BY month
+```
+
+### All contract templates for an entity
+
+```sql
+SELECT template_id, COUNT(*) AS events
+FROM `governence-483517.transformed.events_parsed`,
+UNNEST(acting_parties) AS party
+WHERE party LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+GROUP BY template_id
+ORDER BY events DESC
+```
+
+### External party interaction check
+
+```sql
+SELECT DISTINCT ext_party
+FROM `governence-483517.transformed.events_parsed`,
+UNNEST(acting_parties) AS actor,
+UNNEST(ARRAY_CONCAT(IFNULL(witness_parties, []), IFNULL(observers, []))) AS ext_party
+WHERE actor LIKE '%<namespace_key_fingerprint>'
+  AND ext_party NOT LIKE '%<namespace_key_fingerprint>'
+  AND ext_party NOT LIKE '%DSO%'
+  AND effective_at >= '2025-12-01'
+```
+
+Returns zero rows if the entity has no external users.
+
+### Allocation activity
+
+```sql
+SELECT
+  choice,
+  COUNT(*) AS events,
+  COUNT(DISTINCT JSON_VALUE(payload, '$.receiver')) AS unique_receivers,
+  COUNT(DISTINCT JSON_VALUE(payload, '$.provider')) AS unique_providers
+FROM `governence-483517.transformed.events_parsed`,
+UNNEST(acting_parties) AS party
+WHERE choice LIKE 'Allocation%'
+  AND party LIKE '%<namespace_key_fingerprint>'
+  AND effective_at >= '2025-12-01'
+GROUP BY choice
+ORDER BY events DESC
+```
+
+### Outbound transfers (flow of funds)
+
+```sql
+SELECT
+  DATE(effective_at) AS date,
+  JSON_VALUE(exercise_result, '$.balanceChanges[0].party') AS recipient,
+  CAST(JSON_VALUE(exercise_result, '$.balanceChanges[0].amount') AS NUMERIC) AS cc_amount
+FROM `governence-483517.transformed.events_parsed`
+WHERE choice IN ('AmuletRules_Transfer', 'TransferPreapproval_Send', 'TransferPreapproval_SendV2')
+  AND JSON_VALUE(payload, '$.transfer.sender') LIKE '%<namespace_key_fingerprint>'
+  AND JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NOT NULL
+  AND effective_at >= '2025-12-01'
+ORDER BY effective_at
+```
