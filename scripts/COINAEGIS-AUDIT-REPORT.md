@@ -12,7 +12,7 @@ CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** a
 
 **Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
 
-**Phase 3 — coinaegisVault (May 1–Jun 3):** coinaegisVault generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed. The remaining 2,364,989 CC (99.7%) expired unclaimed. This FA was not revoked until June 3, 5 days after the aevumWallet pause, and continued generating coupons throughout.
+**Phase 3 — coinaegisVault (May 1–Jun 3):** coinaegisVault generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed. The remaining 2,364,989 CC (99.7%) expired unclaimed. This FA was not revoked until June 3, 6 days after the aevumWallet pause, and continued generating coupons throughout.
 
 The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
 
@@ -90,7 +90,7 @@ All contracts were created May 27-29. Only 0.4% of mined CC remains.
 | 2026-04-24 21:26:31 | **Goldacorn revoke vote initiated** | Requester: Global-Synchronizer-Foundation. Reason: "Recent on-chain activity associated with the Goldacorn Protocol App requires further review. The Tokenomics Committee voted to pause it." URL: https://lists.sync.global/g/tokenomics-announce/message/316 |
 | 2026-04-24 23:27–Apr 25 05:14 | **1.1M CC transferred to quokka** | 7 transfers from `cryptolegacy-validator-1` to quokka-controlled auth0 parties (see Money Trail Phase 1) |
 | 2026-04-25 06:35:24 | **Goldacorn FA revoked** | Vote threshold reached: 9 for / 0 against, 4 abstaining (C7-Technology-Services-Limited, Proof-Group-1, SV-Nodeops-Limited, Tradeweb-Markets-1). Effective immediately. Last vote: Digital-Asset-1 at 06:35:15 |
-| 2026-05-01 | FA granted: `coinaegisVault` | "2nd partyID" for CoinAegis. Generated 154 coupons / 2,372,553 CC (99.7% expired unclaimed) |
+| 2026-05-01 | FA granted: `coinaegisVault` | "2nd partyID" for CoinAegis |
 | 2026-05-28 20:00:01 | **AevumWallet pause vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the AevumWallet App due to recent on-chain activity that needs further investigation" |
 | 2026-05-28 21:41:43 | **AevumWallet FA revoked** | 10 for / 0 against, 3 abstaining (C7-Technology-Services-Limited, SV-Nodeops-Limited, Tradeweb-Markets-1) |
 | 2026-05-28 21:42:17 | Last aevumWallet AppRewardCoupon | Round 97923 |
@@ -129,7 +129,7 @@ The governance vote stopped new AppRewardCoupon generation. However, previously-
 |---|---:|---|
 | `cryptolegacy-validator-1` (app rewards) | ~348,535 | Pre-existing coupons claimed via transfers/BuyMemberTraffic |
 | `aevumWallet` | ~5,610 | Pre-existing coupons claimed |
-| `coinaegisVault` (active until Jun 3) | 7,564.14 total claimed (154 coupons / 2,372,553 CC created, 99.7% expired) | FA remained active until Jun 3; generated coupons but almost none claimed |
+| `coinaegisVault` (active until Jun 3) | ≤7,564.14 (lifetime total; pre/post-pause split unknown) | FA remained active until Jun 3; generated 154 coupons / 2,372,553 CC, 99.7% expired |
 | auth0 parties | unknown portion | Pre-existing coupons claimed |
 | **Minimum post-pause total** | **~354,145 CC** | |
 
@@ -182,7 +182,7 @@ Created 40 `auth0_*` party IDs all controlled by the same key. Used them to exec
 | **May 28** | **103,294** | **472,427** | **Peak day #2 — day of governance vote** |
 | May 29 | 59 | 8,687 | FA revoked — activity stopped |
 
-80% of all self-transfers occurred on just two days (May 22 and May 28). On May 29, after the FA pause, activity dropped to 59 transfers.
+~65% of all self-transfers occurred on just two days (May 22 and May 28). On May 29, after the FA pause, activity dropped to 59 transfers.
 
 Note: The daily breakdown above sums to 253,397. The corrected total of 312,696 was obtained using `JSON_VALUE(payload, '$.transfer.sender')` which identifies senders directly from transfer payloads. The daily breakdown used a different query method (`UNNEST(acting_parties)`) which missed transfers where the auth0 sender was not listed in `acting_parties`.
 
