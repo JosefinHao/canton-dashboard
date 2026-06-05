@@ -27,8 +27,8 @@ Complete guide for setting up Amulet Scan for local development.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/cf-internal/amulet-scan-port.git
-cd amulet-scan-port
+git clone https://github.com/cf-internal/cf-data-platform.git
+cd cf-data-platform
 ```
 
 ### 2. Install Dependencies

@@ -3,7 +3,7 @@
 # ========================================
 #
 # Service: canton-live-ingest (systemd)
-# Script:  ~/amulet-scan-port/scripts/ingest/fetch-updates.js
+# Script:  ~/cf-data-platform/scripts/ingest/fetch-updates.js
 # Cursor:  /var/lib/ledger_raw/cursors/live-cursor.json
 # Logs:    journalctl -u canton-live-ingest
 
@@ -60,15 +60,15 @@ print(f'Lag:    {lag}')
 
 # Verify a specific day against Scan API
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
-  ~/amulet-scan-port/scripts/ingest/verify-scan-completeness.js \
+  ~/cf-data-platform/scripts/ingest/verify-scan-completeness.js \
   --migration=4 --date=YYYY-MM-DD --scope=updates \
   --output=/tmp/verify-spot.ndjson
 
 # Check partition coverage (all migrations)
-node ~/amulet-scan-port/scripts/ingest/check-partition-coverage.js
+node ~/cf-data-platform/scripts/ingest/check-partition-coverage.js
 
 # Check file counts for a specific day
-cd ~/amulet-scan-port/scripts/ingest && node -e "
+cd ~/cf-data-platform/scripts/ingest && node -e "
 import('@google-cloud/storage').then(async ({ Storage }) => {
   const bucket = new Storage().bucket('canton-bucket');
   const day = process.argv[1] || '2026-05-18';
@@ -85,7 +85,7 @@ import('@google-cloud/storage').then(async ({ Storage }) => {
 
 # Re-ingest a single day (wipes and replaces existing data)
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
-  ~/amulet-scan-port/scripts/ingest/reingest-updates.js \
+  ~/cf-data-platform/scripts/ingest/reingest-updates.js \
   --start=YYYY-MM-DD --end=YYYY-MM-DD --migration=4 --clean --force
 
 # ─── Service configuration ──────────────────────────────────
@@ -94,7 +94,7 @@ source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
 # /etc/systemd/system/canton-live-ingest.service
 #
 # Environment files:
-#   ~/amulet-scan-port/scripts/ingest/.env     (Scan API config)
+#   ~/cf-data-platform/scripts/ingest/.env     (Scan API config)
 #   ~/.gcs_hmac_env.systemd                     (GCS HMAC keys, no 'export' prefix)
 #
 # After editing the service file:

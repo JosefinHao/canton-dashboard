@@ -1,5 +1,5 @@
 {
-  "name": "amulet-scan-api",
+  "name": "cf-data-platform-api",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

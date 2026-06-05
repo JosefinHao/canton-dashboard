@@ -1,6 +1,6 @@
 [Unit]
 Description=Canton Ledger Live Ingest (fetch-updates.js)
-Documentation=file:///home/josefin/amulet-scan-port/scripts/ingest/DEPRECATED.md
+Documentation=file:///home/josefin/cf-data-platform/scripts/ingest/DEPRECATED.md
 After=network-online.target
 Wants=network-online.target
 
@@ -8,10 +8,10 @@ Wants=network-online.target
 Type=simple
 User=josefin
 Group=josefin
-WorkingDirectory=/home/josefin/amulet-scan-port/scripts/ingest
+WorkingDirectory=/home/josefin/cf-data-platform/scripts/ingest
 
 # Environment: load both .env (Scan API config) and HMAC keys (for DuckDB/GCS)
-EnvironmentFile=/home/josefin/amulet-scan-port/scripts/ingest/.env
+EnvironmentFile=/home/josefin/cf-data-platform/scripts/ingest/.env
 EnvironmentFile=/home/josefin/.gcs_hmac_env.systemd
 
 # Run with 4GB heap (live ingest is lighter than reingest)

@@ -38,8 +38,8 @@ Amulet Scan provides a complete solution for exploring and analyzing Canton Netw
 
 ```bash
 # Clone the repository
-git clone https://github.com/cf-internal/amulet-scan-port.git
-cd amulet-scan-port
+git clone https://github.com/cf-internal/cf-data-platform.git
+cd cf-data-platform
 
 # Install frontend dependencies
 npm install

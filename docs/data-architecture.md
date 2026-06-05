@@ -181,7 +181,7 @@ will be NULL because the payload contains the choice argument, not the contract 
 | Runbook | `scripts/ingest/LIVE-INGEST-RUNBOOK.sh` |
 
 **Environment files on governance-dashboard**:
-- `~/amulet-scan-port/scripts/ingest/.env` — Scan API config
+- `~/cf-data-platform/scripts/ingest/.env` — Scan API config
 - `~/.gcs_hmac_env` — HMAC keys with `export` (for shell/tmux)
 - `~/.gcs_hmac_env.systemd` — HMAC keys without `export` (for systemd), plus `ALERT_SLACK_WEBHOOK_URL`
 
