@@ -6,7 +6,7 @@
 
 CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** all controlled by the same cryptographic key, through two mechanisms across two phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding app activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero transfers involving the goldacorn party ID** during its active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key transfers during this window were 810 single-party validator self-operations and 10 transfers to quokka — none constituting goldacorn app usage. Yet the validator claimed a cumulative marker weight of 193,706. In ~8 hours, 919 markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) submitted `weight` parameters with no corresponding transfer activity when creating FeaturedAppActivityMarkers for the goldacorn FA. BigQuery confirms **zero `AmuletRules_Transfer` events involving the goldacorn party ID** during its active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key transfers during this window were 810 single-party validator operations and 10 transfers to quokka — none constituting goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706. Those markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
 
 **Phase 2 — High-Frequency Markers + Wash Trading (aevumWallet, May 9–28):** 253,397 self-transfers (80.3% of all transfers) moved tiny amounts (0.1–4 CC) between CoinAegis-controlled auth0 parties, while creating 88,340 FeaturedAppActivityMarkers. 78,717 AppRewardCoupons worth 3,292,568 CC were generated, of which 78.9% expired unclaimed.
 
@@ -149,7 +149,7 @@ FeaturedAppActivityMarkers had a protocol-level weakness in how weights were val
 
 **Direct proof of inflation (BigQuery-verified):**
 
-BigQuery confirms **zero transfers involving the goldacorn party ID** during its entire active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key activity during this window consisted of 810 single-party validator operations and 10 transfers to quokka — none representing goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706, with no corresponding app transfer activity.
+BigQuery confirms **zero `AmuletRules_Transfer` events involving the goldacorn party ID** during its entire active FA period (Apr 20–25, verified via `effective_at`). The only CoinAegis-key transfers during this window were 810 single-party validator operations and 10 transfers to quokka — none representing goldacorn app usage. Yet the validator created 919 markers claiming a cumulative weight of 193,706, with no corresponding transfer activity.
 
 **Marker payload structure** (from BigQuery exercise events):
 ```json
