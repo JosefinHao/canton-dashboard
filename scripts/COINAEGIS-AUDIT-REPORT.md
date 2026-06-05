@@ -29,7 +29,7 @@ This proves single-entity control over all 44 party IDs.
 
 ---
 
-## What Happened — Chronological Summary
+## Timeline
 
 **Setup (Apr 20):** One entity registered three Featured Apps — CoinAegis, Aevum Wallet, and Goldacorn — all using the same cryptographic key. All three were approved by SV governance on the same day.
 
