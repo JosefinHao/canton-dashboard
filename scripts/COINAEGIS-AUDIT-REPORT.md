@@ -12,9 +12,9 @@ CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** a
 
 **Phase 3 — Activity Marker Weight Inflation (coinaegisVault, May 27–Jun 3):** The coinaegisVault FA created 154 markers with a cumulative weight of 351,876 (avg 2,285 per marker), designating `cryptolegacy-validator-1` as the beneficiary. These generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed — the remaining 99.7% expired unclaimed. The FA was granted May 1 but had zero activity for 26 days; all markers appeared May 27 – Jun 3. This FA was not revoked until June 3, 6 days after the aevumWallet pause.
 
-**Protocol vulnerability exploited:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the FA provider passed an arbitrary `weight` parameter when exercising `FeaturedAppRight_CreateActivityMarker` and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
+**Protocol vulnerability exploited:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the FA provider passed an arbitrary `weight` parameter when exercising `FeaturedAppRight_CreateActivityMarker` and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–June 2026).
 
-The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 39 additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
+The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 39 additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in activity markers across all its FAs (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
 
 ---
 
@@ -122,7 +122,7 @@ All contracts were created May 27-29. Only 0.3% of earned CC remains.
 | 2026-05-28 20:00:01 | **AevumWallet pause vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the AevumWallet App due to recent on-chain activity that needs further investigation" |
 | 2026-05-28 21:41:43 | **AevumWallet FA revoked** | 10 for / 0 against, 3 abstaining (C7-Technology-Services-Limited, SV-Nodeops-Limited, Tradeweb-Markets-1) |
 | 2026-05-28 21:42:17 | Last aevumWallet AppRewardCoupon | Round 97923 |
-| 2026-05-28 22:03–22:12 | ~665K CC consolidated | Two transfers merging amulets + reward coupons into single holdings |
+| 2026-05-28 22:03–22:12 | ~665K CC consolidated | Two transfers consolidating amulets and claiming pending reward coupons |
 | 2026-05-29 09:15:17 | **Coinaegis revoke vote initiated** | Requester: Global-Synchronizer-Foundation. "Tokenomics Committee has voted to pause the Coinaegis App due to recent on-chain activity that needs further investigation" |
 | 2026-05-29 10:38–10:45 | **Final transfers to exchanges** | 415K to ByBit + 250K to Gate in 7 minutes |
 | 2026-05-29 20:49:56 | **Coinaegis FA revoked** | 9 for / 0 against, 4 abstaining (Cumberland-1, Cumberland-2, Digital-Asset-1, SV-Nodeops-Limited) |
@@ -132,7 +132,7 @@ All contracts were created May 27-29. Only 0.3% of earned CC remains.
 
 ## Mining Timeline (cryptolegacy-validator-1)
 
-This validator was the designated `beneficiary` in goldacorn FA markers (verified via BigQuery exercise payloads), and earned 92.6% of all CoinAegis app rewards:
+This validator was the designated `beneficiary` in activity markers across all CoinAegis FAs (verified via BigQuery exercise payloads), and received 92.6% of all CoinAegis app rewards:
 
 | Date (approx) | Round | Cumulative App CC | Cumulative Val CC | Note |
 |---|---:|---:|---:|---|
@@ -192,7 +192,7 @@ The goldacorn FA created 919 markers with a cumulative weight of 318,898 (avg 34
 ```
 The outer `weight` (376.0) is the value the FA provider submitted per marker — with no corresponding transfer activity. The `beneficiary` is `cryptolegacy-validator-1`, which is where the resulting AppRewardCoupons were attributed.
 
-**CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's active window (April–May 2026), leaving the protocol open to arbitrary weight claims.
+**CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's active window (April–June 2026), leaving the protocol open to arbitrary weight claims.
 
 ### 3. Wash Trading — Self-Transfers (Phase 2 — aevumWallet)
 Created 39 `auth0_*` party IDs all controlled by the same key. Used them to execute **312,696 self-transfers** shuffling tiny amounts (0.1–4 CC) between their own parties. The CC never left CoinAegis's control — it circled between their 44 party IDs. During this period, 44,618 FeaturedAppActivityMarkers were created for aevumWallet, and 78,717 AppRewardCoupons worth 3,292,568 CC were generated.
@@ -225,7 +225,7 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 ```
 
 ### 4. Validator Used as Primary Reward Harvester
-`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total claimed) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused). Additionally, `coinaegisVault` was not revoked until Jun 3 and used inflated marker weights (154 markers, avg weight 2,285) to generate 2,372,553 CC in coupons (May 27 – Jun 3), though 99.7% expired unclaimed.
+`cryptolegacy-validator-1` received **2.6M CC in app rewards** (92.6% of CoinAegis total claimed) despite never being an FA — it was the designated `beneficiary` in activity markers across all CoinAegis FAs (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused). Additionally, `coinaegisVault` was not revoked until Jun 3 and used inflated marker weights (154 markers, avg weight 2,285) to generate 2,372,553 CC in coupons (May 27 – Jun 3), though 99.7% expired unclaimed.
 
 ### 5. Complete Money Trail
 56.4% of all CC (~1.77M CC) was transferred to external parties — 1,065,002 CC to fba188 (ByBit), 700,001 CC to Gate (Gate.io), and 4,234 CC to quokka-validator-1. An additional 41.5% (~1.3M CC) was consumed via BuyMemberTraffic. 1.7% (~54K CC) was consumed by holding fees (demurrage). Only 0.3% (~10.9K CC) remains in wallets.
