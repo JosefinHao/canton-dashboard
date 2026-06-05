@@ -31,15 +31,29 @@ This proves single-entity control over all 44 party IDs.
 
 ## Timeline
 
-**Setup (Apr 20):** One entity registered three Featured Apps — CoinAegis, Aevum Wallet, and Goldacorn — all using the same cryptographic key. All three were approved by SV governance on the same day.
-
-**Phase 1 — goldacorn (Apr 24–25):** The entity's validator (`cryptolegacy-validator-1`) submitted 919 activity markers for goldacorn with heavily inflated weights (avg 347 per marker, cumulative 318,898). The protocol accepted these without validation. This generated 855 reward coupons worth **2,090,601 CC** — all claimed. Within hours of a governance revoke vote being initiated, the entity transferred **1.1M CC** through quokka intermediary wallets to ByBit (650K) and Gate.io (450K). Goldacorn FA was revoked Apr 25.
-
-**Phase 2 — aevumWallet (May 9–28):** The entity created 39 additional `auth0_*` party IDs (same key) and used them to execute **312,696 self-transfers** — shuffling tiny amounts (0.1–4 CC) between its own wallets. The validator submitted 44,618 activity markers during this period. This generated 78,717 reward coupons worth **3,292,568 CC**, of which 694,376 CC was claimed and 2,598,192 CC (78.9%) expired unclaimed. AevumWallet FA was revoked May 28.
-
-**Phase 3 — coinaegisVault (May 27–Jun 3):** The entity activated coinaegisVault (granted May 1 but dormant for 26 days) and submitted 154 markers with even larger inflated weights (avg 2,285 per marker, cumulative 351,876). This generated 154 reward coupons worth **2,372,553 CC**, but only 7,564 CC (0.3%) was claimed — 99.7% expired. This FA was not revoked until Jun 3, 6 days after the aevumWallet pause.
-
-**Cash-out (Apr 24–May 29):** Across all phases, the entity sent **1,065,002 CC to ByBit** and **700,001 CC to Gate.io** in 36 transfers. An additional 1.3M CC was consumed via BuyMemberTraffic (network bandwidth purchases). Only ~10,923 CC (0.3%) remains in wallets.
+| Date | Event | Impact |
+|---|---|---|
+| Apr 20 | **3 FAs granted** on the same day: `coinaegis`, `aevumWallet`, `goldacorn` — all same key | Entity gains 3 Featured App slots in one vote cycle |
+| Apr 24 17:32 – Apr 25 01:47 | **goldacorn: 919 markers created** with inflated weights (cumulative 318,898, avg 347/marker) | Generates 855 coupons worth **2,090,601 CC** — all claimed |
+| Apr 24 21:26 | **Goldacorn revoke vote initiated** by Tokenomics Committee | |
+| Apr 24 23:27 – Apr 25 05:14 | **1.1M CC transferred** from `cryptolegacy-validator-1` to quokka intermediaries (7 transfers) | CC moved out within hours of revoke vote |
+| Apr 25 06:35 | **Goldacorn FA revoked** (9 for / 0 against) | |
+| Apr 25 07:30 – Apr 26 14:21 | **Quokka forwards** 650K CC → ByBit, 450K CC → Gate.io | 1.1M CC reaches exchanges |
+| May 1 | **coinaegisVault FA granted** ("2nd partyID" for CoinAegis) | FA sits dormant for 26 days |
+| May 9 | **aevumWallet self-transfers begin**: 39 auth0 party IDs start shuffling 0.1–4 CC between each other | |
+| May 9–28 | **312,696 self-transfers** executed + **44,618 markers** submitted for aevumWallet | Generates 78,717 coupons worth **3,292,568 CC** (694K claimed, 2.6M expired) |
+| May 22 | **Peak day #1**: 100,135 self-transfers in a single day | |
+| May 27 | **coinaegisVault activated**: 154 markers with inflated weights begin (cumulative 351,876, avg 2,285/marker) | Generates 154 coupons worth **2,372,553 CC** (7.5K claimed, 2.4M expired) |
+| May 27 08:45–15:18 | **26 small transfers** from coinaegisVault to `quokka-validator-1` (4,234 CC total) | |
+| May 28 | **Peak day #2**: 103,294 self-transfers — day of governance vote | |
+| May 28 20:00 | **AevumWallet revoke vote initiated** by Tokenomics Committee | |
+| May 28 21:41 | **AevumWallet FA revoked** (10 for / 0 against) | Self-transfers drop from 103K to 59 next day |
+| May 28 22:03–22:12 | **~665K CC consolidated** into single holdings | |
+| May 29 09:15 | **Coinaegis revoke vote initiated** | |
+| May 29 10:38–10:45 | **Final cash-out**: 415K CC → ByBit + 250K CC → Gate.io (3 transfers in 7 minutes) | |
+| May 29 20:49 | **Coinaegis FA revoked** (9 for / 0 against) | |
+| May 27 – Jun 3 | **coinaegisVault continues generating coupons** — unrevoked for 6 days after aevumWallet pause | 99.7% of coupons expire unclaimed |
+| Jun 3 15:22 | **CoinaegisVault FA revoked** (9 for / 0 against) | Last CoinAegis FA removed |
 
 ---
 
