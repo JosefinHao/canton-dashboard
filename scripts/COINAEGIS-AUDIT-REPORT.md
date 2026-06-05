@@ -8,13 +8,13 @@ CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** a
 
 **Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) created 919 FeaturedAppActivityMarkers for the goldacorn FA with a cumulative weight of 193,706. The old Splice protocol accepted these weights without validation (see CIP-0104). Those markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
 
-**Phase 2 — Self-Transfers + Markers (aevumWallet FA, May 9–28):** 40 `auth0_*` party IDs (same key) executed 312,696 self-transfers, moving tiny amounts (0.1–4 CC) between each other. During this period, 44,783 FeaturedAppActivityMarkers were created for the aevumWallet FA, generating 78,717 AppRewardCoupons worth 3,292,568 CC. 694,376 CC was claimed; the remaining 2,598,192 CC (78.9%) expired unclaimed.
+**Phase 2 — Self-Transfers + Markers (aevumWallet FA, May 9–28):** 39 `auth0_*` party IDs (same key) executed 312,696 self-transfers, moving tiny amounts (0.1–4 CC) between each other. During this period, 44,783 FeaturedAppActivityMarkers were created for the aevumWallet FA, generating 78,717 AppRewardCoupons worth 3,292,568 CC. 694,376 CC was claimed; the remaining 2,598,192 CC (78.9%) expired unclaimed.
 
 **Protocol vulnerability:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
 
-**Phase 3 — coinaegisVault (May 1–Jun 3):** coinaegisVault generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed. The remaining 2,364,989 CC (99.7%) expired unclaimed. This FA was not revoked until June 3, 6 days after the aevumWallet pause, and continued generating coupons throughout.
+**Phase 3 — coinaegisVault (May 27–Jun 3):** coinaegisVault generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed. The remaining 2,364,989 CC (99.7%) expired unclaimed. The FA was granted May 1 but generated zero coupons for 26 days; all 154 coupons appeared May 27 – Jun 3. This FA was not revoked until June 3, 6 days after the aevumWallet pause.
 
-The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 40+ additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
+The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 39 additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
 
 ---
 
@@ -36,9 +36,9 @@ This proves single-entity control over all 44 party IDs.
 | `goldacorn` | Featured App (provider) | 1 (Apr 24–25) | **Unvalidated marker weights** | — | 919 | 193,706 | 855 | 2,090,600.71 | 2,090,600.71 | 0 |
 | `aevumWallet` | Featured App (provider) | 2 (May 9–28) | **Self-transfers between auth0 parties** | 650 | 44,783 | — | 78,717 | 3,292,568.37 | 694,375.99 | 2,598,192.38 |
 | `coinaegis` | Featured App (provider) | Minor | Not verified | — | — | — | 11 | 11,979.16 | 11,979.16 | 0 |
-| `coinaegisVault` | Featured App (provider) | 3 (May 1–Jun 3) | Coupon generation (99.7% expired) | — | — | — | 154 | 2,372,552.66 | 7,564.14 | 2,364,988.52 |
+| `coinaegisVault` | Featured App (provider) | 3 (May 27–Jun 3) | Coupon generation (99.7% expired) | — | — | — | 154 | 2,372,552.66 | 7,564.14 | 2,364,988.52 |
 | `cryptolegacy-validator-1` | Validator + designated marker `beneficiary` | Both | Reward harvesting | — | — | — | — | — | 2,598,113.64 (harvested) | — |
-| 40 `auth0_*` parties | Self-transfer counterparties | 2 | Self-transfer recipients | 312,696 self-transfers | — | — | — | — | ~39,001.13 (harvested) | — |
+| 39 `auth0_*` parties | Self-transfer counterparties | 2 | Self-transfer recipients | 312,696 self-transfers | — | — | — | — | ~39,001 (harvested) | — |
 | **TOTAL** | | | | | **45,702** | | **79,737** | **7,767,700.90** | **2,804,520.00** | **4,963,180.90** |
 
 **Key observations:**
@@ -52,7 +52,7 @@ This proves single-entity control over all 44 party IDs.
 
 ## auth0 Party Breakdown
 
-The 40 `auth0_*` party IDs collectively harvested ~39,001 CC in app rewards:
+The 39 `auth0_*` party IDs collectively harvested ~39,001 CC in app rewards (BigQuery-verified via `exercise_result.summary.inputAppRewardAmount`):
 
 | Group | Count | Total CC |
 |---|---:|---:|
@@ -61,8 +61,8 @@ The 40 `auth0_*` party IDs collectively harvested ~39,001 CC in app rewards:
 | `auth0_007c6a003f*` | 6 | ~7,704 |
 | `auth0_007c6a03c*` | 5 | ~6,060 |
 | `auth0_007c6a066ea*` | 10 | ~9,290 |
-| `auth0_007c6a07b6*` | 15 | ~10,641 |
-| **Total auth0** | **40** | **~39,001** |
+| `auth0_007c6a07b6*` | 14 | ~10,641 |
+| **Total auth0** | **39** | **~39,001** |
 
 ---
 
@@ -76,7 +76,7 @@ The 40 `auth0_*` party IDs collectively harvested ~39,001 CC in app rewards:
 | `coinaegisVault` | 199.99 | 2026-05-27 |
 | **Total remaining** | **~10,923 CC** | |
 
-All contracts were created May 27-29. Only 0.4% of mined CC remains.
+All contracts were created May 27-29. Only 0.3% of earned CC remains.
 
 ---
 
@@ -133,7 +133,7 @@ The governance vote stopped new AppRewardCoupon generation. However, previously-
 | auth0 parties | unknown portion | Pre-existing coupons claimed |
 | **Minimum post-pause total** | **~354,145 CC** | |
 
-Note: `coinaegisVault` FA was not revoked until June 3 and generated 154 AppRewardCoupons worth 2,372,553 CC during its active period (May 1 – Jun 3). However, 99.7% of those coupons expired unclaimed — only 7,564 CC was actually claimed. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
+Note: `coinaegisVault` FA was not revoked until June 3 and generated 154 AppRewardCoupons worth 2,372,553 CC during May 27 – Jun 3 (the FA was granted May 1 but generated zero coupons for 26 days). However, 99.7% of those coupons expired unclaimed — only 7,564 CC was actually claimed. All other post-pause CC came from coupons generated BEFORE the pause but harvested after.
 
 ---
 
@@ -167,7 +167,7 @@ The outer `weight` (376.0) is the value the validator submitted per marker — w
 **CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's active window (April–May 2026), leaving the protocol open to arbitrary weight claims.
 
 ### 3. Wash Trading — Self-Transfers (Phase 2 — aevumWallet)
-Created 40 `auth0_*` party IDs all controlled by the same key. Used them to execute **312,696 self-transfers** shuffling tiny amounts (0.1–4 CC) between their own parties. The CC never left CoinAegis's control — it circled between their 44 party IDs. During this period, 44,783 FeaturedAppActivityMarkers were created for aevumWallet, and 78,717 AppRewardCoupons worth 3,292,568 CC were generated.
+Created 39 `auth0_*` party IDs all controlled by the same key. Used them to execute **312,696 self-transfers** shuffling tiny amounts (0.1–4 CC) between their own parties. The CC never left CoinAegis's control — it circled between their 44 party IDs. During this period, 44,783 FeaturedAppActivityMarkers were created for aevumWallet, and 78,717 AppRewardCoupons worth 3,292,568 CC were generated.
 
 **Daily wash trading volume (BigQuery-verified):**
 
@@ -197,10 +197,10 @@ auth0_...adde → auth0_...a3ac   0.20 CC
 ```
 
 ### 4. Validator Used as Primary Reward Harvester
-`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total claimed) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused). Additionally, `coinaegisVault` was not revoked until Jun 3 and continued generating coupons (154 total worth 2,372,553 CC), though 99.7% expired unclaimed.
+`cryptolegacy-validator-1` earned **2.6M CC in app rewards** (92.6% of CoinAegis total claimed) despite never being an FA — it was the designated `beneficiary` in goldacorn markers (BigQuery-verified). After the Tokenomics Committee revoked two FAs (May 28-29), at least **~354,000 CC** in pre-existing coupons continued to be harvested through the validator (never paused). Additionally, `coinaegisVault` was not revoked until Jun 3 and generated 154 coupons worth 2,372,553 CC (May 27 – Jun 3), though 99.7% expired unclaimed.
 
 ### 5. Complete Money Trail
-57.6% of all CC (~1.77M CC) was transferred to external parties — 1,065,002 CC to fba188 (ByBit), 700,001 CC to Gate (Gate.io), and 4,234 CC to quokka-validator-1. An additional 42.4% (~1.3M CC) was consumed via BuyMemberTraffic. Only 0.4% (~10.9K CC) remains in wallets.
+56.4% of all CC (~1.77M CC) was transferred to external parties — 1,065,002 CC to fba188 (ByBit), 700,001 CC to Gate (Gate.io), and 4,234 CC to quokka-validator-1. An additional 41.5% (~1.3M CC) was consumed via BuyMemberTraffic. 1.7% (~54K CC) was consumed by holding fees (demurrage). Only 0.3% (~10.9K CC) remains in wallets.
 
 #### Transfer Destinations (BigQuery-confirmed)
 
@@ -265,14 +265,15 @@ Three transfers in a 7-minute window, the day `coinaegis` FA was revoked:
 
 | Item | CC | Verification |
 |---|---:|---|
-| App rewards earned | 2,804,520 | Canton Scan API |
-| Validator + faucet rewards harvested | ~268,325 | BigQuery (`exercise_result.summary`) |
-| **Total CC entered system** | **~3,072,845** | |
+| App rewards claimed | 2,804,520 | Canton Scan API + BigQuery cross-check (1,971,768 via transfers + 832,752 via BuyMemberTraffic) |
+| Validator rewards claimed | 294,746 | BigQuery `exercise_result.summary` (135,345 via transfers + 159,401 via BuyMemberTraffic) |
+| Faucet rewards claimed | 36,897 | BigQuery `exercise_result.summary` (36,893 via transfers + 4 via BuyMemberTraffic) |
+| **Total CC entered system** | **~3,136,163** | |
 | | | |
-| Transferred to external parties | -1,769,263.76 | BigQuery (36 transfers to 5 recipients) |
+| Transferred to external parties | -1,769,264 | BigQuery (36 transfers to 5 recipients) |
 | Consumed by BuyMemberTraffic | -1,301,539 | BigQuery (see breakdown below) |
 | Remaining in wallets | -10,923 | Canton Scan API |
-| Holding fees (demurrage) | ~-9,000 | Residual (<0.3% of total) |
+| Holding fees (demurrage) | ~-54,437 | Residual (~1.7% of total) |
 | **Balance** | **~0** | **Fully reconciled** |
 
 All app rewards (2,804,520 CC) have been fully claimed into amulets — confirmed by summing `inputAppRewardAmount` across all transfer and traffic purchase events: 1,971,768 CC (via transfers) + 832,752 CC (via BuyMemberTraffic) = **2,804,520 CC exact**.
