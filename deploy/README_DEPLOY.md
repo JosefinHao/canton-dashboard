@@ -35,7 +35,7 @@ Staging shares the production backend — it only previews frontend changes.
 Use the deploy script for both staging and production:
 
 ```bash
-cd ~/amulet-scan-port
+cd ~/cf-data-platform
 
 # Deploy to staging (preview before going live)
 ./deploy/deploy-frontend.sh --staging
@@ -52,7 +52,7 @@ If you need to deploy manually:
 
 **Production:**
 ```bash
-cd ~/amulet-scan-port
+cd ~/cf-data-platform
 git checkout main && git pull
 npm install
 npx vite build
@@ -61,7 +61,7 @@ sudo cp -r dist/* /var/www/html/
 
 **Staging:**
 ```bash
-cd ~/amulet-scan-port
+cd ~/cf-data-platform
 git checkout <your-branch>
 npm install
 VITE_BASE_PATH=/staging npx vite build --base=/staging/
@@ -73,7 +73,7 @@ cp -r dist/* /var/www/staging/
 The backend only needs restarting when server-side code changes (files in `server/`):
 
 ```bash
-cd ~/amulet-scan-port/server
+cd ~/cf-data-platform/server
 npm install
 pm2 restart duckdb-api
 ```
@@ -124,7 +124,7 @@ sudo chmod -R 755 /var/www/html /var/www/staging
 ### 4. Start backend
 
 ```bash
-cd ~/amulet-scan-port/server
+cd ~/cf-data-platform/server
 pm2 start ecosystem.config.cjs --env production
 pm2 save
 pm2 startup   # enables auto-start on VM reboot
@@ -161,7 +161,7 @@ The deploy script (`./deploy/deploy-frontend.sh --staging`) sets these automatic
 | Restart backend | `pm2 restart duckdb-api` |
 | Stop backend | `pm2 stop duckdb-api` |
 | Monitor resources | `pm2 monit` |
-| Check DuckDB path | `grep -i "duckdb" ~/amulet-scan-port/server/logs/pm2-out.log \| tail -5` |
+| Check DuckDB path | `grep -i "duckdb" ~/cf-data-platform/server/logs/pm2-out.log \| tail -5` |
 
 PM2 auto-starts on boot via systemd (configured with `pm2 startup` + `pm2 save`).
 
@@ -171,7 +171,7 @@ The staging backend runs on port 3002 (nginx routes `/staging/api/` there).
 
 ```bash
 # Start staging backend from a feature branch
-cd ~/amulet-scan-port/server
+cd ~/cf-data-platform/server
 pm2 start ecosystem.config.cjs --only duckdb-api-staging
 
 # View staging logs
@@ -213,7 +213,7 @@ sudo cp -r /var/www/html.backup.YYYYMMDD_HHMMSS/* /var/www/html/
 ### Backend rollback
 
 ```bash
-cd ~/amulet-scan-port
+cd ~/cf-data-platform
 git checkout main -- server/
 cd server && npm install && pm2 restart duckdb-api
 ```

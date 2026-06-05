@@ -34,7 +34,7 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs git
 
 # 3. Clone and setup
-git clone https://github.com/cf-internal/amulet-scan-port.git ~/app
+git clone https://github.com/cf-internal/cf-data-platform.git ~/app
 cd ~/app/server && npm install
 cd ~/app/scripts/ingest && npm install
 
@@ -212,7 +212,7 @@ The frontend is a Vite + React SPA deployed as static files behind nginx. No dir
 ### Production build
 
 ```bash
-cd ~/amulet-scan-port
+cd ~/cf-data-platform
 npm install
 npx vite build
 sudo cp -r dist/* /var/www/html/
