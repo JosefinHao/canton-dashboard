@@ -6,13 +6,13 @@
 
 CoinAegis accumulated app rewards on the Canton Network using **44 party IDs** all controlled by the same cryptographic key, through two mechanisms across three phases:
 
-**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The operator's validator (`cryptolegacy-validator-1`) created 919 FeaturedAppActivityMarkers for the goldacorn FA with a cumulative weight of 318,898 (avg 347 per marker). Those markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
+**Phase 1 — Activity Marker Weight Inflation (goldacorn, Apr 24–25):** The goldacorn FA exercised `FeaturedAppRight_CreateActivityMarker` to create 919 FeaturedAppActivityMarkers with a cumulative weight of 318,898 (avg 347 per marker), designating `cryptolegacy-validator-1` as the beneficiary. Those markers generated 855 AppRewardCoupons worth 2,090,600 CC (all claimed). Within hours, 1.1M CC was transferred via quokka intermediaries to ByBit and Gate.io.
 
 **Phase 2 — Self-Transfers + Markers (aevumWallet FA, May 9–28):** 39 `auth0_*` party IDs (same key) executed 312,696 self-transfers, moving tiny amounts (0.1–4 CC) between each other. During this period, 44,618 FeaturedAppActivityMarkers were created for the aevumWallet FA, generating 78,717 AppRewardCoupons worth 3,292,568 CC. 694,376 CC was claimed; the remaining 2,598,192 CC (78.9%) expired unclaimed.
 
-**Phase 3 — Activity Marker Weight Inflation (coinaegisVault, May 27–Jun 3):** The validator created 154 markers for coinaegisVault with a cumulative weight of 351,876 (avg 2,285 per marker). These generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed — the remaining 99.7% expired unclaimed. The FA was granted May 1 but had zero activity for 26 days; all markers appeared May 27 – Jun 3. This FA was not revoked until June 3, 6 days after the aevumWallet pause.
+**Phase 3 — Activity Marker Weight Inflation (coinaegisVault, May 27–Jun 3):** The coinaegisVault FA created 154 markers with a cumulative weight of 351,876 (avg 2,285 per marker), designating `cryptolegacy-validator-1` as the beneficiary. These generated 154 AppRewardCoupons worth 2,372,553 CC, but only 7,564 CC (0.3%) was claimed — the remaining 99.7% expired unclaimed. The FA was granted May 1 but had zero activity for 26 days; all markers appeared May 27 – Jun 3. This FA was not revoked until June 3, 6 days after the aevumWallet pause.
 
-**Protocol vulnerability exploited:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the validator passed a `weight` parameter in the `FeaturedAppRight_CreateActivityMarker` choice and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
+**Protocol vulnerability exploited:** The old Splice protocol had no validation that marker weights corresponded to actual app activity — the FA provider passed an arbitrary `weight` parameter when exercising `FeaturedAppRight_CreateActivityMarker` and the protocol accepted it. This vulnerability was acknowledged in **CIP-0104** (approved Feb 12, 2026), which noted "roughly 150% of weight is claimed via markers compared to actual traffic burned" and proposed replacing markers with deterministic traffic-based measurement. The fix was **not deployed** during CoinAegis's active window (April–May 2026).
 
 The entity registered multiple FA grants under different names (CoinAegis, Aevum Wallet, Goldacorn), created 39 additional `auth0_*` party IDs, and harvested the majority of rewards through its validator node (`cryptolegacy-validator-1`), which was the designated `beneficiary` in goldacorn activity markers (verified via BigQuery exercise payloads). 1,065,002 CC was sent to ByBit and 700,001 CC to Gate.io — partially routed through quokka-controlled intermediary wallets. All four FAs have been revoked: goldacorn (Apr 25), aevumWallet (May 28), coinaegis (May 29), and coinaegisVault (Jun 3).
 
@@ -177,11 +177,11 @@ Each application had a distinct name, description, and URL in the governance vot
 
 ### 2. Activity Marker Weight Inflation
 
-FeaturedAppActivityMarkers had a protocol-level weakness in how weights were validated. When a validator exercises `FeaturedAppRight_CreateActivityMarker`, it passes a `weight` parameter that determines the FA's share of the network reward pool. The old Splice protocol **did not validate** that this weight corresponded to actual app activity — it accepted whatever value the validator submitted.
+FeaturedAppActivityMarkers had a protocol-level weakness in how weights were validated. When an FA provider exercises `FeaturedAppRight_CreateActivityMarker` (a choice on its `FeaturedAppRight` contract), it passes a `weight` parameter that determines the FA's share of the network reward pool. The old Splice protocol **did not validate** that this weight corresponded to actual app activity — it accepted whatever value the provider submitted.
 
 **goldacorn marker data (BigQuery-verified):**
 
-The validator created 919 markers for goldacorn with a cumulative weight of 318,898 (avg 347 per marker, effective_at Apr 24–25). The same technique was later used for coinaegisVault (154 markers, cumulative weight 351,876, avg 2,285 per marker, May 27 – Jun 3). The protocol accepted these weights without validation — the `weight` parameter was passed directly by the validator and not cross-checked against any on-chain activity.
+The goldacorn FA created 919 markers with a cumulative weight of 318,898 (avg 347 per marker, effective_at Apr 24–25), designating `cryptolegacy-validator-1` as the beneficiary. The same technique was later used by coinaegisVault (154 markers, cumulative weight 351,876, avg 2,285 per marker, May 27 – Jun 3). The protocol accepted these weights without validation — the `weight` parameter was passed directly by the FA provider and not cross-checked against any on-chain activity.
 
 **Marker payload structure** (from BigQuery exercise events):
 ```json
@@ -190,7 +190,7 @@ The validator created 919 markers for goldacorn with a cumulative weight of 318,
   "weight": "376.0"
 }
 ```
-The outer `weight` (376.0) is the value the validator submitted per marker — with no corresponding transfer activity. The `beneficiary` is `cryptolegacy-validator-1`, which is where the resulting AppRewardCoupons were attributed.
+The outer `weight` (376.0) is the value the FA provider submitted per marker — with no corresponding transfer activity. The `beneficiary` is `cryptolegacy-validator-1`, which is where the resulting AppRewardCoupons were attributed.
 
 **CIP-0104 context:** This vulnerability was acknowledged in Canton Improvement Proposal CIP-0104 (approved Feb 12, 2026), which stated "roughly 150% of weight is claimed via markers compared to actual traffic burned." The fix replaced the marker-based system with deterministic traffic-based measurement (`BuyMemberTraffic` amounts). However, CIP-0104 was **not deployed** during CoinAegis's active window (April–May 2026), leaving the protocol open to arbitrary weight claims.
 
