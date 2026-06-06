@@ -36,16 +36,18 @@ This proves single-entity control over all 44 party IDs.
 | Apr 20 | **3 FAs granted** on the same day: `coinaegis`, `aevumWallet`, `goldacorn` — all same key | Entity gains 3 Featured App slots in one vote cycle |
 | Apr 24 17:32 – Apr 25 01:47 | **goldacorn: 919 markers created** with inflated weights (cumulative 318,898, avg 347/marker) | Generates 855 coupons worth **2,090,601 CC** — all claimed |
 | Apr 24 21:26 | **Goldacorn revoke vote initiated** by Tokenomics Committee | |
-| Apr 24 23:27 – Apr 25 05:14 | **1.1M CC transferred** from `cryptolegacy-validator-1` to quokka intermediaries (7 transfers) | CC moved out within hours of revoke vote |
+| Apr 24 23:27 – Apr 25 05:14 | **1.1M CC transferred** from `cryptolegacy-validator-1` to quokka intermediaries (7 transfers) | 1.1M of 2.09M CC moved out within hours of revoke vote; ~990K remains |
 | Apr 25 06:35 | **Goldacorn FA revoked** (9 for / 0 against) | |
 | Apr 25 07:30 – Apr 26 14:21 | **Quokka forwards** 650K CC → ByBit, 450K CC → Gate.io | 1.1M CC reaches exchanges |
+| *Apr 26 – May 9* | *15-day dormant period — no outflows* | *~990K CC from goldacorn sits idle in validator holdings* |
 | May 1 | **coinaegisVault FA granted** ("2nd partyID" for CoinAegis) | FA sits dormant for 26 days |
 | May 9 | **aevumWallet self-transfers begin**: 39 auth0 party IDs start shuffling 0.1–4 CC between each other | |
 | May 9–28 | **312,696 self-transfers** executed + **44,618 markers** submitted for aevumWallet | Generates 78,717 coupons worth **3,292,568 CC** (694K claimed, 2.6M expired) |
-| May 22 | **Peak day #1**: 100,135 self-transfers in a single day | |
+| May 10–28 | **~1.3M CC consumed via BuyMemberTraffic** (1,929 ops) | Traffic peaks match self-transfer peaks (May 18: 200K, May 22: 374K, May 28: 408K) |
+| May 22 | **Peak day #1**: 100,135 self-transfers + 374K CC traffic consumed | |
 | May 27 | **coinaegisVault activated**: 154 markers with inflated weights begin (cumulative 351,876, avg 2,285/marker) | Generates 154 coupons worth **2,372,553 CC** (7.5K claimed, 2.4M expired) |
 | May 27 08:45–15:18 | **26 small transfers** from coinaegisVault to `quokka-validator-1` (4,234 CC total) | |
-| May 28 | **Peak day #2**: 103,294 self-transfers — day of governance vote | |
+| May 28 | **Peak day #2**: 103,294 self-transfers + 408K CC traffic consumed — day of governance vote | |
 | May 28 20:00 | **AevumWallet revoke vote initiated** by Tokenomics Committee | |
 | May 28 21:41 | **AevumWallet FA revoked** (10 for / 0 against) | Self-transfers drop from 103K to 59 next day |
 | May 28 22:03–22:12 | **~665K CC consolidated** into single holdings | |
@@ -323,6 +325,39 @@ CoinAegis executed 1,929 `BuyMemberTraffic` operations consuming ~1.3M CC. These
 | **Total input** | **153,996,549** |
 | Returned as change (`senderChangeAmount`) | -152,695,010 |
 | **Net CC consumed for traffic** | **1,301,539** |
+
+#### Daily CC Outflow Timeline (BigQuery-verified)
+
+All CC leaving CoinAegis control — both transfers to external parties and BuyMemberTraffic consumption — by day:
+
+| Date | Transfers Out (CC) | Traffic Consumed (CC) | Total Outflow (CC) | Note |
+|---|---:|---:|---:|---|
+| Apr 24 | 450,010 | 946 | 450,956 | Phase 1: 3 transfers to quokka intermediary |
+| Apr 25 | 650,020 | 944 | 650,964 | Phase 1: 4 transfers to quokka intermediary |
+| *Apr 26 – May 9* | *0* | *0* | *0* | *15-day dormant period — no outflow* |
+| May 10 | — | 2,340 | 2,340 | Traffic consumption begins |
+| May 11 | — | 1,868 | 1,868 | |
+| May 12 | — | 3,645 | 3,645 | |
+| May 13 | — | 17,306 | 17,306 | |
+| May 14 | — | 29,895 | 29,895 | |
+| May 15 | — | 57,517 | 57,517 | |
+| May 16 | — | 88,726 | 88,726 | |
+| May 17 | — | 52,919 | 52,919 | |
+| **May 18** | **—** | **200,167** | **200,167** | **Peak — 422 ops, matches 17,819 self-transfers** |
+| May 19 | — | 11,041 | 11,041 | |
+| May 20 | — | 10,192 | 10,192 | |
+| May 21 | — | 17,673 | 17,673 | |
+| **May 22** | **—** | **374,399** | **374,399** | **Peak — 403 ops, matches 100,135 self-transfers** |
+| May 23 | — | 6,430 | 6,430 | |
+| May 24 | — | 1,772 | 1,772 | |
+| May 25 | — | 2,611 | 2,611 | |
+| May 26 | — | 1,740 | 1,740 | |
+| May 27 | 4,234 | 11,810 | 16,044 | 26 small transfers to quokka-validator-1 |
+| **May 28** | **—** | **407,596** | **407,596** | **Peak — 437 ops, matches 103,294 self-transfers** |
+| May 29 | 665,000 | — | 665,000 | 3 transfers to ByBit + Gate.io |
+| **Total** | **1,769,264** | **~1,301,539** | **~3,070,803** | |
+
+BuyMemberTraffic peaks on May 18, 22, and 28 correlate exactly with the self-transfer peak days — the wash trading generated network traffic requiring bandwidth purchases. After the goldacorn phase (Apr 24–25), the remaining ~990K CC sat dormant for 15 days before being consumed via traffic during the aevumWallet self-transfer phase (May 10–28).
 
 #### Key Entity: fba188
 
