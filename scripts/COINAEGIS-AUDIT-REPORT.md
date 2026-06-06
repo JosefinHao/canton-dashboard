@@ -36,7 +36,7 @@ This proves single-entity control over all 44 party IDs.
 | Apr 20 | **3 FAs granted** on the same day: `coinaegis`, `aevumWallet`, `goldacorn` — all same key | Entity gains 3 Featured App slots in one vote cycle |
 | Apr 24 17:32 – Apr 25 01:47 | **goldacorn: 919 markers created** with inflated weights (cumulative 318,898, avg 347/marker) | Generates 855 coupons worth **2,090,601 CC** — all claimed |
 | Apr 24 21:26 | **Goldacorn revoke vote initiated** by Tokenomics Committee | |
-| Apr 24 23:27 – Apr 25 05:14 | **1.1M CC transferred** from `cryptolegacy-validator-1` to quokka intermediaries (7 transfers) | 1.1M of 2.09M CC moved out within hours of revoke vote; ~990K remains |
+| Apr 24 23:27 – Apr 25 05:14 | **1.1M CC transferred** from `cryptolegacy-validator-1` to quokka intermediaries (7 transfers) | 1.1M of 2.09M CC moved out within hours of revoke vote; remaining ~990K consumed via BuyMemberTraffic during May 10–28 |
 | Apr 25 06:35 | **Goldacorn FA revoked** (9 for / 0 against) | |
 | Apr 25 07:30 – Apr 26 14:21 | **Quokka forwards** 650K CC → ByBit, 450K CC → Gate.io | 1.1M CC reaches exchanges |
 | *Apr 26 – May 9* | *15-day dormant period — no outflows* | *~990K CC from goldacorn sits idle in validator holdings* |
