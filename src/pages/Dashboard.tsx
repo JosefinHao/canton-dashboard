@@ -80,14 +80,11 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="relative">
-          <div className="absolute inset-0 gradient-primary rounded-xl blur-3xl opacity-20" />
-          <div className="relative glass-card p-6 text-center">
-            <h2 className="text-3xl font-bold mb-1">Welcome to Canton Foundation Dashboard</h2>
-            <p className="text-muted-foreground">
-              Explore governance, validators, and network statistics
-            </p>
-          </div>
+        <div className="text-center py-8">
+          <h2 className="text-3xl font-bold mb-1">Welcome to Canton Foundation Dashboard</h2>
+          <p className="text-muted-foreground">
+            Explore governance, validators, and network statistics
+          </p>
         </div>
 
         {allFailed && (
