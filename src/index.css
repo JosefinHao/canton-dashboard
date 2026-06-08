@@ -9,84 +9,96 @@
 
 @layer base {
   :root {
-    /* Dark base - deep slate */
-    --background: 240 95% 15%;
-    --foreground: 210 20% 95%;
+    /* ====================================================================
+       CANTON DESIGN SYSTEM — locked to the documented current brand.
+       Source of truth: website_analysis/CURRENT_SYSTEM (official Canton
+       Network Brand Guide v2 + live theme). Channels are HSL for shadcn.
+       Palette: Yellow #F3FF97 · Black #030206 · White #FFFFFC ·
+                Purple #875CFF · Lilac #D5A5E3 · Taupe #A89F91 · stroke #634BA9
+       ==================================================================== */
 
-    /* Cards with subtle elevation */
-    --card: 225 25% 12%;
-    --card-foreground: 210 20% 95%;
+    /* Base: Canton Black #030206 */
+    --background: 255 50% 2%;
+    --foreground: 60 30% 96%;          /* near Canton White #FFFFFC */
 
-    --popover: 225 25% 14%;
-    --popover-foreground: 210 20% 95%;
+    /* Panels: deep Canton purple-black (matches .glass-card gradient) */
+    --card: 265 42% 9%;
+    --card-foreground: 60 30% 96%;
 
-    /* Primary: Canton Yellow #F3FF97 */
-    --primary: 67 98% 79%;
-    --primary-foreground: 225 30% 8%;
-    --primary-glow: 67 98% 85%;
+    --popover: 265 42% 11%;
+    --popover-foreground: 60 30% 96%;
 
-    /* Secondary: Muted purple */
-    --secondary: 260 40% 55%;
-    --secondary-foreground: 210 20% 95%;
+    /* Primary: Canton Yellow #F3FF97 — the dominant signal */
+    --primary: 67 100% 80%;
+    --primary-foreground: 255 50% 4%;  /* Canton Black on yellow */
+    --primary-glow: 67 100% 86%;
 
-    --muted: 225 20% 18%;
-    --muted-foreground: 220 15% 60%;
+    /* Secondary: Canton Purple #875CFF (supportive) */
+    --secondary: 256 100% 68%;
+    --secondary-foreground: 60 30% 96%;
 
-    /* Accent: Canton Lilac #D5A5E3 */
-    --accent: 287 53% 77%;
-    --accent-foreground: 225 30% 8%;
+    --muted: 265 28% 16%;
+    --muted-foreground: 270 12% 66%;
 
-    /* Neon colors - toned down for readability */
-    --neon-pink: 330 60% 55%;
-    --neon-purple: 270 50% 55%;
-    --neon-blue: 210 60% 55%;
-    --neon-cyan: 180 50% 50%;
+    /* Accent: Canton Lilac #D5A5E3 (supportive) */
+    --accent: 286 53% 77%;
+    --accent-foreground: 255 50% 4%;
 
-    --success: 287 53% 77%;
-    --success-foreground: 210 20% 95%;
+    /* Legacy "neon" tokens remapped to the Canton secondary family so any
+       remaining usages render on-brand (no off-palette pink/cyan). */
+    --neon-pink: 286 53% 77%;          /* → Canton Lilac   */
+    --neon-purple: 256 100% 68%;       /* → Canton Purple  */
+    --neon-blue: 256 70% 60%;          /* → purple-blue    */
+    --neon-cyan: 67 100% 80%;          /* → Canton Yellow signal */
 
-    --warning: 40 70% 50%;
-    --warning-foreground: 225 30% 8%;
+    /* Status — positive states use the Canton signal (yellow) */
+    --success: 67 100% 80%;
+    --success-foreground: 255 50% 4%;
 
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 210 20% 95%;
+    --warning: 29 79% 52%;             /* Canton Orange #e07b1a */
+    --warning-foreground: 255 50% 4%;
 
-    /* Subtle borders */
-    --border: 225 20% 22%;
-    --input: 225 20% 20%;
-    --ring: 67 98% 79%;
+    --destructive: 4 73% 49%;          /* Canton error #D92D20 */
+    --destructive-foreground: 60 30% 96%;
 
-    --radius: 0.75rem;
+    /* Borders: Canton purple-stroke #634BA9, dimmed */
+    --border: 255 32% 22%;
+    --input: 255 30% 18%;
+    --ring: 67 100% 80%;               /* Canton Yellow focus ring */
 
-    /* Chart colors - balanced palette */
-    --chart-1: 67 98% 79%;
-    --chart-2: 200 50% 55%;
-    --chart-3: 287 53% 77%;
-    --chart-4: 260 45% 55%;
-    --chart-5: 40 65% 55%;
+    /* Form radius per brand (10px); cards keep their explicit 20px */
+    --radius: 0.625rem;
 
-    /* Gradients - subtle */
-    --gradient-background: #030206;
-    --gradient-primary: linear-gradient(135deg, hsl(67 98% 79%) 0%, hsl(67 98% 85%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(287 53% 77%) 0%, hsl(270 50% 70%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(225 25% 12% / 0.95) 0%, hsl(230 25% 14% / 0.9) 100%);
-    --gradient-neon: linear-gradient(90deg, hsl(330 50% 55%), hsl(260 45% 55%), hsl(200 50% 55%));
+    /* Chart palette — strictly Canton hues */
+    --chart-1: 67 100% 80%;            /* Yellow */
+    --chart-2: 256 100% 68%;           /* Purple */
+    --chart-3: 286 53% 77%;            /* Lilac  */
+    --chart-4: 37 12% 61%;             /* Taupe  */
+    --chart-5: 29 79% 52%;             /* Orange */
 
-    /* Subtle shadows */
-    --shadow-glow-primary: 0 4px 20px hsl(67 98% 79% / 0.2);
-    --shadow-glow-cyan: 0 4px 20px hsl(67 98% 79% / 0.15);
-    --shadow-glow-pink: 0 4px 20px hsl(330 50% 55% / 0.15);
-    --shadow-glow-purple: 0 4px 20px hsl(260 45% 55% / 0.15);
-    --shadow-card: 0 4px 24px hsl(225 30% 5% / 0.4);
+    /* Gradients — "soft gradients over black" per brand guide; used sparingly */
+    --gradient-background: radial-gradient(120% 80% at 50% -10%, hsl(268 80% 12% / 0.55) 0%, #030206 60%);
+    --gradient-primary: linear-gradient(135deg, hsl(67 100% 80%) 0%, hsl(67 100% 86%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(286 53% 77%) 0%, hsl(256 100% 68%) 100%);
+    --gradient-card: linear-gradient(180deg, #150E29 0%, #030206 100%);
+    --gradient-neon: linear-gradient(90deg, hsl(256 100% 68%), hsl(286 53% 77%));
 
-    --sidebar-background: 225 28% 10%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 67 98% 79%;
-    --sidebar-primary-foreground: 225 30% 8%;
-    --sidebar-accent: 225 20% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 225 20% 20%;
-    --sidebar-ring: 67 98% 79%;
+    /* Shadows — on-brand glows */
+    --shadow-glow-primary: 0 4px 20px hsl(67 100% 80% / 0.22);
+    --shadow-glow-cyan: 0 4px 20px hsl(67 100% 80% / 0.15);
+    --shadow-glow-pink: 0 4px 20px hsl(286 53% 77% / 0.15);
+    --shadow-glow-purple: 0 4px 20px hsl(256 100% 68% / 0.15);
+    --shadow-card: 0 4px 24px hsl(255 40% 2% / 0.5);
+
+    /* Sidebar — Canton Black with yellow signal */
+    --sidebar-background: 258 45% 4%;
+    --sidebar-foreground: 60 24% 92%;
+    --sidebar-primary: 67 100% 80%;
+    --sidebar-primary-foreground: 255 50% 4%;
+    --sidebar-accent: 265 30% 14%;
+    --sidebar-accent-foreground: 60 24% 92%;
+    --sidebar-border: 255 30% 18%;
+    --sidebar-ring: 67 100% 80%;
   }
 }
 
