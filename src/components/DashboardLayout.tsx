@@ -125,12 +125,12 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-48 p-1 bg-popover border border-border shadow-lg" 
+      <PopoverContent
+        className="z-[120] w-56 p-1.5 bg-popover border border-border shadow-xl"
         align="start"
-        sideOffset={8}
+        sideOffset={16}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-0.5">
           {group.items.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
