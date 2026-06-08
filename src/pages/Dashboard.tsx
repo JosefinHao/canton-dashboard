@@ -80,7 +80,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="text-center py-8">
+        <div className="text-left py-8">
           <h2 className="text-3xl font-bold mb-1">Welcome to Canton Foundation Dashboard</h2>
           <p className="text-muted-foreground">
             Explore governance, validators, and network statistics
