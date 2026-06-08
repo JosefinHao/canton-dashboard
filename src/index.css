@@ -352,4 +352,26 @@
   .color-canton-lilac  { color: var(--color-canton-lilac, #D5A5E3); }
   .color-canton-purple { color: var(--color-canton-purple, #875CFF); }
   .color-canton-white  { color: #fff; }
+
+  /* Nav item — foundation yellow square indicator under the word on hover/active
+     (matches .site-navigation li.parent-nav span:after) */
+  .nav-link {
+    position: relative;
+    padding-bottom: 10px;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    background-color: var(--color-canton-yellow, #F3FF97);
+  }
 }

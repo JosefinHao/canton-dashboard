@@ -114,9 +114,10 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`flex items-center gap-1.5 px-3 py-2 text-[14px] font-normal uppercase tracking-[0.7px] ${
+          data-active={isGroupActive}
+          className={`nav-link flex items-center gap-1.5 px-3 pt-1 text-[14px] font-normal uppercase tracking-[0.7px] ${
             isGroupActive
-              ? "text-primary"
+              ? "text-white"
               : "text-white/85 hover:text-primary"
           }`}
         >
@@ -194,7 +195,11 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Header */}
       <header
         className="sticky top-0 z-[100]"
-        style={{ background: "#030245", boxShadow: "0 6px 24px rgba(3, 2, 6, 0.55)" }}
+        style={{
+          background: "rgba(8, 4, 40, 0.45)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
       >
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
