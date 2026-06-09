@@ -5,7 +5,7 @@
  * Independent of the production backend (port 3001).
  *
  * Usage:
- *   pm2 start ecosystem.staging.cjs
+ *   pm2 start ecosystem.staging.config.cjs
  *   pm2 logs duckdb-api-staging
  *   pm2 restart duckdb-api-staging
  *   pm2 stop duckdb-api-staging
