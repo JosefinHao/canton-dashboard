@@ -196,9 +196,9 @@ Open port 3001 for API access:
 
 ```bash
 # Google Cloud
-gcloud compute firewall-rules create allow-api-3001 \\
-    --allow tcp:3001 \\
-    --source-ranges 0.0.0.0/0 \\
+gcloud compute firewall-rules create allow-api-3001 \
+    --allow tcp:3001 \
+    --source-ranges 0.0.0.0/0 \
     --description "Allow DuckDB API access"
 
 # Or using ufw (Ubuntu)

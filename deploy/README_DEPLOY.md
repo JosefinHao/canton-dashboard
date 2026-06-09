@@ -16,7 +16,7 @@ Browser ─► nginx (port 80/443)
 ```
 
 | Component | Production | Staging |
-|-----------|-----------|---------|
+|-----------|-----------|--------|
 | Frontend | `/var/www/html/` | `/var/www/staging/` |
 | Backend | PM2 `duckdb-api` on port 3001 | PM2 `duckdb-api-staging` on port 3002 |
 | URL | `dashboard.canton.foundation/` | `dashboard.canton.foundation/staging/` |
@@ -160,7 +160,7 @@ The deploy script (`./deploy/deploy-frontend.sh --staging`) sets these automatic
 ## PM2 Commands
 
 | Action | Command |
-|--------|--------|
+|--------|---------|
 | View all processes | `pm2 list` |
 | View logs | `pm2 logs duckdb-api --lines 20 --nostream` |
 | Restart backend | `pm2 restart duckdb-api` |
