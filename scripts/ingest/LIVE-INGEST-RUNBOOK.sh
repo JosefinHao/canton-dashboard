@@ -7,7 +7,7 @@
 # Cursor:  /var/lib/ledger_raw/cursors/live-cursor.json
 # Logs:    journalctl -u canton-live-ingest
 
-# ─── Service management ─────────────────────────────────
+# ─── Service management ─────────────────────────────────────────
 
 # Check status
 sudo systemctl status canton-live-ingest
@@ -21,7 +21,7 @@ sudo systemctl restart canton-live-ingest
 sudo systemctl enable canton-live-ingest
 sudo systemctl disable canton-live-ingest
 
-# ─── Logs ────────────────────────────────────────────────
+# ─── Logs ──────────────────────────────────────────────────────
 
 # Live log stream
 journalctl -u canton-live-ingest -f
@@ -39,7 +39,7 @@ journalctl -u canton-live-ingest --since "1 hour ago" --no-pager | grep -E 'erro
 journalctl -u canton-live-ingest --since "2 hours ago" --no-pager
 journalctl -u canton-live-ingest --since "2026-05-19 16:00" --no-pager
 
-# ─── Cursor & lag ────────────────────────────────────────
+# ─── Cursor & lag ──────────────────────────────────────────────
 
 # Current cursor position
 cat /var/lib/ledger_raw/cursors/live-cursor.json
@@ -56,7 +56,7 @@ print(f'Cursor: {c[\"record_time\"]}')
 print(f'Lag:    {lag}')
 "
 
-# ─── Verification ────────────────────────────────────────
+# ─── Verification ──────────────────────────────────────────────
 
 # Verify a specific day against Scan API
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
@@ -81,14 +81,14 @@ import('@google-cloud/storage').then(async ({ Storage }) => {
 });
 " -- YYYY-MM-DD
 
-# ─── Remediation (re-ingest a day) ───────────────────────
+# ─── Remediation (re-ingest a day) ─────────────────────────────
 
 # Re-ingest a single day (wipes and replaces existing data)
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
   ~/governance-dashboard-v1/scripts/ingest/reingest-updates.js \
   --start=YYYY-MM-DD --end=YYYY-MM-DD --migration=4 --clean --force
 
-# ─── Service configuration ──────────────────────────────
+# ─── Service configuration ────────────────────────────────────
 
 # Service file location
 # /etc/systemd/system/canton-live-ingest.service
