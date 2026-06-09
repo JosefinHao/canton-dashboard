@@ -391,6 +391,7 @@ const FETCH_TIMEOUT_MS               = parseInt(process.env.FETCH_TIMEOUT_MS)   
 const STALL_DETECTION_INTERVAL_MS    = parseInt(process.env.STALL_DETECTION_INTERVAL_MS)    || 30000;
 const STALL_THRESHOLD_MS             = parseInt(process.env.STALL_THRESHOLD_MS)             || 120000;
 const GCS_CURSOR_BACKUP_MAX_FAILURES = parseInt(process.env.GCS_CURSOR_BACKUP_MAX_FAILURES) || 5;
+const GCS_CURSOR_BACKUP_INTERVAL_MS  = parseInt(process.env.GCS_CURSOR_BACKUP_INTERVAL_MS)  || 30000;
 const MAX_TRANSIENT_ERRORS           = parseInt(process.env.MAX_TRANSIENT_ERRORS)           || 100;
 const ENDPOINT_ROTATE_AFTER_ERRORS   = parseInt(process.env.ENDPOINT_ROTATE_AFTER_ERRORS)  || 3;
 
@@ -462,6 +463,7 @@ let stallWatchdogInterval = null;
 let heartbeatInterval     = null;
 let currentCycleId        = 0;
 let gcsCursorBackupConsecutiveFailures = 0;
+let lastGCSBackupTime = 0;
 
 // FIX #13: Adaptive fetch parameters for stuck cursors.
 // When the same cursor times out repeatedly, the API is likely struggling with
@@ -605,7 +607,7 @@ async function loadCursorFromGCS() {
  * FIX #2: Now async — awaits backupCursorToGCS so errors surface and the
  * event loop is not blocked during the gsutil upload.
  */
-async function saveLiveCursor(migId, afterRecordTime) {
+async function saveLiveCursor(migId, afterRecordTime, { force = false } = {}) {
   try {
     if (!fs.existsSync(CURSOR_DIR)) {
       fs.mkdirSync(CURSOR_DIR, { recursive: true });
@@ -623,8 +625,7 @@ async function saveLiveCursor(migId, afterRecordTime) {
     console.log(`  ✅ Local cursor saved: ${afterRecordTime}`);
 
     if (GCS_MODE) {
-      // FIX #2: await the now-async backup — does not block event loop
-      await backupCursorToGCS(cursor);
+      await backupCursorToGCS(cursor, { force });
     } else {
       console.log(`  ⚠️ GCS_MODE disabled, skipping GCS backup`);
     }
@@ -641,10 +642,15 @@ async function saveLiveCursor(migId, afterRecordTime) {
  *   Eliminates dependency on gcloud CLI auth which expires during long runs.
  *   SDK uploads the JSON directly from memory — no temp files needed.
  */
-async function backupCursorToGCS(cursor) {
+async function backupCursorToGCS(cursor, { force = false } = {}) {
   const GCS_BUCKET = process.env.GCS_BUCKET;
   if (!GCS_BUCKET) {
     console.log('  ⚠️ Cursor backup skipped: GCS_BUCKET not set');
+    return;
+  }
+
+  const now = Date.now();
+  if (!force && (now - lastGCSBackupTime) < GCS_CURSOR_BACKUP_INTERVAL_MS) {
     return;
   }
 
@@ -659,6 +665,7 @@ async function backupCursorToGCS(cursor) {
       resumable:   false, // small file, no need for resumable upload
     });
 
+    lastGCSBackupTime = Date.now();
     console.log(`  ☁️ Cursor backed up: ${gcsPath}`);
     gcsCursorBackupConsecutiveFailures = 0;
     log('debug', 'cursor_backed_up_to_gcs', {
@@ -1802,8 +1809,7 @@ async function shutdown() {
   const cursorTime = _liveAfterRecordTime   || lastTimestamp;
 
   if (cursorTime) {
-    // FIX #2: await the now-async saveLiveCursor
-    await saveLiveCursor(cursorMig, cursorTime);
+    await saveLiveCursor(cursorMig, cursorTime, { force: true });
     log('info', 'cursor_advanced', { newCursor: cursorTime, migration: cursorMig, reason: 'shutdown' });
     logCursor('shutdown_saved', { migrationId: cursorMig, lastBefore: cursorTime });
   }
