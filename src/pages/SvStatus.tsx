@@ -63,7 +63,7 @@ function StatusCell({ value }: { value: number }) {
 }
 
 function SummaryBadge({ ok, total }: { ok: number; total: number }) {
-  const allOk = ok === total;
+  const allOk = total > 0 && ok === total;
   return (
     <Badge
       variant={allOk ? "default" : "destructive"}
