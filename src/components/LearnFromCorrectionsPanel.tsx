@@ -627,10 +627,10 @@ export function LearnFromCorrectionsPanel() {
               Generate improvement proposals from manual classification corrections
             </CardDescription>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Learning Mode Toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Learning Mode</span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">Learning Mode</span>
               <Switch
                 checked={learningMode}
                 onCheckedChange={toggleLearningMode}

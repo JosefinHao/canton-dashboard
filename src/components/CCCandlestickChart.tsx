@@ -314,7 +314,7 @@ export function CCCandlestickChart({
             No chart data available
           </div>
         ) : (
-          <div style={{ width: "100%", height: Math.min(480 * zoomLevel, typeof window !== "undefined" ? window.innerHeight * 0.7 : 480), minHeight: 320, maxHeight: 980 }}>
+          <div style={{ width: "100%", height: 480 * zoomLevel, minHeight: 480, maxHeight: "min(980px, 70vh)" }}>
             <ResponsiveContainer width="100%" height="70%">
               <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />

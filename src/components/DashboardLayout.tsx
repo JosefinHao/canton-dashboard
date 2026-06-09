@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import cantonLogo from "@/assets/logo.svg";
 import { Link, useLocation } from "react-router-dom";
@@ -32,6 +32,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useDashboards } from "@/hooks/use-dashboards";
@@ -166,6 +167,10 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -173,11 +178,16 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
           <Menu className="h-6 w-6" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 p-0 bg-card border-border">
-        <div className="p-4 border-b border-border">
+      <SheetContent
+        side="left"
+        className="z-[110] w-72 p-0 bg-card border-border flex flex-col [&>button]:z-[111]"
+        aria-describedby={undefined}
+      >
+        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+        <div className="p-4 border-b border-border pr-12">
           <img src={cantonLogo} alt="Canton Network" className="h-8" />
         </div>
-        <nav className="flex flex-col gap-1 p-4 overflow-y-auto max-h-[calc(100vh-5rem)]">
+        <nav className="flex-1 min-h-0 flex flex-col gap-1 p-4 overflow-y-auto">
           {groups.map((group) => (
             <div key={group.label} className="mb-3">
               <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">
@@ -190,7 +200,6 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    onClick={() => setOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-smooth ${
                       isActive
                         ? "bg-primary/10 text-primary font-medium"
@@ -198,7 +207,7 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
                     }`}
                   >
                     <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span>{item.name}</span>
+                    <span className="break-words min-w-0">{item.name}</span>
                   </Link>
                 );
               })}
@@ -265,12 +274,13 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <img src={cantonLogo} alt="Canton Network" className="h-8 md:h-10" />
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation / mobile spacer for logo centering */}
             <nav className="hidden md:flex items-center gap-1">
               {navigationGroups.map((group) => (
                 <NavDropdown key={group.label} group={group} />
               ))}
             </nav>
+            <div className="w-10 md:hidden" />
           </div>
         </div>
       </header>

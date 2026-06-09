@@ -304,41 +304,45 @@ export default function SvStatus() {
 
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
-          <Eye className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Filter by Env:</span>
-          <Select value={selectedEnv} onValueChange={setSelectedEnv}>
-            <SelectTrigger className="w-full sm:w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-muted border-border">
-              {[ALL_ENVS, ...ENVS].map((env) => (
-                <SelectItem
-                  key={env}
-                  value={env}
-                  className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
-                >
-                  {env === ALL_ENVS ? "All Envs" : env}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className="text-sm font-medium">As viewed from SV:</span>
-          <Select value={selectedSv} onValueChange={setSelectedSv}>
-            <SelectTrigger className="w-full sm:w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-muted border-border">
-              {(svList ?? []).map((sv) => (
-                <SelectItem
-                  key={sv.id}
-                  value={sv.id}
-                  className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
-                >
-                  {sv.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Eye className="h-4 w-4 text-muted-foreground hidden sm:block" />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm font-medium whitespace-nowrap">Filter by Env:</span>
+            <Select value={selectedEnv} onValueChange={setSelectedEnv}>
+              <SelectTrigger className="w-full sm:w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-muted border-border">
+                {[ALL_ENVS, ...ENVS].map((env) => (
+                  <SelectItem
+                    key={env}
+                    value={env}
+                    className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
+                  >
+                    {env === ALL_ENVS ? "All Envs" : env}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm font-medium whitespace-nowrap">As viewed from SV:</span>
+            <Select value={selectedSv} onValueChange={setSelectedSv}>
+              <SelectTrigger className="w-full sm:w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-muted border-border">
+                {(svList ?? []).map((sv) => (
+                  <SelectItem
+                    key={sv.id}
+                    value={sv.id}
+                    className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
+                  >
+                    {sv.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {(selectedSv !== DEFAULT_SV || selectedEnv !== ALL_ENVS) && (
             <Button
               variant="ghost"

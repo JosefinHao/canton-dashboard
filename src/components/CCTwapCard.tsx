@@ -203,7 +203,7 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
 
           {/* Exchange — only in single mode */}
           {mode === "single" && (
-            <div className="space-y-1">
+            <div className="w-full sm:w-auto space-y-1">
               <label className="text-xs text-muted-foreground">Exchange</label>
               <Select value={selectedExchange} onValueChange={(val) => {
                     setSelectedExchange(val);
@@ -233,10 +233,10 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
 
           {/* Pair — only in single mode */}
           {mode === "single" && (
-            <div className="space-y-1">
+            <div className="w-full sm:w-auto space-y-1">
               <label className="text-xs text-muted-foreground">Pair</label>
               <Select value={selectedInstrument} onValueChange={setSelectedInstrument}>
-                <SelectTrigger className="w-[120px]" style={{ backgroundColor: "#000", color: "#fff" }}>
+                <SelectTrigger className="w-full sm:w-[120px]" style={{ backgroundColor: "#000", color: "#fff" }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -251,10 +251,10 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
           )}
 
           {/* Candle interval */}
-          <div className="space-y-1">
+          <div className="w-full sm:w-auto space-y-1">
             <label className="text-xs text-muted-foreground">Interval</label>
             <Select value={twapInterval} onValueChange={setTwapInterval}>
-              <SelectTrigger className="w-[110px]" style={{ backgroundColor: "#000", color: "#fff" }}>
+              <SelectTrigger className="w-full sm:w-[110px]" style={{ backgroundColor: "#000", color: "#fff" }}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
