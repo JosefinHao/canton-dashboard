@@ -212,7 +212,7 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
                       setSelectedInstrument(ex.instruments[0]);
                     }
                   }}>
-                <SelectTrigger className="w-[140px]" style={{ backgroundColor: "#000", color: "#fff" }}>
+                <SelectTrigger className="w-full sm:w-[140px]" style={{ backgroundColor: "#000", color: "#fff" }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -315,7 +315,7 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
                   type="datetime-local"
                   value={startInput}
                   onChange={(e) => setStartInput(e.target.value)}
-                  className="w-[200px] text-sm"
+                  className="w-full sm:w-[200px] text-sm"
                   style={{ backgroundColor: "#000", color: "#fff" }}
                 />
               </div>
@@ -325,7 +325,7 @@ export function CCTwapCard({ enabled = true }: CCTwapCardProps) {
                   type="datetime-local"
                   value={endInput}
                   onChange={(e) => setEndInput(e.target.value)}
-                  className="w-[200px] text-sm"
+                  className="w-full sm:w-[200px] text-sm"
                   style={{ backgroundColor: "#000", color: "#fff" }}
                 />
               </div>

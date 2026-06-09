@@ -553,12 +553,12 @@ export function GoldenSetManagementPanel() {
   return (
     <Card className="border-amber-500/20 bg-card/50">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-amber-400" />
             <CardTitle className="text-lg">Golden Evaluation Set</CardTitle>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {((fullSet?.items.length || 0) > 0 || (summary?.evaluationCount || 0) > 0) && (
               <Button 
                 size="sm" 
@@ -601,7 +601,7 @@ export function GoldenSetManagementPanel() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="id">Item ID *</Label>
                       <Input 
@@ -649,7 +649,7 @@ export function GoldenSetManagementPanel() {
                       rows={3}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="category">Category</Label>
                       <Select 
@@ -976,7 +976,7 @@ export function GoldenSetManagementPanel() {
                 {/* By Type Breakdown */}
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Accuracy by Type</h4>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {Object.entries(selectedEval.byType).map(([type, stats]) => (
                       <div key={type} className="flex items-center justify-between p-2 rounded-lg border bg-muted/20">
                         <Badge variant="outline" className={getTypeColor(type)}>{type}</Badge>

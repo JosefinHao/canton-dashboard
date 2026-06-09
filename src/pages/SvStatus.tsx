@@ -320,7 +320,7 @@ export default function SvStatus() {
           <Eye className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Filter by Env:</span>
           <Select value={selectedEnv} onValueChange={setSelectedEnv}>
-            <SelectTrigger className="w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="w-full sm:w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-muted border-border">
@@ -337,7 +337,7 @@ export default function SvStatus() {
           </Select>
           <span className="text-sm font-medium">Filter by SV:</span>
           <Select value={selectedSv} onValueChange={setSelectedSv}>
-            <SelectTrigger className="w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="w-full sm:w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-muted border-border">

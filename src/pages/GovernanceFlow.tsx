@@ -1558,7 +1558,7 @@ const GovernanceFlow = () => {
             <span className="text-sm font-medium">Date Range:</span>
           </div>
           <Select value={datePreset} onValueChange={handleDatePreset}>
-            <SelectTrigger className="w-[160px] h-8" style={{ backgroundColor: '#000', color: '#fff' }}>
+            <SelectTrigger className="w-full sm:w-[160px] h-8" style={{ backgroundColor: '#000', color: '#fff' }}>
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
             <SelectContent>
