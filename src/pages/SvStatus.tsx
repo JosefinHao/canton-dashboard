@@ -151,12 +151,22 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
   );
 }
 
+function getEnvNodeCount(env: SvEnvStatus): number {
+  if (!env.status) return 0;
+  const names = new Set<string>();
+  for (const svc of Object.values(env.status)) {
+    for (const name of Object.keys(svc.nodes)) {
+      names.add(name);
+    }
+  }
+  return names.size;
+}
+
 function getServiceCounts(envs: SvEnvStatus[], envName: string, service: string) {
   const e = envs.find((x) => x.env === envName);
   if (!e?.status?.[service]) return null;
-  const nodes = Object.values(e.status[service].nodes);
-  const total = nodes.length;
-  const ok = nodes.filter((v) => v === 0).length;
+  const total = getEnvNodeCount(e);
+  const ok = Object.values(e.status[service].nodes).filter((v) => v === 0).length;
   return { ok, total };
 }
 
