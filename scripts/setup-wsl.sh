@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="https://github.com/cf-internal/cf-data-platform.git"
+REPO_URL="https://github.com/cf-internal/governance-dashboard-v1.git"
 INSTALL_DIR="$HOME/canton-explorer"
 DATA_DIR="/mnt/c/ledger_raw"
 NODE_VERSION="20"

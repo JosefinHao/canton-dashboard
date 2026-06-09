@@ -7,7 +7,7 @@ Complete guide for setting up Amulet Scan for local development.
 ### Required Software
 
 | Software | Version | Purpose |
-|----------|---------|---------|
+|----------|---------|--------|
 | Node.js | 20.x or later | Runtime for API server and ingestion |
 | npm | 10.x or later | Package management |
 | Git | Any recent | Version control |
@@ -27,8 +27,8 @@ Complete guide for setting up Amulet Scan for local development.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/cf-internal/cf-data-platform.git
-cd cf-data-platform
+git clone https://github.com/cf-internal/governance-dashboard-v1.git
+cd governance-dashboard-v1
 ```
 
 ### 2. Install Dependencies
