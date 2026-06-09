@@ -369,7 +369,7 @@ export default function KaikoFeed() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
-                  <div className="space-y-1">
+                  <div className="w-full sm:w-auto space-y-1">
                     <label className="text-sm text-muted-foreground">Exchange</label>
                     <Select value={exchange} onValueChange={setExchange}>
                       <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: '#000', color: '#fff' }}>
@@ -397,7 +397,7 @@ export default function KaikoFeed() {
                     </Select>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="w-full sm:w-auto space-y-1">
                     <label className="text-sm text-muted-foreground">
                       Instrument
                       <span className="text-xs text-muted-foreground/70 ml-1">
@@ -435,7 +435,7 @@ export default function KaikoFeed() {
                     </Select>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="w-full sm:w-auto space-y-1">
                     <label className="text-sm text-muted-foreground">Interval</label>
                     <Select value={interval} onValueChange={setInterval}>
                       <SelectTrigger className="w-full sm:w-[140px]" style={{ backgroundColor: '#000', color: '#fff' }}>
@@ -582,7 +582,7 @@ export default function KaikoFeed() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
-                  <div className="space-y-1">
+                  <div className="w-full sm:w-auto space-y-1">
                     <label className="text-sm text-muted-foreground">Asset</label>
                     <Select value={asset} onValueChange={setAsset}>
                       <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: '#000', color: '#fff' }}>
@@ -604,7 +604,7 @@ export default function KaikoFeed() {
                     </Select>
                   </div>
 
-                  <div className="space-y-1">
+                  <div className="w-full sm:w-auto space-y-1">
                     <label className="text-sm text-muted-foreground">Interval</label>
                     <Select value={assetInterval} onValueChange={setAssetInterval}>
                       <SelectTrigger className="w-full sm:w-[140px]" style={{ backgroundColor: '#000', color: '#fff' }}>

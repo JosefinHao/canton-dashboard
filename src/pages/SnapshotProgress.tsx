@@ -442,9 +442,9 @@ const SnapshotProgress = () => {
 
         {/* Migration Filter */}
         {uniqueMigrations.length > 0 && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Migration:</span>
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Migration:</span>
             <Select value={selectedMigration} onValueChange={setSelectedMigration}>
               <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: '#000', color: '#fff' }}>
                 <SelectValue placeholder="Select migration" />
