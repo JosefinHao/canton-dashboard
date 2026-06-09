@@ -120,10 +120,11 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-smooth ${
+          data-active={isGroupActive}
+          className={`nav-link flex items-center gap-1.5 px-3 pt-1 text-[14px] font-normal uppercase tracking-[0.7px] ${
             isGroupActive
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              ? "text-white"
+              : "text-white/85 hover:text-primary"
           }`}
         >
           {group.label}
@@ -131,11 +132,11 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-48 p-1 bg-popover border border-border shadow-lg"
+        className="z-[120] w-56 p-1.5 bg-popover border border-border shadow-xl"
         align="start"
-        sideOffset={8}
+        sideOffset={16}
       >
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-0.5">
           {group.items.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
@@ -246,7 +247,14 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="glass-card border-b border-border/50 sticky top-0 z-50">
+      <header
+        className="sticky top-0 z-[100]"
+        style={{
+          background: "rgba(8, 4, 40, 0.45)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+        }}
+      >
         <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
             {/* Mobile hamburger */}

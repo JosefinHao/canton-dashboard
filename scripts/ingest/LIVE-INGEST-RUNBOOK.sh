@@ -3,11 +3,11 @@
 # ========================================
 #
 # Service: canton-live-ingest (systemd)
-# Script:  ~/cf-data-platform/scripts/ingest/fetch-updates.js
+# Script:  ~/governance-dashboard-v1/scripts/ingest/fetch-updates.js
 # Cursor:  /var/lib/ledger_raw/cursors/live-cursor.json
 # Logs:    journalctl -u canton-live-ingest
 
-# ─── Service management ─────────────────────────────────────
+# ─── Service management ─────────────────────────────────────────
 
 # Check status
 sudo systemctl status canton-live-ingest
@@ -21,7 +21,7 @@ sudo systemctl restart canton-live-ingest
 sudo systemctl enable canton-live-ingest
 sudo systemctl disable canton-live-ingest
 
-# ─── Logs ────────────────────────────────────────────────────
+# ─── Logs ──────────────────────────────────────────────────────
 
 # Live log stream
 journalctl -u canton-live-ingest -f
@@ -39,7 +39,7 @@ journalctl -u canton-live-ingest --since "1 hour ago" --no-pager | grep -E 'erro
 journalctl -u canton-live-ingest --since "2 hours ago" --no-pager
 journalctl -u canton-live-ingest --since "2026-05-19 16:00" --no-pager
 
-# ─── Cursor & lag ────────────────────────────────────────────
+# ─── Cursor & lag ──────────────────────────────────────────────
 
 # Current cursor position
 cat /var/lib/ledger_raw/cursors/live-cursor.json
@@ -56,19 +56,19 @@ print(f'Cursor: {c[\"record_time\"]}')
 print(f'Lag:    {lag}')
 "
 
-# ─── Verification ────────────────────────────────────────────
+# ─── Verification ──────────────────────────────────────────────
 
 # Verify a specific day against Scan API
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
-  ~/cf-data-platform/scripts/ingest/verify-scan-completeness.js \
+  ~/governance-dashboard-v1/scripts/ingest/verify-scan-completeness.js \
   --migration=4 --date=YYYY-MM-DD --scope=updates \
   --output=/tmp/verify-spot.ndjson
 
 # Check partition coverage (all migrations)
-node ~/cf-data-platform/scripts/ingest/check-partition-coverage.js
+node ~/governance-dashboard-v1/scripts/ingest/check-partition-coverage.js
 
 # Check file counts for a specific day
-cd ~/cf-data-platform/scripts/ingest && node -e "
+cd ~/governance-dashboard-v1/scripts/ingest && node -e "
 import('@google-cloud/storage').then(async ({ Storage }) => {
   const bucket = new Storage().bucket('canton-bucket');
   const day = process.argv[1] || '2026-05-18';
@@ -81,20 +81,20 @@ import('@google-cloud/storage').then(async ({ Storage }) => {
 });
 " -- YYYY-MM-DD
 
-# ─── Remediation (re-ingest a day) ───────────────────────────
+# ─── Remediation (re-ingest a day) ─────────────────────────────
 
 # Re-ingest a single day (wipes and replaces existing data)
 source ~/.gcs_hmac_env && node --max-old-space-size=8192 \
-  ~/cf-data-platform/scripts/ingest/reingest-updates.js \
+  ~/governance-dashboard-v1/scripts/ingest/reingest-updates.js \
   --start=YYYY-MM-DD --end=YYYY-MM-DD --migration=4 --clean --force
 
-# ─── Service configuration ──────────────────────────────────
+# ─── Service configuration ────────────────────────────────────
 
 # Service file location
 # /etc/systemd/system/canton-live-ingest.service
 #
 # Environment files:
-#   ~/cf-data-platform/scripts/ingest/.env     (Scan API config)
+#   ~/governance-dashboard-v1/scripts/ingest/.env     (Scan API config)
 #   ~/.gcs_hmac_env.systemd                     (GCS HMAC keys, no 'export' prefix)
 #
 # After editing the service file:

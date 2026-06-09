@@ -129,6 +129,66 @@ describe('restoreCursorsFromGCS (structural verification)', () => {
   });
 });
 
+describe('Live cursor GCS backup throttle (structural verification)', () => {
+  let source;
+
+  beforeEach(() => {
+    source = fs.readFileSync('scripts/ingest/fetch-updates.js', 'utf8');
+  });
+
+  it('declares GCS_CURSOR_BACKUP_INTERVAL_MS with 30s default', () => {
+    expect(source).toContain("GCS_CURSOR_BACKUP_INTERVAL_MS");
+    expect(source).toContain("|| 30000");
+  });
+
+  it('tracks lastGCSBackupTime for throttle state', () => {
+    expect(source).toContain("let lastGCSBackupTime = 0");
+  });
+
+  it('skips GCS backup when interval has not elapsed', () => {
+    const backupFn = source.substring(
+      source.indexOf('async function backupCursorToGCS'),
+      source.indexOf('// ─── Timestamp discovery')
+    );
+    expect(backupFn).toContain('GCS_CURSOR_BACKUP_INTERVAL_MS');
+    expect(backupFn).toContain('lastGCSBackupTime');
+  });
+
+  it('accepts a force flag to bypass throttle', () => {
+    const backupFn = source.substring(
+      source.indexOf('async function backupCursorToGCS'),
+      source.indexOf('// ─── Timestamp discovery')
+    );
+    expect(backupFn).toContain('force = false');
+    expect(backupFn).toContain('!force');
+  });
+
+  it('updates lastGCSBackupTime on successful backup', () => {
+    const backupFn = source.substring(
+      source.indexOf('async function backupCursorToGCS'),
+      source.indexOf('// ─── Timestamp discovery')
+    );
+    expect(backupFn).toContain('lastGCSBackupTime = Date.now()');
+  });
+
+  it('saveLiveCursor forwards force option to backupCursorToGCS', () => {
+    const saveFn = source.substring(
+      source.indexOf('async function saveLiveCursor'),
+      source.indexOf('async function backupCursorToGCS')
+    );
+    expect(saveFn).toContain('force = false');
+    expect(saveFn).toContain('{ force }');
+  });
+
+  it('shutdown calls saveLiveCursor with force: true', () => {
+    const shutdownFn = source.substring(
+      source.indexOf('async function shutdown()'),
+      source.indexOf("process.on('SIGINT'")
+    );
+    expect(shutdownFn).toContain('force: true');
+  });
+});
+
 describe('GCS cursor backup integration in checkpoint flow', () => {
   let source;
 
