@@ -142,7 +142,7 @@ flowchart LR
 Two distinct timestamp concepts exist in the data:
 
 | Field | Meaning | Use for |
-|-------|---------|---------|
+|-------|---------|--------|
 | `effective_at` | When the ledger event actually happened | Partitioning, date queries, time-series |
 | `recorded_at` / `timestamp` | When the ingestion batch wrote the record | Debugging ingestion timing only |
 
@@ -181,7 +181,7 @@ will be NULL because the payload contains the choice argument, not the contract 
 | Runbook | `scripts/ingest/LIVE-INGEST-RUNBOOK.sh` |
 
 **Environment files on governance-dashboard**:
-- `~/cf-data-platform/scripts/ingest/.env` — Scan API config
+- `~/governance-dashboard-v1/scripts/ingest/.env` — Scan API config
 - `~/.gcs_hmac_env` — HMAC keys with `export` (for shell/tmux)
 - `~/.gcs_hmac_env.systemd` — HMAC keys without `export` (for systemd), plus `ALERT_SLACK_WEBHOOK_URL`
 
@@ -263,7 +263,7 @@ scripts (03–08) contain many additional view definitions that were not deploye
 — they can be added later if needed.
 
 | View | Source | Purpose |
-|------|--------|---------|
+|------|--------|--------|
 | `parsed_app_reward_coupon` | `events_parsed` | Full history of app rewards: provider, round, amount, featured flag |
 | `parsed_sv_reward_coupon` | `events_parsed` | SV reward history: SV party, round, weight per round |
 | `sv_weight_history` | `events_parsed` | SV weight trajectory over time (created events only) |
@@ -462,13 +462,13 @@ flowchart TD
 **`scripts/bigquery/`**:
 
 | Script | Purpose |
-|--------|---------|
+|--------|--------|
 | `deploy.sh` | Parameterized deployment of bronze/silver layers (substitutes `${PROJECT_ID}` / `${BUCKET_NAME}`) |
 
 **Bronze layer** (`bronze/`):
 
 | Script | Purpose |
-|--------|---------|
+|--------|--------|
 | `01-create-external-tables.sql` | External tables on GCS Parquet (`raw.events`, `raw.updates`) |
 | `02-transform-raw-data.sql` | Full load: parse timestamps, extract arrays, parse JSON → `transformed.*_parsed` |
 | `03-parse-events-by-template.sql` | Views per template (Amulet, ValidatorLicense, rewards, rounds, etc.) |
@@ -482,7 +482,7 @@ flowchart TD
 **Scheduled queries** (`scheduled/`):
 
 | Script | Purpose |
-|--------|---------|
+|--------|--------|
 | `daily-refresh-events.sql` | Incremental INSERT NOT EXISTS for events_parsed |
 | `daily-refresh-updates.sql` | Incremental INSERT NOT EXISTS for updates_parsed |
 | `daily-health-check.sql` | Stale data detection — RAISE on failure → triggers alerts |
@@ -490,7 +490,7 @@ flowchart TD
 **Silver layer** (`silver/`) — not yet deployed, available for future use:
 
 | Script | Purpose |
-|--------|---------|
+|--------|--------|
 | `01-amulet-silver.sql` | Amulet contracts, archives, locked amulets, lifecycle, daily supply |
 | `02-governance-silver.sql` | Vote requests, votes, DSO rules state, SV membership |
 | `03-rewards-silver.sql` | Reward coupons (app/SV/validator), unified rewards, leaderboard |
@@ -525,7 +525,7 @@ All GCS operations use `@google-cloud/storage` SDK with Application Default
 Credentials (ADC). No script depends on gsutil.
 
 | Script | GCS Usage |
-|--------|-----------|
+|--------|----------|
 | `verify-scan-completeness.js` | `listExistingGlobs()` via SDK |
 | `gcs-scanner.js` | Walks Hive partitions via SDK |
 | `gcs-preflight.js` | Read/write checks via SDK |
@@ -539,7 +539,7 @@ The full archive (2024-06-24 → 2026-05-17) was re-ingested via
 `reingest-updates.js` to fix the `fetch-backfill.js` cursor bug:
 
 | Migration | Date Range | Days | Records |
-|-----------|-----------|------|---------|
+|-----------|-----------|------|--------|
 | M0 | 2024-06-24 → 2024-10-16 | 115 | 2,746,625 |
 | M1 | 2024-10-16 → 2024-12-11 | 57 | 1,655,530 |
 | M2 | 2024-12-11 → 2025-06-25 | 197 | 12,584,874 |

@@ -14,7 +14,7 @@ The deployment consists of:
 ## Prerequisites
 
 | Requirement | Details |
-|-------------|---------|
+|-------------|--------|
 | Linux VM | Ubuntu 22.04 LTS recommended |
 | SSH Access | For initial setup and maintenance |
 | Node.js | 20.x (installed via NodeSource) |
@@ -34,7 +34,7 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs git
 
 # 3. Clone and setup
-git clone https://github.com/cf-internal/cf-data-platform.git ~/app
+git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/app
 cd ~/app/server && npm install
 cd ~/app/scripts/ingest && npm install
 
@@ -100,7 +100,7 @@ pm2 logs duckdb-api
 pm2 monit
 ```
 
-See `server/ecosystem.config.cjs` for production config and `server/ecosystem.staging.cjs` for staging.
+See `server/ecosystem.config.cjs` for production config and `server/ecosystem.staging.config.cjs` for staging.
 See [`deploy/README_DEPLOY.md`](../deploy/README_DEPLOY.md) for PM2 commands and the staging workflow.
 
 ### Option B: Systemd
@@ -212,7 +212,7 @@ The frontend is a Vite + React SPA deployed as static files behind nginx. No dir
 ### Production build
 
 ```bash
-cd ~/cf-data-platform
+cd ~/governance-dashboard-v1
 npm install
 npx vite build
 sudo cp -r dist/* /var/www/html/
@@ -227,7 +227,7 @@ sudo cp -r dist/* /var/www/staging/
 ```
 
 | Env Variable | Purpose | Production | Staging |
-|-------------|---------|-----------|---------|
+|-------------|---------|-----------|--------|
 | `VITE_BASE_PATH` | React Router basename | not set (defaults to `/`) | `/staging` |
 | `VITE_BASE` | Vite asset base path | not set (defaults to `/`) | `/staging/` |
 

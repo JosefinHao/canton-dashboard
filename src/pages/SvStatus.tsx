@@ -25,7 +25,7 @@ import type { SvEnvStatus } from "@/lib/api-client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Activity, RefreshCw, Clock, Eye } from "lucide-react";
 
-const ALL_SVS = "__all__";
+const DEFAULT_SV = "SV-Nodeops-Limited";
 const ALL_ENVS = "__all__";
 const ENVS = ["dev", "test", "main"] as const;
 const ENV_LABELS: Record<string, string> = { dev: "dev", test: "test", main: "main" };
@@ -54,32 +54,6 @@ function getServiceDescriptions(environments: SvEnvStatus[]): Record<string, str
   return descriptions;
 }
 
-function getAllNodeNames(environments: SvEnvStatus[]): string[] {
-  const names = new Set<string>();
-  for (const env of environments) {
-    if (!env.status) continue;
-    for (const svc of Object.values(env.status)) {
-      for (const name of Object.keys(svc.nodes)) {
-        names.add(name);
-      }
-    }
-  }
-  return Array.from(names).sort();
-}
-
-function filterEnvStatus(env: SvEnvStatus, nodeName: string): SvEnvStatus {
-  if (!env.status) return env;
-  const newStatus: typeof env.status = {};
-  for (const [svc, check] of Object.entries(env.status)) {
-    if (nodeName in check.nodes) {
-      newStatus[svc] = { ...check, nodes: { [nodeName]: check.nodes[nodeName] } };
-    } else {
-      newStatus[svc] = { ...check, nodes: {} };
-    }
-  }
-  return { ...env, status: newStatus };
-}
-
 function StatusCell({ value }: { value: number }) {
   return value === 0 ? (
     <span className="text-green-600 font-semibold text-sm">OK</span>
@@ -89,7 +63,7 @@ function StatusCell({ value }: { value: number }) {
 }
 
 function SummaryBadge({ ok, total }: { ok: number; total: number }) {
-  const allOk = ok === total;
+  const allOk = total > 0 && ok === total;
   return (
     <Badge
       variant={allOk ? "default" : "destructive"}
@@ -177,41 +151,54 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
   );
 }
 
+function getEnvNodeCount(env: SvEnvStatus): number {
+  if (!env.status) return 0;
+  const names = new Set<string>();
+  for (const svc of Object.values(env.status)) {
+    for (const name of Object.keys(svc.nodes)) {
+      names.add(name);
+    }
+  }
+  return names.size;
+}
+
 function getServiceCounts(envs: SvEnvStatus[], envName: string, service: string) {
   const e = envs.find((x) => x.env === envName);
   if (!e?.status?.[service]) return null;
-  const nodes = Object.values(e.status[service].nodes);
-  const total = nodes.length;
-  const ok = nodes.filter((v) => v === 0).length;
+  const total = getEnvNodeCount(e);
+  const ok = Object.values(e.status[service].nodes).filter((v) => v === 0).length;
   return { ok, total };
 }
 
 export default function SvStatus() {
-  const [selectedSv, setSelectedSv] = useState(ALL_SVS);
+  const [selectedSv, setSelectedSv] = useState(DEFAULT_SV);
   const [selectedEnv, setSelectedEnv] = useState(ALL_ENVS);
 
+  const { data: svList } = useQuery({
+    queryKey: ["svList"],
+    queryFn: () => scanApi.fetchSvList(),
+    staleTime: Infinity,
+  });
+
   const { data, isLoading, error, refetch, isFetching, dataUpdatedAt } = useQuery({
-    queryKey: ["svNodeStatus"],
-    queryFn: () => scanApi.fetchSvNodeStatus(),
+    queryKey: ["svDsoStatus", selectedSv],
+    queryFn: () => scanApi.fetchSvDsoStatus(selectedSv),
     staleTime: 30_000,
     refetchInterval: 60_000,
   });
 
-  const rawEnvironments: SvEnvStatus[] = data?.environments ?? [];
+  const ENV_ORDER: Record<string, number> = { dev: 0, test: 1, main: 2 };
+  const rawEnvironments: SvEnvStatus[] = useMemo(
+    () => [...(data?.environments ?? [])].sort((a, b) => (ENV_ORDER[a.env] ?? 99) - (ENV_ORDER[b.env] ?? 99)),
+    [data],
+  );
   const allServices = useMemo(() => getAllServices(rawEnvironments), [rawEnvironments]);
-  const allNodeNames = useMemo(() => getAllNodeNames(rawEnvironments), [rawEnvironments]);
   const serviceDescriptions = useMemo(() => getServiceDescriptions(rawEnvironments), [rawEnvironments]);
 
   const environments = useMemo(() => {
-    let filtered = rawEnvironments;
-    if (selectedEnv !== ALL_ENVS) {
-      filtered = filtered.filter((env) => env.env === selectedEnv);
-    }
-    if (selectedSv !== ALL_SVS) {
-      filtered = filtered.map((env) => filterEnvStatus(env, selectedSv));
-    }
-    return filtered;
-  }, [rawEnvironments, selectedSv, selectedEnv]);
+    if (selectedEnv === ALL_ENVS) return rawEnvironments;
+    return rawEnvironments.filter((env) => env.env === selectedEnv);
+  }, [rawEnvironments, selectedEnv]);
 
   const checkedAt = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : null;
   const displayEnvs = selectedEnv === ALL_ENVS ? [...ENVS] : [selectedEnv];
@@ -335,28 +322,28 @@ export default function SvStatus() {
               ))}
             </SelectContent>
           </Select>
-          <span className="text-sm font-medium">Filter by SV:</span>
+          <span className="text-sm font-medium">As viewed from SV:</span>
           <Select value={selectedSv} onValueChange={setSelectedSv}>
             <SelectTrigger className="w-full sm:w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-muted border-border">
-              {[ALL_SVS, ...allNodeNames].map((name) => (
+              {(svList ?? []).map((sv) => (
                 <SelectItem
-                  key={name}
-                  value={name}
+                  key={sv.id}
+                  value={sv.id}
                   className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
                 >
-                  {name === ALL_SVS ? "All SVs" : name}
+                  {sv.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {(selectedSv !== ALL_SVS || selectedEnv !== ALL_ENVS) && (
+          {(selectedSv !== DEFAULT_SV || selectedEnv !== ALL_ENVS) && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => { setSelectedSv(ALL_SVS); setSelectedEnv(ALL_ENVS); }}
+              onClick={() => { setSelectedSv(DEFAULT_SV); setSelectedEnv(ALL_ENVS); }}
               className="text-xs text-muted-foreground"
             >
               Reset

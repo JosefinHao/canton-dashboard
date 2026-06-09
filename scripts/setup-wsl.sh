@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="https://github.com/cf-internal/cf-data-platform.git"
+REPO_URL="https://github.com/cf-internal/governance-dashboard-v1.git"
 INSTALL_DIR="$HOME/canton-explorer"
 DATA_DIR="/mnt/c/ledger_raw"
 NODE_VERSION="20"
@@ -253,4 +253,4 @@ echo "  Data is written to C:\\ledger_raw and accessible by the Windows server."
 echo "  Start the server on Windows with:"
 echo -e "     ${YELLOW}cd server && npm start${NC}"
 echo ""
-echo -e "${GREEN}Happy backfilling! 🚀${NC}"
+echo -e "${GREEN}Happy backfilling! \U0001f680${NC}"

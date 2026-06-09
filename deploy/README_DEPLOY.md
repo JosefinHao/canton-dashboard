@@ -10,18 +10,18 @@ Staging site: `https://dashboard.canton.foundation/staging/`
 ```
 Browser ─► nginx (port 80/443)
               ├── /            ─► /var/www/html/          (production frontend)
-              ├── /api/        ─► localhost:3001           (backend API)
+              ├── /api/        ─► localhost:3001           (production backend)
               ├── /staging/    ─► /var/www/staging/        (staging frontend)
-              └── /staging/api/─► localhost:3001           (same backend)
+              └── /staging/api/─► localhost:3002           (staging backend)
 ```
 
 | Component | Production | Staging |
-|-----------|-----------|---------|
+|-----------|-----------|--------|
 | Frontend | `/var/www/html/` | `/var/www/staging/` |
-| Backend | PM2 `duckdb-api` on port 3001 | Same backend (port 3001) |
+| Backend | PM2 `duckdb-api` on port 3001 | PM2 `duckdb-api-staging` on port 3002 |
 | URL | `dashboard.canton.foundation/` | `dashboard.canton.foundation/staging/` |
 
-Staging shares the production backend — it only previews frontend changes.
+Staging runs its own backend so server-side changes can be tested without affecting production.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ Staging shares the production backend — it only previews frontend changes.
 Use the deploy script for both staging and production:
 
 ```bash
-cd ~/cf-data-platform
+cd ~/governance-dashboard-v1
 
 # Deploy to staging (preview before going live)
 ./deploy/deploy-frontend.sh --staging
@@ -52,7 +52,7 @@ If you need to deploy manually:
 
 **Production:**
 ```bash
-cd ~/cf-data-platform
+cd ~/governance-dashboard-v1
 git checkout main && git pull
 npm install
 npx vite build
@@ -61,7 +61,7 @@ sudo cp -r dist/* /var/www/html/
 
 **Staging:**
 ```bash
-cd ~/cf-data-platform
+cd ~/governance-dashboard-v1
 git checkout <your-branch>
 npm install
 VITE_BASE_PATH=/staging npx vite build --base=/staging/
@@ -73,9 +73,14 @@ cp -r dist/* /var/www/staging/
 The backend only needs restarting when server-side code changes (files in `server/`):
 
 ```bash
-cd ~/cf-data-platform/server
+cd ~/governance-dashboard-v1/server
 npm install
+
+# Production
 pm2 restart duckdb-api
+
+# Staging
+pm2 restart duckdb-api-staging
 ```
 
 Frontend-only changes do NOT require a backend restart.
@@ -124,7 +129,7 @@ sudo chmod -R 755 /var/www/html /var/www/staging
 ### 4. Start backend
 
 ```bash
-cd ~/cf-data-platform/server
+cd ~/governance-dashboard-v1/server
 pm2 start ecosystem.config.cjs --env production
 pm2 save
 pm2 startup   # enables auto-start on VM reboot
@@ -161,7 +166,7 @@ The deploy script (`./deploy/deploy-frontend.sh --staging`) sets these automatic
 | Restart backend | `pm2 restart duckdb-api` |
 | Stop backend | `pm2 stop duckdb-api` |
 | Monitor resources | `pm2 monit` |
-| Check DuckDB path | `grep -i "duckdb" ~/cf-data-platform/server/logs/pm2-out.log \| tail -5` |
+| Check DuckDB path | `grep -i "duckdb" ~/governance-dashboard-v1/server/logs/pm2-out.log \| tail -5` |
 
 PM2 auto-starts on boot via systemd (configured with `pm2 startup` + `pm2 save`).
 
@@ -171,7 +176,7 @@ The staging backend runs on port 3002 (nginx routes `/staging/api/` there).
 
 ```bash
 # Start staging backend from a feature branch
-cd ~/cf-data-platform/server
+cd ~/governance-dashboard-v1/server
 pm2 start ecosystem.config.cjs --only duckdb-api-staging
 
 # View staging logs
@@ -213,7 +218,7 @@ sudo cp -r /var/www/html.backup.YYYYMMDD_HHMMSS/* /var/www/html/
 ### Backend rollback
 
 ```bash
-cd ~/cf-data-platform
+cd ~/governance-dashboard-v1
 git checkout main -- server/
 cd server && npm install && pm2 restart duckdb-api
 ```

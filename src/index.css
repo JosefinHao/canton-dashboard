@@ -9,84 +9,96 @@
 
 @layer base {
   :root {
-    /* Dark base - deep slate */
-    --background: 240 95% 15%;
-    --foreground: 210 20% 95%;
+    /* ====================================================================
+       CANTON DESIGN SYSTEM — locked to the documented current brand.
+       Source of truth: website_analysis/CURRENT_SYSTEM (official Canton
+       Network Brand Guide v2 + live theme). Channels are HSL for shadcn.
+       Palette: Yellow #F3FF97 · Black #030206 · White #FFFFFC ·
+                Purple #875CFF · Lilac #D5A5E3 · Taupe #A89F91 · stroke #634BA9
+       ==================================================================== */
 
-    /* Cards with subtle elevation */
-    --card: 225 25% 12%;
-    --card-foreground: 210 20% 95%;
+    /* Base: Canton deep purple #180231 — the CURRENT_SYSTEM "purple world" */
+    --background: 268 92% 10%;
+    --foreground: 60 30% 96%;          /* near Canton White #FFFFFC */
 
-    --popover: 225 25% 14%;
-    --popover-foreground: 210 20% 95%;
+    /* Panels: darker purple-black so cards lift off the purple page */
+    --card: 260 70% 6%;
+    --card-foreground: 60 30% 96%;
 
-    /* Primary: Canton Yellow #F3FF97 */
-    --primary: 67 98% 79%;
-    --primary-foreground: 225 30% 8%;
-    --primary-glow: 67 98% 85%;
+    --popover: 260 60% 8%;
+    --popover-foreground: 60 30% 96%;
 
-    /* Secondary: Muted purple */
-    --secondary: 260 40% 55%;
-    --secondary-foreground: 210 20% 95%;
+    /* Primary: Canton Yellow #F3FF97 — the dominant signal */
+    --primary: 67 100% 80%;
+    --primary-foreground: 255 50% 4%;  /* Canton Black on yellow */
+    --primary-glow: 67 100% 86%;
 
-    --muted: 225 20% 18%;
-    --muted-foreground: 220 15% 60%;
+    /* Secondary: Canton Purple #875CFF (supportive) */
+    --secondary: 256 100% 68%;
+    --secondary-foreground: 60 30% 96%;
 
-    /* Accent: Canton Lilac #D5A5E3 */
-    --accent: 287 53% 77%;
-    --accent-foreground: 225 30% 8%;
+    --muted: 265 28% 16%;
+    --muted-foreground: 270 12% 66%;
 
-    /* Neon colors - toned down for readability */
-    --neon-pink: 330 60% 55%;
-    --neon-purple: 270 50% 55%;
-    --neon-blue: 210 60% 55%;
-    --neon-cyan: 180 50% 50%;
+    /* Accent: Canton Lilac #D5A5E3 (supportive) */
+    --accent: 286 53% 77%;
+    --accent-foreground: 255 50% 4%;
 
-    --success: 287 53% 77%;
-    --success-foreground: 210 20% 95%;
+    /* Legacy "neon" tokens remapped to the Canton secondary family so any
+       remaining usages render on-brand (no off-palette pink/cyan). */
+    --neon-pink: 286 53% 77%;          /* → Canton Lilac   */
+    --neon-purple: 256 100% 68%;       /* → Canton Purple  */
+    --neon-blue: 256 70% 60%;          /* → purple-blue    */
+    --neon-cyan: 67 100% 80%;          /* → Canton Yellow signal */
 
-    --warning: 40 70% 50%;
-    --warning-foreground: 225 30% 8%;
+    /* Status — positive states use the Canton signal (yellow) */
+    --success: 67 100% 80%;
+    --success-foreground: 255 50% 4%;
 
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 210 20% 95%;
+    --warning: 29 79% 52%;             /* Canton Orange #e07b1a */
+    --warning-foreground: 255 50% 4%;
 
-    /* Subtle borders */
-    --border: 225 20% 22%;
-    --input: 225 20% 20%;
-    --ring: 67 98% 79%;
+    --destructive: 4 73% 49%;          /* Canton error #D92D20 */
+    --destructive-foreground: 60 30% 96%;
 
-    --radius: 0.75rem;
+    /* Borders: Canton purple-stroke #634BA9 — visible on the purple page */
+    --border: 255 36% 33%;
+    --input: 255 32% 26%;
+    --ring: 67 100% 80%;               /* Canton Yellow focus ring */
 
-    /* Chart colors - balanced palette */
-    --chart-1: 67 98% 79%;
-    --chart-2: 200 50% 55%;
-    --chart-3: 287 53% 77%;
-    --chart-4: 260 45% 55%;
-    --chart-5: 40 65% 55%;
+    /* Form radius per brand (10px); cards keep their explicit 20px */
+    --radius: 0.625rem;
 
-    /* Gradients - subtle */
-    --gradient-background: #030206;
-    --gradient-primary: linear-gradient(135deg, hsl(67 98% 79%) 0%, hsl(67 98% 85%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(287 53% 77%) 0%, hsl(270 50% 70%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(225 25% 12% / 0.95) 0%, hsl(230 25% 14% / 0.9) 100%);
-    --gradient-neon: linear-gradient(90deg, hsl(330 50% 55%), hsl(260 45% 55%), hsl(200 50% 55%));
+    /* Chart palette — strictly Canton hues */
+    --chart-1: 67 100% 80%;            /* Yellow */
+    --chart-2: 256 100% 68%;           /* Purple */
+    --chart-3: 286 53% 77%;            /* Lilac  */
+    --chart-4: 37 12% 61%;             /* Taupe  */
+    --chart-5: 29 79% 52%;             /* Orange */
 
-    /* Subtle shadows */
-    --shadow-glow-primary: 0 4px 20px hsl(67 98% 79% / 0.2);
-    --shadow-glow-cyan: 0 4px 20px hsl(67 98% 79% / 0.15);
-    --shadow-glow-pink: 0 4px 20px hsl(330 50% 55% / 0.15);
-    --shadow-glow-purple: 0 4px 20px hsl(260 45% 55% / 0.15);
-    --shadow-card: 0 4px 24px hsl(225 30% 5% / 0.4);
+    /* Gradients — Canton purple page wash (mirrors CURRENT_SYSTEM body) */
+    --gradient-background: radial-gradient(125% 90% at 50% -10%, hsl(258 90% 20% / 0.65) 0%, #180231 55%);
+    --gradient-primary: linear-gradient(135deg, hsl(67 100% 80%) 0%, hsl(67 100% 86%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(286 53% 77%) 0%, hsl(256 100% 68%) 100%);
+    --gradient-card: linear-gradient(180deg, #150E29 0%, #030206 100%);
+    --gradient-neon: linear-gradient(90deg, hsl(256 100% 68%), hsl(286 53% 77%));
 
-    --sidebar-background: 225 28% 10%;
-    --sidebar-foreground: 210 20% 90%;
-    --sidebar-primary: 67 98% 79%;
-    --sidebar-primary-foreground: 225 30% 8%;
-    --sidebar-accent: 225 20% 18%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 225 20% 20%;
-    --sidebar-ring: 67 98% 79%;
+    /* Shadows — on-brand glows */
+    --shadow-glow-primary: 0 4px 20px hsl(67 100% 80% / 0.22);
+    --shadow-glow-cyan: 0 4px 20px hsl(67 100% 80% / 0.15);
+    --shadow-glow-pink: 0 4px 20px hsl(286 53% 77% / 0.15);
+    --shadow-glow-purple: 0 4px 20px hsl(256 100% 68% / 0.15);
+    --shadow-card: 0 4px 24px hsl(255 40% 2% / 0.5);
+
+    /* Sidebar / nav — deep Canton purple with yellow signal */
+    --sidebar-background: 263 70% 7%;
+    --sidebar-foreground: 60 24% 92%;
+    --sidebar-primary: 67 100% 80%;
+    --sidebar-primary-foreground: 255 50% 4%;
+    --sidebar-accent: 265 30% 14%;
+    --sidebar-accent-foreground: 60 24% 92%;
+    --sidebar-border: 255 30% 18%;
+    --sidebar-ring: 67 100% 80%;
   }
 }
 
@@ -121,18 +133,19 @@
 }
 
 @layer components {
-  /* Clean card with subtle border */
+  /* Card = foundation .canton-border-gradient: faint purple sheen, #634BA9 stroke, 20px */
   .glass-card {
-    @apply bg-card/90 backdrop-blur-sm shadow-lg;
-    background: linear-gradient(180deg, #150E29, #030206);
+    @apply backdrop-blur-sm;
+    background: linear-gradient(180deg, rgba(135, 92, 255, 0.14) 0%, rgba(10, 5, 127, 0) 100%), rgba(3, 2, 16, 0.35);
     border: 1px solid #634ba9;
     border-radius: 20px;
-    transition: all 0.2s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   }
 
+  /* Canton hover: smooth 0.3s, border eases to yellow — no scale/pop */
   .glass-card:hover {
-    border-color: hsl(var(--primary) / 0.4);
-    box-shadow: var(--shadow-glow-primary);
+    border-color: hsl(var(--primary) / 0.55);
+    box-shadow: 0 8px 30px hsl(258 90% 3% / 0.55);
   }
 
   /* Accent card */
@@ -201,24 +214,41 @@
     );
   }
 
-  /* Smooth transitions */
+  /* Smooth transitions — Canton 0.3s ease */
   .transition-smooth {
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
   }
 
-  /* Button styles */
+  /* Canton arrow link — chevron slides 5px on hover (matches .link-base-arrow) */
+  .link-arrow {
+    @apply inline-flex items-center gap-2 text-sm uppercase tracking-wide;
+    color: hsl(var(--primary));
+    transition: color 0.3s ease;
+  }
+  .link-arrow::after {
+    content: "→";
+    display: inline-block;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+  }
+  .link-arrow:hover::after {
+    transform: translateX(5px);
+  }
+
+  /* Button styles — Canton pills that FILL on hover (no glow / no lift) */
   .btn-pill {
-    @apply rounded-lg px-5 py-2 font-medium text-sm;
-    transition: all 0.2s ease;
+    @apply rounded-full px-6 py-2.5 font-medium text-sm uppercase tracking-wide;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 
   .btn-pill-primary {
     @apply btn-pill bg-primary text-primary-foreground;
   }
 
+  /* Canton: yellow primary fills to white on hover */
   .btn-pill-primary:hover {
-    box-shadow: var(--shadow-glow-primary);
-    transform: translateY(-1px);
+    background: #ffffff;
+    color: hsl(var(--primary-foreground));
   }
 
   .btn-pill-outline {
@@ -227,8 +257,10 @@
     color: hsl(var(--primary));
   }
 
+  /* Canton: outline fills yellow on hover */
   .btn-pill-outline:hover {
-    background: hsl(var(--primary) / 0.1);
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
 
   /* Stat number styling - clean gradient */
@@ -248,5 +280,98 @@
   .stat-number-pink {
     @apply text-3xl md:text-4xl font-bold;
     color: hsl(var(--neon-pink));
+  }
+
+  /* =====================================================================
+     FOUNDATION DESIGN-LANGUAGE CLASSES — ported verbatim from the live
+     canton.foundation theme so dashboard pages read like the foundation site.
+     ===================================================================== */
+
+  /* Eyebrow label — yellow, wide-tracked, uppercase (.micro-title) */
+  .micro-title {
+    color: var(--color-canton-yellow, #F3FF97);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: normal;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+  }
+
+  /* Light section heading (.small-heading) */
+  .small-heading {
+    color: #fff;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 300;
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  /* Body lead (.small-title) */
+  .small-title {
+    color: #fff;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 400;
+    font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+    line-height: 150%;
+  }
+
+  /* Big metric figure (.stat-num) */
+  .stat-num {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 400;
+    font-size: clamp(2.25rem, 3.4vw, 3.4rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+  .stat-num sup {
+    top: -0.6em;
+    font-size: 0.6em;
+    left: 0;
+  }
+
+  /* Hero heading with colored span (.hero-heading) */
+  .hero-heading {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: clamp(2.25rem, 4.9vw, 4.9375rem);
+    line-height: 1.05;
+  }
+  .hero-heading span { color: var(--color-canton-yellow, #F3FF97); }
+
+  /* Foundation card variants */
+  .purple-border { border: 1px solid #634BA9; border-radius: 20px; }
+  .canton-border-gradient {
+    border: 1px solid #634BA9;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(135, 92, 255, 0.14) 0%, rgba(10, 5, 127, 0) 100%);
+  }
+
+  /* Canton text-color helpers (.color-canton-*) */
+  .color-canton-yellow { color: var(--color-canton-yellow, #F3FF97); }
+  .color-canton-lilac  { color: var(--color-canton-lilac, #D5A5E3); }
+  .color-canton-purple { color: var(--color-canton-purple, #875CFF); }
+  .color-canton-white  { color: #fff; }
+
+  /* Nav item — foundation yellow square indicator under the word on hover/active
+     (matches .site-navigation li.parent-nav span:after) */
+  .nav-link {
+    position: relative;
+    padding-bottom: 10px;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active="true"]::after {
+    background-color: var(--color-canton-yellow, #F3FF97);
   }
 }
