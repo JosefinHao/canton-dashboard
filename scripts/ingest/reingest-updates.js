@@ -698,7 +698,7 @@ async function discoverMigrations() {
 
 async function findBackfillBoundary(migrationId) {
   // Strategy 1: Check local cursor files
-  const CURSOR_DIR = process.env.CURSOR_DIR || join(process.env.DATA_DIR || '/home/ben/ledger_data', 'cursors');
+  const CURSOR_DIR = process.env.CURSOR_DIR || join(process.env.DATA_DIR || '/home/josefin/ledger_data', 'cursors');
   console.log(`   🔍 Looking for backfill cursors in ${CURSOR_DIR}...`);
 
   let bestTime = null;
