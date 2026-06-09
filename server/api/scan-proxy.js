@@ -214,39 +214,54 @@ router.get('/_sv-list', async (req, res) => {
   }
 });
 
+const svStatusCache = new Map();
+const SV_STATUS_TTL = 30_000;
+
+async function fetchSvStatus(svName) {
+  const cached = svStatusCache.get(svName);
+  if (cached && Date.now() - cached.time < SV_STATUS_TTL) {
+    return cached.data;
+  }
+
+  const { allStatusUrls } = await discoverSvNodes();
+
+  const results = await Promise.all(
+    Object.entries(allStatusUrls).map(async ([env, urls]) => {
+      const url = urls?.[svName];
+      if (!url) return { env, status: null, error: `SV not available in ${env}` };
+      try {
+        const resp = await fetch(url, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!resp.ok) {
+          console.warn(`[Scan Proxy] SV status ${svName}/${env}: HTTP ${resp.status}`);
+          return { env, status: null, error: `HTTP ${resp.status}` };
+        }
+        const text = await readBodyWithLimit(resp, 256 * 1024);
+        const data = JSON.parse(text);
+        return { env, status: normalizeStatus(data.status), error: null };
+      } catch (err) {
+        console.warn(`[Scan Proxy] SV status ${svName}/${env}: ${err.message}`);
+        return { env, status: null, error: err.message };
+      }
+    })
+  );
+
+  const data = { environments: results, checked_at: new Date().toISOString() };
+  svStatusCache.set(svName, { data, time: Date.now() });
+  return data;
+}
+
 // GET /_sv-dso-status?sv=<name> - fetch status.json from a specific SV's perspective
 router.get('/_sv-dso-status', async (req, res) => {
   const svName = req.query.sv;
   if (!svName) return res.status(400).json({ error: 'sv query param required' });
 
   try {
-    const { allStatusUrls } = await discoverSvNodes();
-
-    const results = await Promise.all(
-      Object.entries(allStatusUrls).map(async ([env, urls]) => {
-        const url = urls?.[svName];
-        if (!url) return { env, status: null, error: `SV not available in ${env}` };
-        try {
-          const resp = await fetch(url, {
-            method: 'GET',
-            headers: { Accept: 'application/json' },
-            signal: AbortSignal.timeout(15000),
-          });
-          if (!resp.ok) {
-            console.warn(`[Scan Proxy] SV status ${svName}/${env}: HTTP ${resp.status}`);
-            return { env, status: null, error: `HTTP ${resp.status}` };
-          }
-          const text = await readBodyWithLimit(resp, 256 * 1024);
-          const data = JSON.parse(text);
-          return { env, status: normalizeStatus(data.status), error: null };
-        } catch (err) {
-          console.warn(`[Scan Proxy] SV status ${svName}/${env}: ${err.message}`);
-          return { env, status: null, error: err.message };
-        }
-      })
-    );
-
-    res.json({ environments: results, checked_at: new Date().toISOString() });
+    const data = await fetchSvStatus(svName);
+    res.json(data);
   } catch (err) {
     console.error('[Scan Proxy] SV DSO status error:', err.message);
     res.status(500).json({ error: err.message });
