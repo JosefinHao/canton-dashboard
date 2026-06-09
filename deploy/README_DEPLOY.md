@@ -10,18 +10,18 @@ Staging site: `https://dashboard.canton.foundation/staging/`
 ```
 Browser ─► nginx (port 80/443)
               ├── /            ─► /var/www/html/          (production frontend)
-              ├── /api/        ─► localhost:3001           (backend API)
+              ├── /api/        ─► localhost:3001           (production backend)
               ├── /staging/    ─► /var/www/staging/        (staging frontend)
-              └── /staging/api/─► localhost:3001           (same backend)
+              └── /staging/api/─► localhost:3002           (staging backend)
 ```
 
 | Component | Production | Staging |
 |-----------|-----------|---------|
 | Frontend | `/var/www/html/` | `/var/www/staging/` |
-| Backend | PM2 `duckdb-api` on port 3001 | Same backend (port 3001) |
+| Backend | PM2 `duckdb-api` on port 3001 | PM2 `duckdb-api-staging` on port 3002 |
 | URL | `dashboard.canton.foundation/` | `dashboard.canton.foundation/staging/` |
 
-Staging shares the production backend — it only previews frontend changes.
+Staging runs its own backend so server-side changes can be tested without affecting production.
 
 ## Prerequisites
 
@@ -75,7 +75,12 @@ The backend only needs restarting when server-side code changes (files in `serve
 ```bash
 cd ~/cf-data-platform/server
 npm install
+
+# Production
 pm2 restart duckdb-api
+
+# Staging
+pm2 restart duckdb-api-staging
 ```
 
 Frontend-only changes do NOT require a backend restart.

@@ -100,7 +100,7 @@ pm2 logs duckdb-api
 pm2 monit
 ```
 
-See `server/ecosystem.config.cjs` for production config and `server/ecosystem.staging.cjs` for staging.
+See `server/ecosystem.config.cjs` for production config and `server/ecosystem.staging.config.cjs` for staging.
 See [`deploy/README_DEPLOY.md`](../deploy/README_DEPLOY.md) for PM2 commands and the staging workflow.
 
 ### Option B: Systemd
