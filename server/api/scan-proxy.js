@@ -105,19 +105,50 @@ router.get('/_sv-node-status', async (req, res) => {
 // For each env, we try URLs in order until one responds successfully.
 const DSO_DISCOVERY_URLS = {
   dev: [
-    'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime/dso.json',
     'https://info.sv-1.dev.global.canton.network.sync.global/runtime/dso.json',
+    'https://info.sv.dev.global.canton.network.sv-nodeops.com/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.c7.digital/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.cumberland.io/runtime/dso.json',
     'https://info.sv-1.dev.global.canton.network.digitalasset.com/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.fivenorth.io/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.lcv.mpch.io/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.mpch.io/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.orb1lp.mpch.io/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.proofgroup.xyz/runtime/dso.json',
+    'https://info.sv-1.dev.global.canton.network.tradeweb.com/runtime/dso.json',
+    'https://info.sv-2.dev.global.canton.network.cumberland.io/runtime/dso.json',
+    'https://info.sv-2.dev.global.canton.network.digitalasset.com/runtime/dso.json',
+    'https://info.sv.dev.global.canton.network.digitalasset.com/runtime/dso.json',
   ],
   test: [
-    'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime/dso.json',
     'https://info.sv-1.test.global.canton.network.sync.global/runtime/dso.json',
+    'https://info.sv.test.global.canton.network.sv-nodeops.com/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.c7.digital/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.cumberland.io/runtime/dso.json',
     'https://info.sv-1.test.global.canton.network.digitalasset.com/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.fivenorth.io/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.lcv.mpch.io/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.mpch.io/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.orb1lp.mpch.io/runtime/dso.json',
+    'https://info.sv-1.test.global.canton.network.proofgroup.xyz/runtime/dso.json',
+    'https://info.sv-2.test.global.canton.network.cumberland.io/runtime/dso.json',
+    'https://info.sv-2.test.global.canton.network.digitalasset.com/runtime/dso.json',
+    'https://info.sv.test.global.canton.network.tradeweb.com/runtime/dso.json',
   ],
   main: [
-    'https://info.sv.global.canton.network.sv-nodeops.com/runtime/dso.json',
     'https://info.sv-1.global.canton.network.sync.global/runtime/dso.json',
+    'https://info.sv.global.canton.network.sv-nodeops.com/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.c7.digital/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.cumberland.io/runtime/dso.json',
     'https://info.sv-1.global.canton.network.digitalasset.com/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.fivenorth.io/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.lcv.mpch.io/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.mpch.io/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.orb1lp.mpch.io/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.proofgroup.xyz/runtime/dso.json',
+    'https://info.sv-1.global.canton.network.tradeweb.com/runtime/dso.json',
+    'https://info.sv-2.global.canton.network.cumberland.io/runtime/dso.json',
+    'https://info.sv-2.global.canton.network.digitalasset.com/runtime/dso.json',
   ],
 };
 
@@ -233,7 +264,7 @@ async function fetchSvStatus(svName) {
         const resp = await fetch(url, {
           method: 'GET',
           headers: { Accept: 'application/json' },
-          signal: AbortSignal.timeout(10000),
+          signal: AbortSignal.timeout(5000),
         });
         if (!resp.ok) {
           console.warn(`[Scan Proxy] SV status ${svName}/${env}: HTTP ${resp.status}`);
