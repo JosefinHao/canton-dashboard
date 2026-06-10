@@ -127,7 +127,7 @@ export const ACSSnapshotCard = () => {
             <h4 className="text-sm font-medium text-muted-foreground">Total Amulet</h4>
             <Coins className="h-5 w-5 text-primary" />
           </div>
-          <p className="text-3xl font-bold text-primary mb-1">
+          <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">
             {amuletTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -140,7 +140,7 @@ export const ACSSnapshotCard = () => {
             <h4 className="text-sm font-medium text-muted-foreground">Locked Amulet</h4>
             <Lock className="h-5 w-5 text-orange-500" />
           </div>
-          <p className="text-3xl font-bold text-orange-500 mb-1">
+          <p className="text-2xl sm:text-3xl font-bold text-orange-500 mb-1">
             {lockedTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -153,7 +153,7 @@ export const ACSSnapshotCard = () => {
             <h4 className="text-sm font-medium text-muted-foreground">Circulating Supply</h4>
             <TrendingUp className="h-5 w-5 text-green-500" />
           </div>
-          <p className="text-3xl font-bold text-green-500 mb-1">
+          <p className="text-2xl sm:text-3xl font-bold text-green-500 mb-1">
             {circulatingSupply.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-muted-foreground">

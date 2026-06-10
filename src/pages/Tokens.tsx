@@ -147,7 +147,7 @@ export default function Tokens() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Layers className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">CIP-56 Tokens</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">CIP-56 Tokens</h1>
             </div>
           </div>
           <Alert variant="destructive">
@@ -166,7 +166,7 @@ export default function Tokens() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Layers className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">CIP-56 Tokens</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">CIP-56 Tokens</h1>
           </div>
           <p className="text-muted-foreground">
             All assets on the Canton Network implementing the CIP-56 token standard
@@ -182,7 +182,7 @@ export default function Tokens() {
             <CardContent>
               <div className="flex items-center gap-2">
                 <Layers className="h-5 w-5 text-primary" />
-                <p className="text-3xl font-bold">{tokens.length}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{tokens.length}</p>
               </div>
             </CardContent>
           </Card>
@@ -193,7 +193,7 @@ export default function Tokens() {
             <CardContent>
               <div className="flex items-center gap-2">
                 <Coins className="h-5 w-5 text-primary" />
-                <p className="text-3xl font-bold">{uniqueIssuers}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{uniqueIssuers}</p>
               </div>
             </CardContent>
           </Card>

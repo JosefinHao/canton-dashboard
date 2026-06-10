@@ -72,7 +72,7 @@ export const BurnMintStats = () => {
           <Skeleton className="h-10 w-full" />
         ) : (
           <>
-            <p className="text-3xl font-bold text-chart-2 mb-1">
+            <p className="text-2xl sm:text-3xl font-bold text-chart-2 mb-1">
               {dailyMintAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-muted-foreground">CC minted in last 24h</p>
@@ -94,7 +94,7 @@ export const BurnMintStats = () => {
           </>
         ) : (
           <>
-            <p className="text-3xl font-bold text-destructive mb-1">
+            <p className="text-2xl sm:text-3xl font-bold text-destructive mb-1">
               {dailyBurn.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -139,7 +139,7 @@ export const BurnMintStats = () => {
           <Skeleton className="h-10 w-full" />
         ) : (
           <>
-            <p className="text-3xl font-bold text-primary mb-1">
+            <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">
               {cumulativeIssued.toLocaleString(undefined, { maximumFractionDigits: 0 })}
             </p>
             <p className="text-xs text-muted-foreground">

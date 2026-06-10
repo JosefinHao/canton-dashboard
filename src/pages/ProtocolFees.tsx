@@ -112,7 +112,7 @@ export default function ProtocolFees() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Settings className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Protocol Fees</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Protocol Fees</h1>
           </div>
           <p className="text-muted-foreground">
             Network fee structure and transfer configuration parameters
@@ -162,17 +162,17 @@ export default function ProtocolFees() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-5 rounded-lg bg-muted/50 space-y-3">
                 <p className="text-muted-foreground text-xs uppercase font-medium">Create Fee</p>
-                <p className="text-3xl font-bold">{transferConfig.createFee?.fee || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.createFee?.fee || "—"}</p>
                 <p className="text-sm text-muted-foreground">Charged when creating a new transfer</p>
               </div>
               <div className="p-5 rounded-lg bg-muted/50 space-y-3">
                 <p className="text-muted-foreground text-xs uppercase font-medium">Holding Fee Rate</p>
-                <p className="text-3xl font-bold">{transferConfig.holdingFee?.rate || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.holdingFee?.rate || "—"}</p>
                 <p className="text-sm text-muted-foreground">Rate applied to held balances over time</p>
               </div>
               <div className="p-5 rounded-lg bg-muted/50 space-y-3">
                 <p className="text-muted-foreground text-xs uppercase font-medium">Lock Holder Fee</p>
-                <p className="text-3xl font-bold">{transferConfig.lockHolderFee?.fee || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.lockHolderFee?.fee || "—"}</p>
                 <p className="text-sm text-muted-foreground">Fee for maintaining lock holders on transfers</p>
               </div>
             </div>
@@ -239,17 +239,17 @@ export default function ProtocolFees() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-5 rounded-lg bg-muted/50">
                 <p className="text-muted-foreground text-xs uppercase font-medium mb-2">Max Inputs</p>
-                <p className="text-3xl font-bold">{transferConfig.maxNumInputs || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.maxNumInputs || "—"}</p>
                 <p className="text-sm text-muted-foreground mt-1">Maximum input contracts per transfer</p>
               </div>
               <div className="p-5 rounded-lg bg-muted/50">
                 <p className="text-muted-foreground text-xs uppercase font-medium mb-2">Max Outputs</p>
-                <p className="text-3xl font-bold">{transferConfig.maxNumOutputs || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.maxNumOutputs || "—"}</p>
                 <p className="text-sm text-muted-foreground mt-1">Maximum output contracts per transfer</p>
               </div>
               <div className="p-5 rounded-lg bg-muted/50">
                 <p className="text-muted-foreground text-xs uppercase font-medium mb-2">Max Lock Holders</p>
-                <p className="text-3xl font-bold">{transferConfig.maxNumLockHolders || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{transferConfig.maxNumLockHolders || "—"}</p>
                 <p className="text-sm text-muted-foreground mt-1">Maximum lock holders per transfer</p>
               </div>
             </div>

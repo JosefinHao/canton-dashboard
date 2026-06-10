@@ -194,7 +194,7 @@ const AmuletRules = () => {
               {normalizedRule?.isDevNet ? "Development" : "Production"}
             </Badge>
           </div>
-          <h2 className="text-3xl font-bold">Amulet Rules</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Amulet Rules</h2>
           <p className="text-muted-foreground max-w-3xl">
             Live configuration values from the Canton Scan API <code>/v0/dso</code> endpoint. This view updates automatically when new data is available.
           </p>

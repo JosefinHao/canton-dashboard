@@ -250,7 +250,7 @@ const Governance = () => {
 
         {/* Page Header */}
         <div>
-          <h2 className="text-3xl font-bold mb-2">Governance</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Governance</h2>
           <p className="text-muted-foreground">DSO proposals and voting activity</p>
         </div>
 
@@ -263,7 +263,7 @@ const Governance = () => {
             </div>
             {!svCount ? <Skeleton className="h-10 w-full" /> : (
               <>
-                <p className="text-3xl font-bold text-primary mb-1">{svCount}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{svCount}</p>
                 <p className="text-xs text-muted-foreground">Active SVs</p>
               </>
             )}
@@ -276,7 +276,7 @@ const Governance = () => {
             </div>
             {!votingThreshold ? <Skeleton className="h-10 w-full" /> : (
               <>
-                <p className="text-3xl font-bold text-chart-3 mb-1">{votingThreshold}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-chart-3 mb-1">{votingThreshold}</p>
                 <p className="text-xs text-muted-foreground">Votes required</p>
               </>
             )}
@@ -289,7 +289,7 @@ const Governance = () => {
             </div>
             {isLoading ? <Skeleton className="h-10 w-full" /> : (
               <>
-                <p className="text-3xl font-bold text-chart-2 mb-1">{totalProposals}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-chart-2 mb-1">{totalProposals}</p>
                 <p className="text-xs text-muted-foreground">All proposals</p>
               </>
             )}
@@ -302,7 +302,7 @@ const Governance = () => {
             </div>
             {isLoading ? <Skeleton className="h-10 w-full" /> : (
               <>
-                <p className="text-3xl font-bold text-warning mb-1">{activeProposals}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-warning mb-1">{activeProposals}</p>
                 <p className="text-xs text-muted-foreground">In voting</p>
               </>
             )}

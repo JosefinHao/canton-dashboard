@@ -33,7 +33,7 @@ export default function PriceVotes() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Amulet Price Votes</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Amulet Price Votes</h1>
           <p className="text-muted-foreground">
             Current price votes from Super Validators for the Amulet token
           </p>
@@ -52,7 +52,7 @@ export default function PriceVotes() {
               {isLoading ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <p className="text-3xl font-bold">{votes.length}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{votes.length}</p>
               )}
             </CardContent>
           </Card>
@@ -68,7 +68,7 @@ export default function PriceVotes() {
               {isLoading ? (
                 <Skeleton className="h-8 w-24" />
               ) : (
-                <p className="text-3xl font-bold">
+                <p className="text-2xl sm:text-3xl font-bold">
                   ${avgPrice.toFixed(6)}
                 </p>
               )}
@@ -86,7 +86,7 @@ export default function PriceVotes() {
               {isLoading ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <p className="text-3xl font-bold">
+                <p className="text-2xl sm:text-3xl font-bold">
                   {new Set(votes.map(v => v.payload?.sv)).size}
                 </p>
               )}

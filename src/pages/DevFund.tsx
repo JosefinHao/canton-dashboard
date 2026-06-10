@@ -92,7 +92,7 @@ const DevFund = () => {
             {isLoading ? (
               <Skeleton className="h-8 w-28" />
             ) : (
-              <p className="text-3xl font-bold text-foreground">
+              <p className="text-2xl sm:text-3xl font-bold text-foreground">
                 {totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
               </p>
             )}
@@ -105,7 +105,7 @@ const DevFund = () => {
             {isLoading ? (
               <Skeleton className="h-8 w-20" />
             ) : (
-              <p className="text-3xl font-bold text-foreground">{coupons?.length ?? 0}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground">{coupons?.length ?? 0}</p>
             )}
           </Card>
           <Card className="p-5 space-y-2">

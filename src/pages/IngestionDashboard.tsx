@@ -160,7 +160,7 @@ const IngestionDashboard = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Ingestion Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Ingestion Dashboard</h1>
             <p className="text-muted-foreground">Combined backfill and live ingestion status</p>
           </div>
           <Button variant="outline" onClick={handleRefresh}>
@@ -214,7 +214,7 @@ const IngestionDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-primary">{stats?.activeMigrations || cursors.length || 0}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{stats?.activeMigrations || cursors.length || 0}</p>
               <p className="text-xs text-muted-foreground">{backfillProgress.completedCount} complete</p>
             </CardContent>
           </Card>
@@ -227,7 +227,7 @@ const IngestionDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-emerald-500">{stats?.totalUpdates?.toLocaleString() || 0}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-500">{stats?.totalUpdates?.toLocaleString() || 0}</p>
               <p className="text-xs text-muted-foreground">{(stats as any)?.rawFileCounts?.updates?.toLocaleString() || 0} files</p>
             </CardContent>
           </Card>
@@ -240,7 +240,7 @@ const IngestionDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amber-500">{stats?.totalEvents?.toLocaleString() || 0}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-amber-500">{stats?.totalEvents?.toLocaleString() || 0}</p>
               <p className="text-xs text-muted-foreground">{(stats as any)?.rawFileCounts?.events?.toLocaleString() || 0} files</p>
             </CardContent>
           </Card>
@@ -253,7 +253,7 @@ const IngestionDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-violet-500">{backfillProgress.progress.toFixed(1)}%</p>
+              <p className="text-2xl sm:text-3xl font-bold text-violet-500">{backfillProgress.progress.toFixed(1)}%</p>
               <p className="text-xs text-muted-foreground">Overall backfill</p>
             </CardContent>
           </Card>

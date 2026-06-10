@@ -42,7 +42,7 @@ export default function Rewards() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Rewards & Leaderboards</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Rewards & Leaderboards</h1>
           <p className="text-muted-foreground">
             Track rewards collected and top performers across the network
           </p>
@@ -62,7 +62,7 @@ export default function Rewards() {
                 <Skeleton className="h-8 w-32" />
               ) : (
                 <div>
-                  <p className="text-3xl font-bold">{totalRewards.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{totalRewards.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
                   <p className="text-muted-foreground text-sm">CC through round {latestRound?.round}</p>
                 </div>
               )}
@@ -80,7 +80,7 @@ export default function Rewards() {
               {loadingProviders ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <p className="text-3xl font-bold">
+                <p className="text-2xl sm:text-3xl font-bold">
                   {topProviders?.providersAndRewards?.length || 0}
                 </p>
               )}
@@ -95,7 +95,7 @@ export default function Rewards() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{latestRound?.round || "—"}</p>
+              <p className="text-2xl sm:text-3xl font-bold">{latestRound?.round || "—"}</p>
             </CardContent>
           </Card>
         </div>

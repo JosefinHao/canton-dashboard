@@ -503,7 +503,7 @@ ${DOCUMENTATION_CONTENT
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Template Documentation</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Template Documentation</h2>
           <p className="text-muted-foreground">
             Download comprehensive documentation for all Canton Network templates
           </p>

@@ -35,7 +35,7 @@ const Elections = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Active Vote Requests</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Active Vote Requests</h2>
           <p className="text-muted-foreground">DSO governance vote requests and voting data</p>
         </div>
 
@@ -48,7 +48,7 @@ const Elections = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{allElections.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{allElections.length.toLocaleString()}</p>
             )}
           </Card>
 
@@ -60,7 +60,7 @@ const Elections = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{filteredElections.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{filteredElections.length.toLocaleString()}</p>
             )}
           </Card>
         </div>

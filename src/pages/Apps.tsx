@@ -92,7 +92,7 @@ const Apps = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Package className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">Canton Network Apps</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Canton Network Apps</h1>
             </div>
             <p className="text-muted-foreground">Featured applications on the Canton Network</p>
           </div>

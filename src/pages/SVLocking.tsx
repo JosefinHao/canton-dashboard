@@ -522,7 +522,7 @@ const SVLocking = () => {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Lock className="h-8 w-8 text-primary" />
-                <h1 className="text-3xl font-bold">SV Locking</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold">SV Locking</h1>
                 <Badge variant="outline" className="ml-2 border-primary/30 text-primary bg-primary/10">
                   CIP-0105
                 </Badge>

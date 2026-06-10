@@ -260,7 +260,7 @@ const LiveUpdates = () => {
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Transaction History</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">Transaction History</h1>
             <p className="text-muted-foreground">Live updates from DuckDB API</p>
           </div>
           {/* Freshness Indicator */}
@@ -543,7 +543,7 @@ const LiveUpdates = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-primary">{unifiedTransactions.length}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{unifiedTransactions.length}</p>
             </CardContent>
           </Card>
 
@@ -555,7 +555,7 @@ const LiveUpdates = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-emerald-500">{stats.totalEvents}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-500">{stats.totalEvents}</p>
             </CardContent>
           </Card>
 
@@ -567,7 +567,7 @@ const LiveUpdates = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amber-500">{stats.totalTypes}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-amber-500">{stats.totalTypes}</p>
             </CardContent>
           </Card>
 
@@ -579,7 +579,7 @@ const LiveUpdates = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-violet-500">{stats.topTemplates.length}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-violet-500">{stats.topTemplates.length}</p>
             </CardContent>
           </Card>
         </div>

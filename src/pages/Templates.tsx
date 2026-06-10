@@ -151,7 +151,7 @@ const Templates = () => {
         <div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-3xl font-bold">Template Data Explorer</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold">Template Data Explorer</h2>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                 <Database className="h-3 w-3 mr-1" />
                 Live API

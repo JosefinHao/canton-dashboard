@@ -48,7 +48,7 @@ export default function TrafficStatus() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Traffic Status</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Traffic Status</h1>
           <p className="text-muted-foreground">
             Check traffic consumption and limits for domain members
           </p>
@@ -119,7 +119,7 @@ export default function TrafficStatus() {
                   <p className="text-destructive text-sm">Failed to load traffic status</p>
                 ) : trafficStatus ? (
                   <div className="space-y-2">
-                    <p className="text-3xl font-bold">
+                    <p className="text-2xl sm:text-3xl font-bold">
                       {trafficStatus.traffic_status.actual.total_consumed.toLocaleString()}
                     </p>
                     <p className="text-muted-foreground text-sm">bytes consumed</p>
@@ -142,7 +142,7 @@ export default function TrafficStatus() {
                   <p className="text-destructive text-sm">—</p>
                 ) : trafficStatus ? (
                   <div className="space-y-2">
-                    <p className="text-3xl font-bold">
+                    <p className="text-2xl sm:text-3xl font-bold">
                       {trafficStatus.traffic_status.actual.total_limit.toLocaleString()}
                     </p>
                     <p className="text-muted-foreground text-sm">bytes limit</p>
@@ -165,7 +165,7 @@ export default function TrafficStatus() {
                   <p className="text-destructive text-sm">—</p>
                 ) : trafficStatus ? (
                   <div className="space-y-2">
-                    <p className="text-3xl font-bold">
+                    <p className="text-2xl sm:text-3xl font-bold">
                       {trafficStatus.traffic_status.target.total_purchased.toLocaleString()}
                     </p>
                     <p className="text-muted-foreground text-sm">bytes purchased</p>

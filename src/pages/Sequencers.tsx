@@ -43,7 +43,7 @@ export default function Sequencers() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Server className="h-8 w-8 text-primary" />
-              <h1 className="text-3xl font-bold">DSO Sequencers</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">DSO Sequencers</h1>
             </div>
             <p className="text-muted-foreground">
               Domain sequencer configuration across the network
@@ -66,7 +66,7 @@ export default function Sequencers() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Server className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">DSO Sequencers</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">DSO Sequencers</h1>
           </div>
           <p className="text-muted-foreground">
             Domain sequencer configuration across the network
@@ -82,7 +82,7 @@ export default function Sequencers() {
             <CardContent>
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5 text-primary" />
-                <p className="text-3xl font-bold">{totalDomains}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{totalDomains}</p>
               </div>
             </CardContent>
           </Card>
@@ -93,7 +93,7 @@ export default function Sequencers() {
             <CardContent>
               <div className="flex items-center gap-2">
                 <Server className="h-5 w-5 text-primary" />
-                <p className="text-3xl font-bold">{totalSequencers}</p>
+                <p className="text-2xl sm:text-3xl font-bold">{totalSequencers}</p>
               </div>
             </CardContent>
           </Card>
@@ -102,7 +102,7 @@ export default function Sequencers() {
               <CardTitle className="text-sm text-muted-foreground">Avg per Domain</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">
+              <p className="text-2xl sm:text-3xl font-bold">
                 {totalDomains > 0 ? (totalSequencers / totalDomains).toFixed(1) : "—"}
               </p>
             </CardContent>

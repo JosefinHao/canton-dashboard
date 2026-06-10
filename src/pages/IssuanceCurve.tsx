@@ -187,16 +187,18 @@ const RewardDistributionChart = ({
     ...(devFundPct != null ? [{ name: "Dev Fund", value: devFundPct * 100, color: REWARD_COLORS.devFund }] : []),
   ];
 
+  const isSmall = typeof window !== "undefined" && window.innerWidth < 640;
+
   return (
-    <div className="h-[280px] w-full">
+    <div className="h-[280px] sm:h-[280px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={data}
-            cx="40%"
-            cy="50%"
-            innerRadius={70}
-            outerRadius={110}
+            cx="50%"
+            cy={isSmall ? "40%" : "50%"}
+            innerRadius={isSmall ? 50 : 70}
+            outerRadius={isSmall ? 80 : 110}
             paddingAngle={3}
             dataKey="value"
           >
@@ -216,12 +218,12 @@ const RewardDistributionChart = ({
             labelStyle={{ color: "hsl(215 20% 65%)" }}
           />
           <Legend
-            verticalAlign="middle"
-            align="right"
-            layout="vertical"
-            wrapperStyle={{ paddingLeft: "30px" }}
+            verticalAlign={isSmall ? "bottom" : "middle"}
+            align={isSmall ? "center" : "right"}
+            layout={isSmall ? "horizontal" : "vertical"}
+            wrapperStyle={isSmall ? {} : { paddingLeft: "30px" }}
             formatter={(value, entry: any) => (
-              <span className="text-sm text-foreground">
+              <span className="text-xs sm:text-sm text-foreground">
                 {value}: {entry.payload.value.toFixed(decimals)}%
               </span>
             )}
@@ -282,7 +284,7 @@ const IssuanceTimeline = ({ initialValue, futureValues }: IssuanceTimelineProps)
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
         <span className="text-muted-foreground">Network Launch: Jul 2024</span>
         <span className="font-medium text-primary">Elapsed: {formatDuration(elapsedMicros)}</span>
       </div>
@@ -319,7 +321,7 @@ const IssuanceTimeline = ({ initialValue, futureValues }: IssuanceTimelineProps)
                       : "bg-muted/20"
                   }`}
                 >
-                  <div className="mb-2 flex items-center justify-between">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-1">
                     <div className="flex items-center gap-2">
                       <span className="text-base font-semibold">{s.label}</span>
                       {s.isActive && (
@@ -338,8 +340,8 @@ const IssuanceTimeline = ({ initialValue, futureValues }: IssuanceTimelineProps)
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-x-4 gap-y-1 text-sm">
-                    <div>
+                  <div className="grid grid-cols-2 sm:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-x-4 gap-y-1 text-sm">
+                    <div className="col-span-2 sm:col-span-1">
                       <span className="text-xs text-muted-foreground">Issuance/yr</span>
                       <p className="tabular-nums font-semibold">
                         {formatCompact(s.values?.amuletToIssuePerYear)}
@@ -456,8 +458,8 @@ export default function IssuanceCurve() {
       <div className="space-y-6">
         <div>
           <div className="mb-2 flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Issuance Curve</h1>
+            <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
+            <h1 className="text-2xl sm:text-3xl font-bold">Issuance Curve</h1>
           </div>
           <p className="text-muted-foreground">
             Token issuance schedule and reward distribution across network participants
@@ -471,7 +473,7 @@ export default function IssuanceCurve() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">{label}</p>
+                <p className="text-xl sm:text-2xl font-bold">{label}</p>
                 <Badge variant="default">Active</Badge>
               </div>
             </CardContent>
@@ -482,7 +484,7 @@ export default function IssuanceCurve() {
               <CardTitle className="text-sm text-muted-foreground">Annual Issuance</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{formatCompact(values?.amuletToIssuePerYear)}</p>
+              <p className="text-xl sm:text-2xl font-bold truncate">{formatCompact(values?.amuletToIssuePerYear)}</p>
               <p className="text-xs text-muted-foreground">CC per year</p>
             </CardContent>
           </Card>
@@ -492,7 +494,7 @@ export default function IssuanceCurve() {
               <CardTitle className="text-sm text-muted-foreground">Validator Reward Cap</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{formatCompact(values?.validatorRewardCap)}</p>
+              <p className="text-xl sm:text-2xl font-bold truncate">{formatCompact(values?.validatorRewardCap)}</p>
               <p className="text-xs text-muted-foreground">Per round</p>
             </CardContent>
           </Card>
@@ -502,7 +504,7 @@ export default function IssuanceCurve() {
               <CardTitle className="text-sm text-muted-foreground">Featured App Cap</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{formatCompact(values?.featuredAppRewardCap)}</p>
+              <p className="text-xl sm:text-2xl font-bold truncate">{formatCompact(values?.featuredAppRewardCap)}</p>
               <p className="text-xs text-muted-foreground">Per round</p>
             </CardContent>
           </Card>
@@ -527,32 +529,32 @@ export default function IssuanceCurve() {
               />
 
               <div
-                className={`mt-4 grid gap-4 text-center ${
-                  distribution.devFundPct != null ? "grid-cols-4" : "grid-cols-3"
+                className={`mt-4 grid gap-4 text-center grid-cols-2 ${
+                  distribution.devFundPct != null ? "sm:grid-cols-4" : "sm:grid-cols-3"
                 }`}
               >
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="text-xs text-muted-foreground">Validators</p>
-                  <p className="text-lg font-semibold">
+                <div className="rounded-lg bg-muted/50 p-3 min-w-0">
+                  <p className="text-xs text-muted-foreground truncate">Validators</p>
+                  <p className="text-base sm:text-lg font-semibold">
                     {formatPct(distribution.validatorPct, stage)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="text-xs text-muted-foreground">Apps</p>
-                  <p className="text-lg font-semibold">
+                <div className="rounded-lg bg-muted/50 p-3 min-w-0">
+                  <p className="text-xs text-muted-foreground truncate">Apps</p>
+                  <p className="text-base sm:text-lg font-semibold">
                     {formatPct(distribution.appPct, stage)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-muted/50 p-3">
-                  <p className="text-xs text-muted-foreground">Super Validators</p>
-                  <p className="text-lg font-semibold">
+                <div className="rounded-lg bg-muted/50 p-3 min-w-0">
+                  <p className="text-xs text-muted-foreground truncate">Super Validators</p>
+                  <p className="text-base sm:text-lg font-semibold">
                     {formatPct(distribution.svPct, stage)}
                   </p>
                 </div>
                 {distribution.devFundPct != null && (
-                  <div className="rounded-lg bg-muted/50 p-3">
-                    <p className="text-xs text-muted-foreground">Dev Fund</p>
-                    <p className="text-lg font-semibold">
+                  <div className="rounded-lg bg-muted/50 p-3 min-w-0">
+                    <p className="text-xs text-muted-foreground truncate">Dev Fund</p>
+                    <p className="text-base sm:text-lg font-semibold">
                       {formatPct(distribution.devFundPct, stage)}
                     </p>
                   </div>

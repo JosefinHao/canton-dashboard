@@ -47,7 +47,7 @@ const TransferCounters = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Transfer Command Counters</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Transfer Command Counters</h2>
           <p className="text-muted-foreground">External party transfer command tracking from live network state</p>
         </div>
 
@@ -60,7 +60,7 @@ const TransferCounters = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{counters.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{counters.length.toLocaleString()}</p>
             )}
           </Card>
 
@@ -72,7 +72,7 @@ const TransferCounters = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{filteredCounters.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{filteredCounters.length.toLocaleString()}</p>
             )}
           </Card>
         </div>
