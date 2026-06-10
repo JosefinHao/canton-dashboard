@@ -115,7 +115,7 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
         id="dashboard-mount-point"
         className="dashboard-container"
         style={{
-          minWidth: '800px',
+          minWidth: '1100px',
           width: '100%',
         }}
       >
