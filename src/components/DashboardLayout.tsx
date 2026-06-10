@@ -163,33 +163,27 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
   );
 };
 
-const clearScrollLocks = () => {
-  document.body.style.pointerEvents = "";
-  document.body.style.overflow = "";
-  document.body.style.marginRight = "";
-  document.body.style.paddingRight = "";
-  document.documentElement.removeAttribute("data-scroll-locked");
-  document.body.removeAttribute("data-scroll-locked");
-};
-
 const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    clearScrollLocks();
-    return clearScrollLocks;
-  }, []);
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   useEffect(() => {
-    if (open) {
-      setOpen(false);
-      setTimeout(clearScrollLocks, 350);
-    }
+    setOpen(false);
   }, [location.pathname]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={setOpen} modal={false}>
       <SheetTrigger asChild>
         <button className="md:hidden p-2 text-foreground" aria-label="Open menu">
           <Menu className="h-6 w-6" />
@@ -199,6 +193,7 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
         side="left"
         className="z-[110] w-72 p-0 bg-card border-border flex flex-col [&>button]:z-[111]"
         aria-describedby={undefined}
+        onInteractOutside={() => setOpen(false)}
       >
         <SheetTitle className="sr-only">Navigation menu</SheetTitle>
         <div className="p-4 border-b border-border pr-12">
