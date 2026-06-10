@@ -115,12 +115,16 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
         id="dashboard-mount-point"
         className="dashboard-container"
         style={{
-          width: 'max(100%, 1400px)',
+          width: '1400px',
         }}
       >
         <Dashboard
           ref={(ref) => {
             dashboardRef.current = ref;
+            if (ref) {
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 800);
+            }
           }}
           tiles={tiles}
           notExecutedText="Queries will not execute in view-only mode"
