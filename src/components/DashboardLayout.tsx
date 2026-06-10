@@ -168,6 +168,13 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    return () => {
+      document.body.style.pointerEvents = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
@@ -200,6 +207,7 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
                   <Link
                     key={item.name}
                     to={item.href}
+                    onClick={() => setOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-smooth ${
                       isActive
                         ? "bg-primary/10 text-primary font-medium"
