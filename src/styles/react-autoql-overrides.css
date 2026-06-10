@@ -1,19 +1,7 @@
 /* React AutoQL Dashboard CSS Overrides */
 
 .dashboard-container {
-  width: 1400px;
-}
-
-.react-autoql-dashboard-container,
-.react-autoql-dashboard {
-  width: 100% !important;
-  min-width: 100% !important;
-}
-
-/* Ensure chart SVGs and canvases fill their tile */
-.react-autoql-dashboard-tile svg,
-.react-autoql-dashboard-tile canvas {
-  width: 100% !important;
+  width: 100%;
 }
 
 .react-autoql-dashboard-tile,
