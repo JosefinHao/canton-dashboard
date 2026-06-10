@@ -320,7 +320,7 @@
   .stat-num {
     font-family: "IBM Plex Sans", sans-serif;
     font-weight: 400;
-    font-size: clamp(1.5rem, 3.4vw, 3.4rem);
+    font-size: clamp(1.25rem, 2.5vw, 2.5rem);
     line-height: 1.1;
     text-transform: uppercase;
   }
