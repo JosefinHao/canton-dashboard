@@ -4,6 +4,11 @@
   width: 100%;
 }
 
+.react-autoql-dashboard-container,
+.react-autoql-dashboard {
+  width: 100% !important;
+}
+
 .react-autoql-dashboard-tile,
 .react-autoql-dashboard-tile > div,
 .react-autoql-dashboard-tile > div > div,

@@ -27,12 +27,31 @@ const loadTiles = (dashboardId: string, rawTiles: RawDashboardTile[]) =>
     )
   );
 
+const DESKTOP_WIDTH = 1400;
+
 function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const [dashboardLoaded, setDashboardLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const mountedRef = useRef(true);
   const dashboardRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const innerWidthDescriptorRef = useRef<PropertyDescriptor | undefined>(undefined);
+
+  useEffect(() => {
+    if (window.innerWidth < DESKTOP_WIDTH) {
+      innerWidthDescriptorRef.current = Object.getOwnPropertyDescriptor(window, 'innerWidth');
+      Object.defineProperty(window, 'innerWidth', {
+        get: () => DESKTOP_WIDTH,
+        configurable: true,
+      });
+    }
+
+    return () => {
+      if (innerWidthDescriptorRef.current) {
+        Object.defineProperty(window, 'innerWidth', innerWidthDescriptorRef.current);
+      }
+    };
+  }, []);
   
   // Load react-autoql dynamically
   useEffect(() => {
@@ -114,10 +133,14 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
         ref={containerRef}
         id="dashboard-mount-point"
         className="dashboard-container"
+        style={{ width: DESKTOP_WIDTH }}
       >
         <Dashboard
           ref={(ref) => {
             dashboardRef.current = ref;
+            if (ref) {
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+            }
           }}
           tiles={tiles}
           notExecutedText="Queries will not execute in view-only mode"
