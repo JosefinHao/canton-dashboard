@@ -9,6 +9,17 @@
   width: 100% !important;
 }
 
+/* react-autoql sets width:100vw on chart containers, which sizes charts
+   to the viewport instead of their grid tile. Override to 100% so charts
+   fill the tile at its actual rendered width (1400px desktop layout). */
+.dashboard-container .react-autoql-response-content-container.chart {
+  width: 100% !important;
+}
+
+.dashboard-container .react-autoql-response-content-container {
+  max-width: none !important;
+}
+
 .react-autoql-dashboard-tile,
 .react-autoql-dashboard-tile > div,
 .react-autoql-dashboard-tile > div > div,

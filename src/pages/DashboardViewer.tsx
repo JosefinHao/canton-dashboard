@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useLayoutEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useDashboards } from "@/hooks/use-dashboards";
@@ -32,23 +32,25 @@ const DESKTOP_WIDTH = 1400;
 function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const [dashboardLoaded, setDashboardLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [widthReady, setWidthReady] = useState(false);
   const mountedRef = useRef(true);
   const dashboardRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const innerWidthDescriptorRef = useRef<PropertyDescriptor | undefined>(undefined);
+  const needsWidthOverrideRef = useRef(false);
 
-  useEffect(() => {
-    if (window.innerWidth < DESKTOP_WIDTH) {
-      innerWidthDescriptorRef.current = Object.getOwnPropertyDescriptor(window, 'innerWidth');
+  useLayoutEffect(() => {
+    if (screen.width < DESKTOP_WIDTH) {
+      needsWidthOverrideRef.current = true;
       Object.defineProperty(window, 'innerWidth', {
         get: () => DESKTOP_WIDTH,
         configurable: true,
       });
     }
-
+    setWidthReady(true);
     return () => {
-      if (innerWidthDescriptorRef.current) {
-        Object.defineProperty(window, 'innerWidth', innerWidthDescriptorRef.current);
+      if (needsWidthOverrideRef.current) {
+        delete (window as any).innerWidth;
+        needsWidthOverrideRef.current = false;
       }
     };
   }, []);
@@ -106,6 +108,8 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
     };
   }, []);
   
+  if (!widthReady) return null;
+
   if (loadError) {
     return (
       <div className="p-4">
@@ -117,7 +121,7 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
       </div>
     );
   }
-  
+
   if (!dashboardLoaded || !Dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -133,13 +137,14 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
         ref={containerRef}
         id="dashboard-mount-point"
         className="dashboard-container"
-        style={{ width: DESKTOP_WIDTH }}
+        style={{ width: DESKTOP_WIDTH, minWidth: DESKTOP_WIDTH }}
       >
         <Dashboard
           ref={(ref) => {
             dashboardRef.current = ref;
             if (ref) {
-              setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
             }
           }}
           tiles={tiles}
