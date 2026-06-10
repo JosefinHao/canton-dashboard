@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git push*origin*main*)",
+      "Bash(git merge*)",
+      "Bash(gh pr create*)",
+      "Bash(gh pr merge*)",
+      "mcp__github__create_pull_request",
+      "mcp__github__merge_pull_request"
+    ]
+  }
+}
