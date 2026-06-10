@@ -109,26 +109,26 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   }
   
   return (
-    <div 
-      ref={containerRef}
-      id="dashboard-mount-point"
-      className="dashboard-container w-full" 
-      style={{ 
-        width: 'calc(100% + 40px)',
-        minWidth: 0,
-        marginLeft: '-20px',
-        marginRight: '-20px',
-      }}
-    >
-      <Dashboard
-        ref={(ref) => {
-          dashboardRef.current = ref;
+    <div className="overflow-x-auto -mx-4 sm:-mx-5 px-4 sm:px-5">
+      <div
+        ref={containerRef}
+        id="dashboard-mount-point"
+        className="dashboard-container"
+        style={{
+          minWidth: '800px',
+          width: '100%',
         }}
-        tiles={tiles}
-        notExecutedText="Queries will not execute in view-only mode"
-        offline
-        isEditable={false}
-      />
+      >
+        <Dashboard
+          ref={(ref) => {
+            dashboardRef.current = ref;
+          }}
+          tiles={tiles}
+          notExecutedText="Queries will not execute in view-only mode"
+          offline
+          isEditable={false}
+        />
+      </div>
     </div>
   );
 }
@@ -265,8 +265,8 @@ export default function DashboardViewer() {
   return (
     <DashboardLayout>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold">{dashboardData.dashboard.title}</h1>
             {/* TODO: wire up refreshed_at from the API response once available
             {refreshedAt && (
