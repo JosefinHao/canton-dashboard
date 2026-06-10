@@ -163,19 +163,29 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
   );
 };
 
+const clearScrollLocks = () => {
+  document.body.style.pointerEvents = "";
+  document.body.style.overflow = "";
+  document.body.style.marginRight = "";
+  document.body.style.paddingRight = "";
+  document.documentElement.removeAttribute("data-scroll-locked");
+  document.body.removeAttribute("data-scroll-locked");
+};
+
 const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    return () => {
-      document.body.style.pointerEvents = "";
-      document.body.style.overflow = "";
-    };
+    clearScrollLocks();
+    return clearScrollLocks;
   }, []);
 
   useEffect(() => {
-    setOpen(false);
+    if (open) {
+      setOpen(false);
+      setTimeout(clearScrollLocks, 350);
+    }
   }, [location.pathname]);
 
   return (
