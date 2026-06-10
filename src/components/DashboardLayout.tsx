@@ -228,7 +228,12 @@ const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
 };
 
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const location = useLocation();
   const { data: dashboards = [], error: dashboardsError } = useDashboards();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   if (dashboardsError) {
     console.warn("⚠️ Error loading dashboards:", dashboardsError);
