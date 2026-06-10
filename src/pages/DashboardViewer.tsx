@@ -109,14 +109,13 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   }
   
   return (
-    <div className="overflow-x-auto -mx-4 sm:-mx-5 px-4 sm:px-5">
+    <div className="overflow-x-auto -mx-4 px-4">
       <div
         ref={containerRef}
         id="dashboard-mount-point"
         className="dashboard-container"
         style={{
-          minWidth: '1100px',
-          width: '100%',
+          width: 'max(100%, 1400px)',
         }}
       >
         <Dashboard
