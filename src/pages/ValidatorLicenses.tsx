@@ -121,13 +121,13 @@ const ValidatorLicenses = () => {
                     const metadata = license.payload?.metadata || license.metadata;
 
                     return (
-                      <Card key={idx} className="p-4 space-y-3 overflow-hidden">
-                        <div className="flex justify-between items-start gap-2">
-                          <div className="flex-1 min-w-0 space-y-2">
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-primary">Validator</p>
-                              <p className="text-xs font-mono break-all">{validator}</p>
-                            </div>
+                      <Card key={idx} className="p-3 sm:p-4 space-y-2 overflow-hidden">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold text-primary flex-1">Validator</p>
+                            <Badge variant="default" className="shrink-0">Active</Badge>
+                          </div>
+                          <p className="text-xs font-mono break-all">{validator}</p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                               <div>
@@ -198,8 +198,6 @@ const ValidatorLicenses = () => {
                                 </pre>
                               </CollapsibleContent>
                             </Collapsible>
-                          </div>
-                          <Badge variant="default" className="shrink-0">Active</Badge>
                         </div>
                       </Card>
                     );

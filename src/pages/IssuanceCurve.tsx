@@ -190,7 +190,7 @@ const RewardDistributionChart = ({
   const isSmall = typeof window !== "undefined" && window.innerWidth < 640;
 
   return (
-    <div className="h-[340px] sm:h-[280px] w-full">
+    <div className="h-[280px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

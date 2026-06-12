@@ -255,56 +255,53 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
                   isHighlighted && "ring-2 ring-pink-500 ring-offset-2 ring-offset-background"
                 )}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      {getOutcomeIcon(result.outcome)}
-                      <p className="text-sm font-semibold">{highlightMatch(result.actionTitle || "Unknown Action", searchQuery)}</p>
-                    </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getOutcomeIcon(result.outcome)}
+                    <p className="text-sm font-semibold flex-1 min-w-0">{highlightMatch(result.actionTitle || "Unknown Action", searchQuery)}</p>
+                    <Badge variant={getOutcomeVariant(result.outcome)} className="capitalize shrink-0">
+                      {result.outcome}
+                    </Badge>
+                  </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Completed At</p>
-                        <p className="text-sm">{safeFormatDate(result.completedAt)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Vote Before</p>
-                        <p className="text-sm">{safeFormatDate(result.voteBefore)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Votes</p>
-                        <p className="text-sm">
-                          <span className="text-green-500">{result.votesFor} for</span>
-                          {" / "}
-                          <span className="text-red-500">{result.votesAgainst} against</span>
-                        </p>
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Completed At</p>
+                      <p>{safeFormatDate(result.completedAt)}</p>
                     </div>
-
-                    <div className="p-3 rounded-lg bg-background/30 border border-border/30">
-                      <p className="text-xs text-muted-foreground mb-1 font-semibold">Reason</p>
-                      {result.reasonBody && (
-                        <p className="text-sm mb-1">{highlightMatch(result.reasonBody, searchQuery)}</p>
-                      )}
-                      {result.reasonUrl && (
-                        <a
-                          href={result.reasonUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline break-all"
-                        >
-                          {highlightMatch(result.reasonUrl, searchQuery)}
-                        </a>
-                      )}
-                      {!result.reasonBody && !result.reasonUrl && (
-                        <p className="text-sm text-muted-foreground italic">No reason provided</p>
-                      )}
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vote Before</p>
+                      <p>{safeFormatDate(result.voteBefore)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Votes</p>
+                      <p>
+                        <span className="text-green-500">{result.votesFor} for</span>
+                        {" / "}
+                        <span className="text-red-500">{result.votesAgainst} against</span>
+                      </p>
                     </div>
                   </div>
 
-                  <Badge variant={getOutcomeVariant(result.outcome)} className="capitalize ml-4 shrink-0">
-                    {result.outcome}
-                  </Badge>
+                  <div className="p-2 sm:p-3 rounded-lg bg-background/30 border border-border/30">
+                    <p className="text-xs text-muted-foreground mb-1 font-semibold">Reason</p>
+                    {result.reasonBody && (
+                      <p className="text-xs sm:text-sm mb-1 break-words">{highlightMatch(result.reasonBody, searchQuery)}</p>
+                    )}
+                    {result.reasonUrl && (
+                      <a
+                        href={result.reasonUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs sm:text-sm text-primary hover:underline break-all"
+                      >
+                        {highlightMatch(result.reasonUrl, searchQuery)}
+                      </a>
+                    )}
+                    {!result.reasonBody && !result.reasonUrl && (
+                      <p className="text-xs sm:text-sm text-muted-foreground italic">No reason provided</p>
+                    )}
+                  </div>
                 </div>
               </Card>
             );
