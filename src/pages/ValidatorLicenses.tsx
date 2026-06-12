@@ -15,7 +15,7 @@ import { useValidatorLicenses, useTopValidatorsByFaucets } from "@/hooks/use-can
 const ValidatorLicenses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 100;
+  const pageSize = 20;
 
   const { data: licensesData, isLoading: licensesLoading } = useValidatorLicenses();
   const { data: faucetData, isLoading: faucetsLoading } = useTopValidatorsByFaucets(1000);
@@ -79,7 +79,7 @@ const ValidatorLicenses = () => {
           </Card>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-3 sm:p-6 overflow-hidden">
           <div className="mb-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -163,7 +163,7 @@ const ValidatorLicenses = () => {
                             {metadata && (
                               <div className="pt-2 border-t">
                                 <p className="text-xs font-semibold mb-2">Metadata</p>
-                                <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                   <div>
                                     <p className="text-muted-foreground">Version</p>
                                     <p className="font-medium">{metadata.version || "N/A"}</p>
@@ -224,17 +224,17 @@ const ValidatorLicenses = () => {
               ) : (
                 <>
                   {paginateData(filteredFaucets).map((faucet, idx: number) => (
-                    <Card key={idx} className="p-4 space-y-2 overflow-hidden">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <Activity className="h-4 w-4 text-success shrink-0" />
-                          <p className="text-sm font-medium truncate">Validator: {formatParty(faucet.validator)}</p>
-                        </div>
-                        <Badge variant="secondary" className="shrink-0 w-fit">
+                    <Card key={idx} className="p-3 sm:p-4 space-y-2 overflow-hidden">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Activity className="h-4 w-4 text-success shrink-0" />
+                        <p className="text-xs sm:text-sm font-medium truncate flex-1 min-w-0">
+                          {formatParty(faucet.validator)}
+                        </p>
+                        <Badge variant="secondary" className="shrink-0 text-xs">
                           {faucet.numRoundsCollected} rounds
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <p className="text-muted-foreground">First Round</p>
                           <p className="font-medium">{faucet.firstCollectedInRound}</p>
