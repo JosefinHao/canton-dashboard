@@ -39,7 +39,7 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const needsWidthOverrideRef = useRef(false);
 
   useLayoutEffect(() => {
-    if (screen.width < DESKTOP_WIDTH) {
+    if (window.innerWidth < DESKTOP_WIDTH) {
       needsWidthOverrideRef.current = true;
       Object.defineProperty(window, 'innerWidth', {
         get: () => DESKTOP_WIDTH,
