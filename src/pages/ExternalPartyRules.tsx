@@ -38,7 +38,7 @@ const ExternalPartyRules = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">External Party Amulet Rules</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">External Party Amulet Rules</h2>
           <p className="text-muted-foreground">Rules and configurations for external party amulet interactions</p>
         </div>
 
@@ -51,7 +51,7 @@ const ExternalPartyRules = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{rules.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{rules.length.toLocaleString()}</p>
             )}
           </Card>
 
@@ -63,7 +63,7 @@ const ExternalPartyRules = () => {
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <p className="text-3xl font-bold text-primary">{filteredRules.length.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-primary">{filteredRules.length.toLocaleString()}</p>
             )}
           </Card>
         </div>

@@ -93,7 +93,7 @@ const UnclaimedSVRewards = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">SV Rewards</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">SV Rewards</h2>
           <p className="text-muted-foreground">
             Overview of validator reward coupons from live network data
           </p>
@@ -121,7 +121,7 @@ const UnclaimedSVRewards = () => {
                     <Skeleton className="h-10 w-full" />
                   ) : (
                     <>
-                      <p className="text-3xl font-bold text-primary">{totalCoupons.toLocaleString()}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-primary">{totalCoupons.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground mt-1">Live unclaimed coupons</p>
                     </>
                   )}
@@ -140,7 +140,7 @@ const UnclaimedSVRewards = () => {
                     <Skeleton className="h-10 w-full" />
                   ) : (
                     <>
-                      <p className="text-3xl font-bold text-chart-2">{uniqueUsers}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-chart-2">{uniqueUsers}</p>
                       <p className="text-xs text-muted-foreground mt-1">Validators with rewards</p>
                     </>
                   )}
@@ -159,7 +159,7 @@ const UnclaimedSVRewards = () => {
                     <Skeleton className="h-10 w-full" />
                   ) : (
                     <>
-                      <p className="text-3xl font-bold text-green-500">{totalRewardAmount.toFixed(4)}</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-green-500">{totalRewardAmount.toFixed(4)}</p>
                       <p className="text-xs text-muted-foreground mt-1">Total unclaimed CC</p>
                     </>
                   )}

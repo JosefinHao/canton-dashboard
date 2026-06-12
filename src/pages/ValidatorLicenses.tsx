@@ -54,7 +54,7 @@ const ValidatorLicenses = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Award className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Validator Licenses & Faucets</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Validator Licenses & Faucets</h1>
           </div>
           <p className="text-muted-foreground">View active validator licenses and faucet activity on the network.</p>
         </div>
@@ -143,7 +143,7 @@ const ValidatorLicenses = () => {
                             {faucetState && (
                               <div className="pt-2 border-t">
                                 <p className="text-xs font-semibold mb-2">Faucet State</p>
-                                <div className="grid grid-cols-3 gap-3 text-xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                                   <div>
                                     <p className="text-muted-foreground">First Round</p>
                                     <p className="font-medium">{faucetState.firstReceivedFor?.number || "N/A"}</p>
@@ -236,7 +236,7 @@ const ValidatorLicenses = () => {
                           {faucet.numRoundsCollected} rounds collected
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-4 gap-3 text-xs">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                         <div>
                           <p className="text-muted-foreground">First Round</p>
                           <p className="font-medium">{faucet.firstCollectedInRound}</p>

@@ -617,7 +617,7 @@ export function LearnFromCorrectionsPanel() {
   return (
     <Card className="border-border/50">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <CardTitle className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-yellow-400" />
@@ -627,10 +627,10 @@ export function LearnFromCorrectionsPanel() {
               Generate improvement proposals from manual classification corrections
             </CardDescription>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Learning Mode Toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Learning Mode</span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">Learning Mode</span>
               <Switch
                 checked={learningMode}
                 onCheckedChange={toggleLearningMode}
@@ -722,7 +722,7 @@ export function LearnFromCorrectionsPanel() {
                 </div>
                 
                 {/* Summary Stats - Clean Grid */}
-                <div className="grid grid-cols-6 gap-2 text-xs mt-2">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-xs mt-2">
                   <div className="text-center p-2 bg-muted/30 rounded">
                     <div className="font-bold text-lg">{currentPatterns.patterns.validatorKeywords?.length || 0}</div>
                     <div className="text-muted-foreground text-[10px]">Validator</div>
@@ -817,7 +817,7 @@ export function LearnFromCorrectionsPanel() {
                     )}
                     
                     {/* Other Keywords in Compact Grid */}
-                    <div className="grid grid-cols-3 gap-2 pt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
                       {currentPatterns.patterns.cipKeywords?.length > 0 && (
                         <div className="p-2 bg-muted/20 rounded">
                           <div className="text-[10px] text-muted-foreground mb-1">CIP Keywords</div>
@@ -928,8 +928,8 @@ export function LearnFromCorrectionsPanel() {
         {proposals.length > 0 && (
           <>
             {/* Summary Bar */}
-            <div className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
-              <div className="flex items-center gap-4 text-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 bg-muted/20 rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm">
                 <span>
                   <strong>{proposals.length}</strong> proposals from <strong>{correctionsCount}</strong> corrections
                 </span>
@@ -945,7 +945,7 @@ export function LearnFromCorrectionsPanel() {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1022,7 +1022,7 @@ export function LearnFromCorrectionsPanel() {
                 </div>
                 
                 {/* Summary Stats */}
-                <div className="grid grid-cols-4 gap-2 text-xs mb-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mb-3">
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Minus className="h-3 w-3" />
                     {testResult.summary.unchanged} unchanged ({testResult.summary.unchangedPercent}%)

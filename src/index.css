@@ -292,9 +292,9 @@
     color: var(--color-canton-yellow, #F3FF97);
     font-family: "IBM Plex Sans", sans-serif;
     font-weight: 400;
-    font-size: 0.875rem;
+    font-size: clamp(0.6875rem, 2vw, 0.875rem);
     line-height: normal;
-    letter-spacing: 7px;
+    letter-spacing: clamp(3px, 1vw, 7px);
     text-transform: uppercase;
   }
 
@@ -320,7 +320,7 @@
   .stat-num {
     font-family: "IBM Plex Sans", sans-serif;
     font-weight: 400;
-    font-size: clamp(2.25rem, 3.4vw, 3.4rem);
+    font-size: clamp(1.25rem, 2.5vw, 2.5rem);
     line-height: 1.1;
     text-transform: uppercase;
   }

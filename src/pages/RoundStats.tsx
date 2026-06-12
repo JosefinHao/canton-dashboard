@@ -71,7 +71,7 @@ const RoundStats = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Round Statistics</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">Round Statistics</h2>
           <p className="text-muted-foreground">Detailed statistics for closed mining rounds</p>
         </div>
 

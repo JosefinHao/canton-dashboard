@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import cantonLogo from "@/assets/logo.svg";
 import { Link, useLocation } from "react-router-dom";
@@ -20,6 +20,7 @@ import {
   Radio,
   Layers,
   Lock,
+  Menu,
   type LucideIcon,
 } from "lucide-react";
 import { SyncInsightsIcon } from "./icons/SyncInsightsIcon";
@@ -28,6 +29,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useDashboards } from "@/hooks/use-dashboards";
 
 interface DashboardLayoutProps {
@@ -109,7 +116,7 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
   const location = useLocation();
   const isGroupActive = group.items.some(item => location.pathname === item.href);
   const [open, setOpen] = useState(false);
-  
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -156,8 +163,82 @@ const NavDropdown = ({ group }: { group: NavGroup }) => {
   );
 };
 
+const MobileNav = ({ groups }: { groups: NavGroup[] }) => {
+  const location = useLocation();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen} modal={false}>
+      <SheetTrigger asChild>
+        <button className="md:hidden p-2 text-foreground" aria-label="Open menu">
+          <Menu className="h-6 w-6" />
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="z-[110] w-72 p-0 bg-card border-border flex flex-col [&>button]:z-[111]"
+        aria-describedby={undefined}
+        onInteractOutside={() => setOpen(false)}
+      >
+        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+        <div className="p-4 border-b border-border pr-12">
+          <img src={cantonLogo} alt="Canton Network" className="h-8" />
+        </div>
+        <nav className="flex-1 min-h-0 flex flex-col gap-1 p-4 overflow-y-auto">
+          {groups.map((group) => (
+            <div key={group.label} className="mb-3">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">
+                {group.label}
+              </div>
+              {group.items.map((item) => {
+                const isActive = location.pathname === item.href;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-smooth ${
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="break-words min-w-0">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const location = useLocation();
   const { data: dashboards = [], error: dashboardsError } = useDashboards();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   if (dashboardsError) {
     console.warn("⚠️ Error loading dashboards:", dashboardsError);
@@ -201,25 +282,29 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           WebkitBackdropFilter: "blur(14px)",
         }}
       >
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
           <div className="flex items-center justify-between">
+            {/* Mobile hamburger */}
+            <MobileNav groups={navigationGroups} />
+
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group">
-              <img src={cantonLogo} alt="Canton Network" className="h-10" />
+              <img src={cantonLogo} alt="Canton Network" className="h-8 md:h-10" />
             </Link>
 
-            {/* Navigation */}
-            <nav className="flex items-center gap-1">
+            {/* Desktop Navigation / mobile spacer for logo centering */}
+            <nav className="hidden md:flex items-center gap-1">
               {navigationGroups.map((group) => (
                 <NavDropdown key={group.label} group={group} />
               ))}
             </nav>
+            <div className="w-10 md:hidden" />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-4 md:px-6 py-4 md:py-8">
         <ErrorBoundary title="Dashboard failed to render">
           {children}
         </ErrorBoundary>

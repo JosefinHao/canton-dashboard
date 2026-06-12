@@ -298,7 +298,7 @@ export function GapRecoveryPanel({ refreshInterval = 30000 }: GapRecoveryPanelPr
               <strong>Cursor vs File Reconciliation:</strong> File totals are <em>estimates</em> (~5k updates/file, ~8.5k events/file).
               "Extra" data means gap traversal re-fetched some records (normal). Run <code>validate-backfill.js</code> for exact counts.
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className={`p-3 rounded-lg ${
                 reconciliation.updates.status === 'missing' 
                   ? 'bg-warning/10 border border-warning/30' 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useLayoutEffect, useState, useRef, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useDashboards } from "@/hooks/use-dashboards";
@@ -27,12 +27,33 @@ const loadTiles = (dashboardId: string, rawTiles: RawDashboardTile[]) =>
     )
   );
 
+const DESKTOP_WIDTH = 1400;
+
 function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const [dashboardLoaded, setDashboardLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [widthReady, setWidthReady] = useState(false);
   const mountedRef = useRef(true);
   const dashboardRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const needsWidthOverrideRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (window.innerWidth < DESKTOP_WIDTH) {
+      needsWidthOverrideRef.current = true;
+      Object.defineProperty(window, 'innerWidth', {
+        get: () => DESKTOP_WIDTH,
+        configurable: true,
+      });
+    }
+    setWidthReady(true);
+    return () => {
+      if (needsWidthOverrideRef.current) {
+        delete (window as any).innerWidth;
+        needsWidthOverrideRef.current = false;
+      }
+    };
+  }, []);
   
   // Load react-autoql dynamically
   useEffect(() => {
@@ -87,6 +108,8 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
     };
   }, []);
   
+  if (!widthReady) return null;
+
   if (loadError) {
     return (
       <div className="p-4">
@@ -98,7 +121,7 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
       </div>
     );
   }
-  
+
   if (!dashboardLoaded || !Dashboard) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -109,26 +132,27 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   }
   
   return (
-    <div 
-      ref={containerRef}
-      id="dashboard-mount-point"
-      className="dashboard-container w-full" 
-      style={{ 
-        width: 'calc(100% + 40px)',
-        minWidth: 0,
-        marginLeft: '-20px',
-        marginRight: '-20px',
-      }}
-    >
-      <Dashboard
-        ref={(ref) => {
-          dashboardRef.current = ref;
-        }}
-        tiles={tiles}
-        notExecutedText="Queries will not execute in view-only mode"
-        offline
-        isEditable={false}
-      />
+    <div className="overflow-x-auto -mx-4 px-4">
+      <div
+        ref={containerRef}
+        id="dashboard-mount-point"
+        className="dashboard-container"
+        style={{ width: DESKTOP_WIDTH, minWidth: DESKTOP_WIDTH }}
+      >
+        <Dashboard
+          ref={(ref) => {
+            dashboardRef.current = ref;
+            if (ref) {
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+              setTimeout(() => window.dispatchEvent(new Event('resize')), 500);
+            }
+          }}
+          tiles={tiles}
+          notExecutedText="Queries will not execute in view-only mode"
+          offline
+          isEditable={false}
+        />
+      </div>
     </div>
   );
 }
@@ -265,9 +289,9 @@ export default function DashboardViewer() {
   return (
     <DashboardLayout>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">{dashboardData.dashboard.title}</h1>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold">{dashboardData.dashboard.title}</h1>
             {/* TODO: wire up refreshed_at from the API response once available
             {refreshedAt && (
               <p className="text-sm text-muted-foreground mt-1">

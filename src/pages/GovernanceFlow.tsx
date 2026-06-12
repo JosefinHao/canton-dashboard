@@ -1431,7 +1431,7 @@ const GovernanceFlow = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Governance Lifecycle</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Governance Lifecycle</h1>
             <p className="text-muted-foreground mt-1">Track CIPs, Featured Apps, and Validators through the governance process</p>
             {cachedAt && <p className="text-xs text-muted-foreground mt-1">Last updated: {new Date(cachedAt).toLocaleString()}</p>}
           </div>
@@ -1558,7 +1558,7 @@ const GovernanceFlow = () => {
             <span className="text-sm font-medium">Date Range:</span>
           </div>
           <Select value={datePreset} onValueChange={handleDatePreset}>
-            <SelectTrigger className="w-[160px] h-8" style={{ backgroundColor: '#000', color: '#fff' }}>
+            <SelectTrigger className="w-full sm:w-[160px] h-8" style={{ backgroundColor: '#000', color: '#fff' }}>
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
             <SelectContent>

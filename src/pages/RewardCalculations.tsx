@@ -98,8 +98,8 @@ const RewardCalculations = () => {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
-            <Calculator className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3">
+            <Calculator className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
             Reward Calculations
           </h1>
           <p className="text-muted-foreground">
@@ -252,7 +252,7 @@ const RewardCalculations = () => {
           <Card>
             <CardContent className="pt-6 space-y-4">
               <Skeleton className="h-8 w-48" />
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Skeleton className="h-24" />
                 <Skeleton className="h-24" />
                 <Skeleton className="h-24" />
@@ -352,9 +352,9 @@ const RewardCalculations = () => {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[400px]">
-                    <div className="space-y-1">
+                    <div className="space-y-1 overflow-x-auto">
                       {/* Header */}
-                      <div className="grid grid-cols-5 gap-4 text-xs text-muted-foreground font-medium px-3 py-2 bg-muted/50 rounded sticky top-0">
+                      <div className="grid grid-cols-[auto_auto_auto_auto_auto] min-w-[600px] gap-4 text-xs text-muted-foreground font-medium px-3 py-2 bg-muted/50 rounded sticky top-0">
                         <span>Round</span>
                         <span>Type</span>
                         <span>{data.hasIssuanceData ? 'CC Amount' : 'Weight'}</span>
@@ -364,7 +364,7 @@ const RewardCalculations = () => {
                       {data.events.map((event, idx) => (
                         <div
                           key={event.event_id || idx}
-                          className={`grid grid-cols-5 gap-4 text-sm py-2 px-3 rounded hover:bg-muted/50 ${
+                          className={`grid grid-cols-[auto_auto_auto_auto_auto] min-w-[600px] gap-4 text-sm py-2 px-3 rounded hover:bg-muted/50 ${
                             idx % 2 === 0 ? "bg-muted/20" : ""
                           }`}
                         >

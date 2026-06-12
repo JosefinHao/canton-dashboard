@@ -114,13 +114,13 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
       <CardHeader className="pb-3">
         <CardTitle className="text-base">{ENV_LABELS[env.env] ?? env.env}</CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        <Table className="table-fixed">
+      <CardContent className="p-0 overflow-x-auto">
+        <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-2/5">Name</TableHead>
+              <TableHead className="whitespace-nowrap">Name</TableHead>
               {services.map((svc) => (
-                <TableHead key={svc}>
+                <TableHead key={svc} className="whitespace-nowrap">
                   <ServiceHeader name={svc} description={descriptions[svc]} />
                 </TableHead>
               ))}
@@ -129,7 +129,7 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
           <TableBody>
             {nodeNames.map((name) => (
               <TableRow key={name}>
-                <TableCell className="font-medium text-sm"><span className="whitespace-nowrap">{name}</span></TableCell>
+                <TableCell className="font-medium text-sm whitespace-nowrap">{name}</TableCell>
                 {services.map((svc) => {
                   const nodes = env.status![svc]?.nodes;
                   return (
@@ -207,13 +207,13 @@ export default function SvStatus() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Activity className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+              <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
               SV Status Monitor
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Live health of SV services across all environments
             </p>
           </div>
@@ -232,7 +232,7 @@ export default function SvStatus() {
         {/* Summary table */}
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <CardTitle className="text-base">Summary</CardTitle>
               {checkedAt && (
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -242,11 +242,11 @@ export default function SvStatus() {
               )}
             </div>
           </CardHeader>
-          <CardContent className="p-0">
-            <Table className="table-fixed">
+          <CardContent className="p-0 overflow-x-auto">
+            <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Env</TableHead>
+                  <TableHead className="whitespace-nowrap">Env</TableHead>
                   {isLoading ? (
                     <>
                       <TableHead><Skeleton className="h-4 w-16" /></TableHead>
@@ -255,7 +255,7 @@ export default function SvStatus() {
                     </>
                   ) : (
                     allServices.map((svc) => (
-                      <TableHead key={svc}>
+                      <TableHead key={svc} className="whitespace-nowrap">
                         <ServiceHeader name={svc} description={serviceDescriptions[svc]} />
                       </TableHead>
                     ))
@@ -281,7 +281,7 @@ export default function SvStatus() {
                 ) : (
                   displayEnvs.map((env) => (
                     <TableRow key={env}>
-                      <TableCell className="font-semibold">{env}</TableCell>
+                      <TableCell className="font-semibold whitespace-nowrap">{env}</TableCell>
                       {allServices.map((svc) => {
                         const counts = getServiceCounts(environments, env, svc);
                         return (
@@ -304,41 +304,45 @@ export default function SvStatus() {
 
         {/* Filters */}
         <div className="flex items-center gap-3 flex-wrap">
-          <Eye className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Filter by Env:</span>
-          <Select value={selectedEnv} onValueChange={setSelectedEnv}>
-            <SelectTrigger className="w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-muted border-border">
-              {[ALL_ENVS, ...ENVS].map((env) => (
-                <SelectItem
-                  key={env}
-                  value={env}
-                  className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
-                >
-                  {env === ALL_ENVS ? "All Envs" : env}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <span className="text-sm font-medium">As viewed from SV:</span>
-          <Select value={selectedSv} onValueChange={setSelectedSv}>
-            <SelectTrigger className="w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-muted border-border">
-              {(svList ?? []).map((sv) => (
-                <SelectItem
-                  key={sv.id}
-                  value={sv.id}
-                  className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
-                >
-                  {sv.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Eye className="h-4 w-4 text-muted-foreground hidden sm:block" />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm font-medium whitespace-nowrap">Filter by Env:</span>
+            <Select value={selectedEnv} onValueChange={setSelectedEnv}>
+              <SelectTrigger className="w-full sm:w-[140px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-muted border-border">
+                {[ALL_ENVS, ...ENVS].map((env) => (
+                  <SelectItem
+                    key={env}
+                    value={env}
+                    className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
+                  >
+                    {env === ALL_ENVS ? "All Envs" : env}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-sm font-medium whitespace-nowrap">As viewed from SV:</span>
+            <Select value={selectedSv} onValueChange={setSelectedSv}>
+              <SelectTrigger className="w-full sm:w-[280px] bg-muted/60 border-border focus:ring-0 focus:ring-offset-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-muted border-border">
+                {(svList ?? []).map((sv) => (
+                  <SelectItem
+                    key={sv.id}
+                    value={sv.id}
+                    className="focus:bg-primary/10 focus:text-primary data-[state=checked]:text-primary"
+                  >
+                    {sv.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           {(selectedSv !== DEFAULT_SV || selectedEnv !== ALL_ENVS) && (
             <Button
               variant="ghost"

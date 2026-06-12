@@ -105,7 +105,7 @@ const Supply = () => {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <h2 className="text-3xl font-bold">Supply & Tokenomics</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold">Supply & Tokenomics</h2>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                 <Coins className="h-3 w-3 mr-1" />
                 Live from Scan API
@@ -132,7 +132,7 @@ const Supply = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-primary mb-1">{formatAmount(totalSupply)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{formatAmount(totalSupply)}</p>
                 <p className="text-xs text-muted-foreground">CC (from round {latestRound?.round})</p>
               </>
             )}
@@ -147,7 +147,7 @@ const Supply = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-primary mb-1">{latestRound?.round?.toLocaleString() || "—"}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{latestRound?.round?.toLocaleString() || "—"}</p>
                 <p className="text-xs text-muted-foreground">
                   {latestRound?.effectiveAt ? new Date(latestRound.effectiveAt).toLocaleString() : "—"}
                 </p>
@@ -164,7 +164,7 @@ const Supply = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-chart-2 mb-1">{formatAmount(cumulativeAppRewards)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-chart-2 mb-1">{formatAmount(cumulativeAppRewards)}</p>
                 <p className="text-xs text-muted-foreground">CC total distributed</p>
               </>
             )}
@@ -179,7 +179,7 @@ const Supply = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-chart-3 mb-1">{formatAmount(cumulativeValidatorRewards)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-chart-3 mb-1">{formatAmount(cumulativeValidatorRewards)}</p>
                 <p className="text-xs text-muted-foreground">CC total distributed</p>
               </>
             )}

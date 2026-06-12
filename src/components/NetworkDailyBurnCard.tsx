@@ -19,12 +19,12 @@ export const NetworkDailyBurnCard = () => {
         <Skeleton className="h-10 w-full" />
       ) : hasError ? (
         <>
-          <p className="text-3xl font-bold text-muted-foreground mb-1">--</p>
+          <p className="text-2xl sm:text-3xl font-bold text-muted-foreground mb-1">--</p>
           <p className="text-xs text-muted-foreground">Data unavailable</p>
         </>
       ) : (
         <>
-          <p className="text-3xl font-bold text-destructive mb-1">
+          <p className="text-2xl sm:text-3xl font-bold text-destructive mb-1">
             {dailyBurn.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </p>
           <p className="text-xs text-muted-foreground">

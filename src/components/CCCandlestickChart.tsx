@@ -268,7 +268,7 @@ export function CCCandlestickChart({
           </CardTitle>
           <div className="flex flex-wrap items-center gap-2">
             <Select value={selectedExchange} onValueChange={handleExchangeSelect}>
-              <SelectTrigger className="w-[140px] h-8 text-sm" style={{ backgroundColor: "#000", color: "#fff" }}>
+              <SelectTrigger className="w-full sm:w-[140px] h-8 text-sm" style={{ backgroundColor: "#000", color: "#fff" }}>
                 <SelectValue placeholder="Exchange" />
               </SelectTrigger>
               <SelectContent className="z-50 max-h-[300px] bg-popover">
@@ -281,7 +281,7 @@ export function CCCandlestickChart({
             </Select>
 
             <Select value={selectedInstrument} onValueChange={handleInstrumentSelect}>
-              <SelectTrigger className="w-[110px] h-8 text-sm" style={{ backgroundColor: "#000", color: "#fff" }}>
+              <SelectTrigger className="w-full sm:w-[110px] h-8 text-sm" style={{ backgroundColor: "#000", color: "#fff" }}>
                 <SelectValue placeholder="Pair" />
               </SelectTrigger>
               <SelectContent className="z-50 bg-popover">
@@ -314,7 +314,7 @@ export function CCCandlestickChart({
             No chart data available
           </div>
         ) : (
-          <div style={{ width: "100%", height: 480 * zoomLevel, minHeight: 480, maxHeight: 980 }}>
+          <div style={{ width: "100%", height: 480 * zoomLevel, minHeight: 480, maxHeight: "min(980px, 70vh)" }}>
             <ResponsiveContainer width="100%" height="70%">
               <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />

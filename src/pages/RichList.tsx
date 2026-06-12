@@ -52,7 +52,7 @@ const RichList = () => {
         <ACSStatusBanner />
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-3xl font-bold">Rich List</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold">Rich List</h2>
             <Badge variant="outline" className="bg-success/10 text-success border-success/30">
               <Clock className="h-3 w-3 mr-1" />
               Live API
@@ -88,7 +88,7 @@ const RichList = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-primary mb-1">{holderCount.toLocaleString()}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{holderCount.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Unique holders (from holdings state)</p>
               </>
             )}
@@ -103,7 +103,7 @@ const RichList = () => {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <p className="text-3xl font-bold text-success mb-1">{formatAmount(totalSupply)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-success mb-1">{formatAmount(totalSupply)}</p>
                 <p className="text-xs text-muted-foreground">CC (after holding fees)</p>
               </>
             )}

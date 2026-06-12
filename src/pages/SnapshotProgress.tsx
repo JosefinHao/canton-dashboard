@@ -392,9 +392,9 @@ const SnapshotProgress = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">ACS Snapshot</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">ACS Snapshot</h1>
             <p className="text-muted-foreground">
               <span className="flex items-center gap-2">
                 <Server className={`w-4 h-4 ${isConnected ? 'text-green-500' : 'text-red-500'}`} />
@@ -402,7 +402,7 @@ const SnapshotProgress = () => {
               </span>
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={refreshLocalData} variant="outline" size="sm" disabled={!isConnected}>
               <Activity className="h-4 w-4 mr-2" />
               Refresh
@@ -419,18 +419,18 @@ const SnapshotProgress = () => {
         {localStats && (
           <Card className="glass-card border-green-500/20 bg-green-500/5">
             <CardContent className="py-4">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <div className="text-sm text-muted-foreground">Total Contracts</div>
-                  <div className="text-2xl font-bold text-green-500">{localStats.total_contracts.toLocaleString()}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-green-500 truncate">{localStats.total_contracts.toLocaleString()}</div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Unique Templates</div>
-                  <div className="text-2xl font-bold text-green-500">{localStats.total_templates.toLocaleString()}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-green-500 truncate">{localStats.total_templates.toLocaleString()}</div>
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Snapshots</div>
-                  <div className="text-2xl font-bold text-green-500">{snapshots.length}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-green-500">{snapshots.length}</div>
                 </div>
               </div>
             </CardContent>
@@ -442,11 +442,11 @@ const SnapshotProgress = () => {
 
         {/* Migration Filter */}
         {uniqueMigrations.length > 0 && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Migration:</span>
+            <span className="text-sm text-muted-foreground whitespace-nowrap">Migration:</span>
             <Select value={selectedMigration} onValueChange={setSelectedMigration}>
-              <SelectTrigger className="w-[180px]" style={{ backgroundColor: '#000', color: '#fff' }}>
+              <SelectTrigger className="w-full sm:w-[180px]" style={{ backgroundColor: '#000', color: '#fff' }}>
                 <SelectValue placeholder="Select migration" />
               </SelectTrigger>
               <SelectContent>

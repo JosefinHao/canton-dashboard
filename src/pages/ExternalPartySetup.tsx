@@ -60,7 +60,7 @@ const ExternalPartySetup = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-2">
             <Users className="h-8 w-8 text-primary" />
             External Party Setup Proposals
           </h1>

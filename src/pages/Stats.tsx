@@ -393,7 +393,7 @@ const Stats = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold mb-2">Validator Statistics</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2">Validator Statistics</h2>
             <p className="text-muted-foreground">
               Track validator growth and onboarding trends
             </p>
@@ -416,7 +416,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-primary mb-1">{newValidators.length}</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{newValidators.length}</p>
                   <p className="text-xs text-muted-foreground">New validators</p>
                 </>
               )}
@@ -433,7 +433,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-chart-2 mb-1">
+                  <p className="text-2xl sm:text-3xl font-bold text-chart-2 mb-1">
                     {weeklyValidators.length + newValidators.length}
                   </p>
                   <p className="text-xs text-muted-foreground">New validators</p>
@@ -452,7 +452,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-chart-3 mb-1">
+                  <p className="text-2xl sm:text-3xl font-bold text-chart-3 mb-1">
                     {monthlyValidators.length + weeklyValidators.length + newValidators.length}
                   </p>
                   <p className="text-xs text-muted-foreground">New validators</p>
@@ -471,7 +471,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-chart-4 mb-1">
+                  <p className="text-2xl sm:text-3xl font-bold text-chart-4 mb-1">
                     {sixMonthValidators.length +
                       monthlyValidators.length +
                       weeklyValidators.length +
@@ -493,7 +493,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold text-chart-5 mb-1">
+                  <p className="text-2xl sm:text-3xl font-bold text-chart-5 mb-1">
                     {yearlyValidators.length +
                       sixMonthValidators.length +
                       monthlyValidators.length +
@@ -516,7 +516,7 @@ const Stats = () => {
                 <Skeleton className="h-10 w-16" />
               ) : (
                 <>
-                  <p className="text-3xl font-bold gradient-text mb-1">{allTimeValidators.length}</p>
+                  <p className="text-2xl sm:text-3xl font-bold gradient-text mb-1">{allTimeValidators.length}</p>
                   <p className="text-xs text-muted-foreground">Total validators</p>
                 </>
               )}
@@ -536,7 +536,7 @@ const Stats = () => {
               </div>
             ) : (
               <Tabs defaultValue="day" className="w-full">
-                <TabsList className="grid w-full grid-cols-6">
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
                   <TabsTrigger value="day">Day</TabsTrigger>
                   <TabsTrigger value="week">Week</TabsTrigger>
                   <TabsTrigger value="month">Month</TabsTrigger>
