@@ -50,12 +50,15 @@ const safeFormatDate = (dateStr: string | null | undefined, formatStr: string = 
   }
 };
 
+const PAGE_SIZE = 20;
+
 export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: GovernanceHistoryTableProps) {
   const [searchParams] = useSearchParams();
   const highlightedProposalId = searchParams.get("proposal");
   const proposalRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const { data: voteResults, isLoading, error } = useGovernanceVoteHistory(limit);
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (highlightedProposalId && !isLoading && voteResults) {
@@ -104,8 +107,12 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
         return terms.every((t) => blob.includes(t));
       });
     }
+    setCurrentPage(1);
     return results;
   }, [voteResults, typeFilter, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const getOutcomeVariant = (outcome: ParsedVoteResult["outcome"]) => {
     switch (outcome) {
@@ -221,7 +228,8 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
             {searchQuery ? "No results match your search" : "No governance history found"}
           </p>
         ) : (
-          filtered.map((result, idx) => {
+          <>
+          {paginatedResults.map((result, idx) => {
             const proposalKey = result.trackingCid || `idx-${idx}`;
             const shortId = result.trackingCid?.slice(0, 12);
             const isHighlighted = highlightedProposalId && (
@@ -297,7 +305,34 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
                 </div>
               </Card>
             );
-          })
+          })}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+          </>
         )}
       </div>
     </div>
