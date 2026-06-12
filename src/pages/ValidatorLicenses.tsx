@@ -121,15 +121,15 @@ const ValidatorLicenses = () => {
                     const metadata = license.payload?.metadata || license.metadata;
 
                     return (
-                      <Card key={idx} className="p-4 space-y-3">
+                      <Card key={idx} className="p-4 space-y-3 overflow-hidden">
                         <div className="flex justify-between items-start gap-2">
                           <div className="flex-1 min-w-0 space-y-2">
-                            <div>
+                            <div className="min-w-0">
                               <p className="text-sm font-semibold text-primary">Validator</p>
                               <p className="text-xs font-mono break-all">{validator}</p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                               <div>
                                 <p className="text-xs text-muted-foreground">Sponsor</p>
                                 <p className="font-mono text-xs break-all">{formatParty(sponsor)}</p>
@@ -226,14 +226,14 @@ const ValidatorLicenses = () => {
               ) : (
                 <>
                   {paginateData(filteredFaucets).map((faucet, idx: number) => (
-                    <Card key={idx} className="p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-success" />
-                          <p className="text-sm font-medium">Validator: {formatParty(faucet.validator)}</p>
+                    <Card key={idx} className="p-4 space-y-2 overflow-hidden">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Activity className="h-4 w-4 text-success shrink-0" />
+                          <p className="text-sm font-medium truncate">Validator: {formatParty(faucet.validator)}</p>
                         </div>
-                        <Badge variant="secondary">
-                          {faucet.numRoundsCollected} rounds collected
+                        <Badge variant="secondary" className="shrink-0 w-fit">
+                          {faucet.numRoundsCollected} rounds
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
