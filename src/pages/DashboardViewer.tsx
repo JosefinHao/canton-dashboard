@@ -28,6 +28,7 @@ const loadTiles = (dashboardId: string, rawTiles: RawDashboardTile[]) =>
   );
 
 const DESKTOP_WIDTH = 1400;
+const MOBILE_BREAKPOINT = 1024;
 
 function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const [dashboardLoaded, setDashboardLoaded] = useState(false);
@@ -37,9 +38,10 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   const dashboardRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const needsWidthOverrideRef = useRef(false);
+  const isMobileRef = useRef(window.innerWidth < MOBILE_BREAKPOINT);
 
   useLayoutEffect(() => {
-    if (window.innerWidth < DESKTOP_WIDTH) {
+    if (isMobileRef.current) {
       needsWidthOverrideRef.current = true;
       Object.defineProperty(window, 'innerWidth', {
         get: () => DESKTOP_WIDTH,
@@ -132,12 +134,12 @@ function DashboardWrapper({ tiles }: { tiles: any[] }) {
   }
   
   return (
-    <div className="overflow-x-auto -mx-4 px-4">
+    <div className={isMobileRef.current ? "overflow-x-auto -mx-4 px-4" : ""}>
       <div
         ref={containerRef}
         id="dashboard-mount-point"
         className="dashboard-container"
-        style={{ width: DESKTOP_WIDTH, minWidth: DESKTOP_WIDTH }}
+        style={isMobileRef.current ? { width: DESKTOP_WIDTH, minWidth: DESKTOP_WIDTH } : { width: '100%' }}
       >
         <Dashboard
           ref={(ref) => {
