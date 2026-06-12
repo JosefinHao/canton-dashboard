@@ -275,9 +275,9 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen">
       {/* Header */}
       <header
-        className="sticky top-0 z-[100]"
+        className="sticky top-0 z-[100] isolate"
         style={{
-          background: "rgba(8, 4, 40, 0.45)",
+          background: "rgba(8, 4, 40, 0.92)",
           backdropFilter: "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
         }}
