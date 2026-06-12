@@ -542,6 +542,9 @@ const GovernanceFlow = () => {
   const [stageFilter, setStageFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'lifecycle' | 'all' | 'timeline' | 'learn'>('lifecycle');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [lifecyclePage, setLifecyclePage] = useState(1);
+  const [topicsPage, setTopicsPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
   
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
@@ -1231,7 +1234,12 @@ const GovernanceFlow = () => {
 
   const clearDateFilter = () => { setDateFrom(undefined); setDateTo(undefined); setDatePreset('all'); };
 
-  type TimelineEntry = 
+  useEffect(() => {
+    setLifecyclePage(1);
+    setTopicsPage(1);
+  }, [typeFilter, stageFilter, searchQuery, dateFrom, dateTo]);
+
+  type TimelineEntry =
     | { type: 'topic'; data: Topic; date: Date }
     | { type: 'vote-started'; data: VoteRequest; date: Date; cipRef: string | null }
     | { type: 'vote-ended'; data: VoteRequest; date: Date; cipRef: string | null; status: 'passed' | 'failed' | 'expired' };
@@ -1665,10 +1673,9 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="h-[calc(100vh-280px)] overflow-y-auto overflow-x-auto pr-1">
-                <div className="space-y-3 min-w-0">
+              <div className="space-y-3 min-w-0">
                   {/* Pending CIP Section */}
-                  {tbdItems.length > 0 && (
+                  {lifecyclePage === 1 && tbdItems.length > 0 && (
                     <Card className="border-amber-500/30 bg-amber-500/5">
                       <CardHeader className="pb-3 cursor-pointer" onClick={() => toggleExpand('cip-00xx-section')}>
                         <div className="flex items-center justify-between">
@@ -1693,8 +1700,8 @@ const GovernanceFlow = () => {
                     </Card>
                   )}
 
-                  {/* Grouped Items */}
-                  {groupedRegularItems.map((group) => {
+                  {/* Grouped Items (paginated) */}
+                  {groupedRegularItems.slice((lifecyclePage - 1) * ITEMS_PER_PAGE, lifecyclePage * ITEMS_PER_PAGE).map((group) => {
                     const groupId = `group-${group.primaryId.toLowerCase()}`;
                     const isExpanded = expandedIds.has(groupId);
                     const typeConfig = TYPE_CONFIG[group.type];
@@ -1849,7 +1856,28 @@ const GovernanceFlow = () => {
                       </Card>
                     );
                   })}
-                </div>
+
+                  {/* Pagination */}
+                  {groupedRegularItems.length > ITEMS_PER_PAGE && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Showing {(lifecyclePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(lifecyclePage * ITEMS_PER_PAGE, groupedRegularItems.length)} of {groupedRegularItems.length}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setLifecyclePage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          disabled={lifecyclePage === 1}
+                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                        >Previous</button>
+                        <span className="text-xs text-muted-foreground">{lifecyclePage} / {Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}</span>
+                        <button
+                          onClick={() => { setLifecyclePage((p) => Math.min(Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          disabled={lifecyclePage >= Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}
+                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                        >Next</button>
+                      </div>
+                    </div>
+                  )}
               </div>
             )}
           </TabsContent>
@@ -1976,9 +2004,29 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[calc(100vh-280px)]">
-                <div className="space-y-2 pr-4">{filteredTopics.map(topic => renderTopicCard(topic, true))}</div>
-              </ScrollArea>
+              <div className="space-y-2">
+                {filteredTopics.slice((topicsPage - 1) * ITEMS_PER_PAGE, topicsPage * ITEMS_PER_PAGE).map(topic => renderTopicCard(topic, true))}
+                {filteredTopics.length > ITEMS_PER_PAGE && (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Showing {(topicsPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(topicsPage * ITEMS_PER_PAGE, filteredTopics.length)} of {filteredTopics.length}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setTopicsPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        disabled={topicsPage === 1}
+                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                      >Previous</button>
+                      <span className="text-xs text-muted-foreground">{topicsPage} / {Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}</span>
+                      <button
+                        onClick={() => { setTopicsPage((p) => Math.min(Math.ceil(filteredTopics.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        disabled={topicsPage >= Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}
+                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                      >Next</button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </TabsContent>
           
