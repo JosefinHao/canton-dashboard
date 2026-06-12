@@ -125,32 +125,32 @@ export default function Sequencers() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-3">
+                <div className="grid gap-2">
                   {domain.sequencers.map((seq, j) => (
-                    <div 
-                      key={j} 
-                      className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border/50"
+                    <div
+                      key={j}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg border border-border/50"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 rounded-md bg-primary/10">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="p-1.5 rounded-md bg-primary/10 shrink-0">
                           <Server className="h-4 w-4 text-primary" />
                         </div>
-                        <div>
-                          <p className="font-semibold">{seq.svName}</p>
-                          <Badge variant="secondary" className="text-xs mt-1">
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold truncate">{seq.svName}</p>
+                          <Badge variant="secondary" className="text-xs mt-0.5">
                             Migration {seq.migrationId}
                           </Badge>
                         </div>
                       </div>
-                      <a 
-                        href={seq.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center gap-2 text-primary hover:underline font-mono text-sm"
+                      <a
+                        href={seq.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-primary hover:underline font-mono text-xs sm:text-sm shrink-0"
                       >
                         <span className="hidden md:inline truncate max-w-xs">{seq.url}</span>
                         <span className="md:hidden">View URL</span>
-                        <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                        <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
                       </a>
                     </div>
                   ))}
