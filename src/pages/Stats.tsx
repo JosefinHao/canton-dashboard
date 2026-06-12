@@ -393,15 +393,15 @@ const Stats = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2">Validator Statistics</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1">Validator Statistics</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Track validator growth and onboarding trends
             </p>
           </div>
-          <Button onClick={exportToCSV} disabled={validatorsLoading} variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
+          <Button onClick={exportToCSV} disabled={validatorsLoading} variant="outline" size="sm" className="gap-1.5 text-xs sm:text-sm">
+            <Download className="h-3.5 w-3.5" />
             Export CSV
           </Button>
         </div>
@@ -529,7 +529,7 @@ const Stats = () => {
         {/* Detailed Lists */}
         <Card className="glass-card">
           <div className="p-6">
-            <h3 className="text-xl font-bold mb-6">Recently Joined Validators</h3>
+            <h3 className="text-base sm:text-xl font-bold mb-4">Recently Joined Validators</h3>
             {validatorsLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -539,12 +539,12 @@ const Stats = () => {
             ) : (
               <Tabs defaultValue="day" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
-                  <TabsTrigger value="day">Day</TabsTrigger>
-                  <TabsTrigger value="week">Week</TabsTrigger>
-                  <TabsTrigger value="month">Month</TabsTrigger>
-                  <TabsTrigger value="6months">6 Months</TabsTrigger>
-                  <TabsTrigger value="year">Year</TabsTrigger>
-                  <TabsTrigger value="all">All Time</TabsTrigger>
+                  <TabsTrigger value="day" className="text-xs sm:text-sm">Day</TabsTrigger>
+                  <TabsTrigger value="week" className="text-xs sm:text-sm">Week</TabsTrigger>
+                  <TabsTrigger value="month" className="text-xs sm:text-sm">Month</TabsTrigger>
+                  <TabsTrigger value="6months" className="text-xs sm:text-sm">6 Mo</TabsTrigger>
+                  <TabsTrigger value="year" className="text-xs sm:text-sm">Year</TabsTrigger>
+                  <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
                 </TabsList>
                 <TabsContent value="day" className="mt-6">
                   <ValidatorList validators={newValidators} title="Validators with < 1 day of activity" />

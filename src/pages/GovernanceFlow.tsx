@@ -1532,7 +1532,7 @@ const GovernanceFlow = () => {
             </div>
             <div className="flex flex-wrap gap-1">
               {['all', 'cip', 'featured-app', 'validator', 'protocol-upgrade', 'outcome', 'other'].map(type => (
-                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-7 text-xs px-2">
+                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-6 text-[10px] sm:text-xs px-1.5 sm:px-2">
                   {type === 'all' ? 'All' : TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.label || type}
                 </Button>
               ))}
@@ -1665,8 +1665,8 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[calc(100vh-280px)] pr-4">
-                <div className="space-y-3">
+              <div className="h-[calc(100vh-280px)] overflow-y-auto overflow-x-auto pr-1">
+                <div className="space-y-3 min-w-0">
                   {/* Pending CIP Section */}
                   {tbdItems.length > 0 && (
                     <Card className="border-amber-500/30 bg-amber-500/5">
@@ -1850,7 +1850,7 @@ const GovernanceFlow = () => {
                     );
                   })}
                 </div>
-              </ScrollArea>
+              </div>
             )}
           </TabsContent>
 
