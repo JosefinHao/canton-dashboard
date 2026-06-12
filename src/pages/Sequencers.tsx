@@ -112,7 +112,7 @@ export default function Sequencers() {
         {/* Sequencers by Domain */}
         <div className="space-y-4">
           {dsoSequencers.domainSequencers.map((domain, i) => (
-            <Card key={i}>
+            <Card key={i} className="overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="h-5 w-5" />
@@ -124,20 +124,20 @@ export default function Sequencers() {
                   </Badge>
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-3 sm:px-6">
                 <div className="grid gap-2">
                   {domain.sequencers.map((seq, j) => (
                     <div
                       key={j}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg border border-border/50"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg border border-border/50 overflow-hidden"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
                         <div className="p-1.5 rounded-md bg-primary/10 shrink-0">
-                          <Server className="h-4 w-4 text-primary" />
+                          <Server className="h-3.5 w-3.5 text-primary" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold truncate">{seq.svName}</p>
-                          <Badge variant="secondary" className="text-xs mt-0.5">
+                          <p className="text-xs sm:text-sm font-semibold truncate">{seq.svName}</p>
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs mt-0.5">
                             Migration {seq.migrationId}
                           </Badge>
                         </div>
@@ -146,11 +146,11 @@ export default function Sequencers() {
                         href={seq.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 text-primary hover:underline font-mono text-xs sm:text-sm shrink-0"
+                        className="flex items-center gap-1.5 text-primary hover:underline font-mono text-xs min-w-0"
                       >
-                        <span className="hidden md:inline truncate max-w-xs">{seq.url}</span>
+                        <span className="hidden md:inline truncate">{seq.url}</span>
                         <span className="md:hidden">View URL</span>
-                        <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                       </a>
                     </div>
                   ))}
