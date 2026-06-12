@@ -23,12 +23,17 @@ describe('PaginationControls', () => {
 
   it('displays correct page count', () => {
     const { container } = render(<PaginationControls {...defaultProps} />);
-    expect(container.textContent).toContain('Page 1 of 10');
+    expect(container.textContent).toContain('1 / 10');
   });
 
-  it('shows at least 1 page even with 0 items', () => {
-    const { container } = render(<PaginationControls {...defaultProps} totalItems={0} />);
-    expect(container.textContent).toContain('Page 1 of 1');
+  it('displays showing range', () => {
+    const { container } = render(<PaginationControls {...defaultProps} />);
+    expect(container.textContent).toContain('Showing 1–10 of 100');
+  });
+
+  it('returns null when only 1 page', () => {
+    const { container } = render(<PaginationControls {...defaultProps} totalItems={5} />);
+    expect(container.innerHTML).toBe('');
   });
 
   it('disables Previous button on first page', () => {
