@@ -118,9 +118,9 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="whitespace-nowrap">Name</TableHead>
+              <TableHead className="whitespace-nowrap w-auto">Name</TableHead>
               {services.map((svc) => (
-                <TableHead key={svc} className="whitespace-nowrap">
+                <TableHead key={svc} className="whitespace-nowrap text-center" style={{ width: `${80 / Math.max(services.length, 1)}%` }}>
                   <ServiceHeader name={svc} description={descriptions[svc]} />
                 </TableHead>
               ))}
@@ -133,7 +133,7 @@ function EnvSection({ env, services, descriptions }: { env: SvEnvStatus; service
                 {services.map((svc) => {
                   const nodes = env.status![svc]?.nodes;
                   return (
-                    <TableCell key={svc}>
+                    <TableCell key={svc} className="text-center">
                       {nodes && name in nodes ? (
                         <StatusCell value={nodes[name]} />
                       ) : (
@@ -246,7 +246,7 @@ export default function SvStatus() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">Env</TableHead>
+                  <TableHead className="whitespace-nowrap w-auto">Env</TableHead>
                   {isLoading ? (
                     <>
                       <TableHead><Skeleton className="h-4 w-16" /></TableHead>
@@ -255,7 +255,7 @@ export default function SvStatus() {
                     </>
                   ) : (
                     allServices.map((svc) => (
-                      <TableHead key={svc} className="whitespace-nowrap">
+                      <TableHead key={svc} className="whitespace-nowrap text-center" style={{ width: `${80 / Math.max(allServices.length, 1)}%` }}>
                         <ServiceHeader name={svc} description={serviceDescriptions[svc]} />
                       </TableHead>
                     ))
@@ -285,7 +285,7 @@ export default function SvStatus() {
                       {allServices.map((svc) => {
                         const counts = getServiceCounts(environments, env, svc);
                         return (
-                          <TableCell key={svc}>
+                          <TableCell key={svc} className="text-center">
                             {counts ? (
                               <SummaryBadge ok={counts.ok} total={counts.total} />
                             ) : (
