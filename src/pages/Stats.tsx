@@ -352,8 +352,8 @@ const Stats = () => {
               })}
             </div>
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                   {Math.min(currentPage * itemsPerPage, validators.length)} of {validators.length} validators
                 </p>
@@ -363,20 +363,22 @@ const Stats = () => {
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
+                    className="text-xs sm:text-sm"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Previous
+                    <span className="hidden sm:inline">Previous</span>
                   </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
+                  <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {currentPage} / {totalPages}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
+                    className="text-xs sm:text-sm"
                   >
-                    Next
+                    <span className="hidden sm:inline">Next</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -391,15 +393,15 @@ const Stats = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2">Validator Statistics</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1">Validator Statistics</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Track validator growth and onboarding trends
             </p>
           </div>
-          <Button onClick={exportToCSV} disabled={validatorsLoading} variant="outline" className="gap-2">
-            <Download className="h-4 w-4" />
+          <Button onClick={exportToCSV} disabled={validatorsLoading} variant="outline" size="sm" className="gap-1.5 text-xs sm:text-sm">
+            <Download className="h-3.5 w-3.5" />
             Export CSV
           </Button>
         </div>
@@ -525,9 +527,9 @@ const Stats = () => {
         </div>
 
         {/* Detailed Lists */}
-        <Card className="glass-card">
-          <div className="p-6">
-            <h3 className="text-xl font-bold mb-6">Recently Joined Validators</h3>
+        <Card className="glass-card overflow-hidden">
+          <div className="p-3 sm:p-6">
+            <h3 className="text-base sm:text-xl font-bold mb-4">Recently Joined Validators</h3>
             {validatorsLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -536,13 +538,13 @@ const Stats = () => {
               </div>
             ) : (
               <Tabs defaultValue="day" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
-                  <TabsTrigger value="day">Day</TabsTrigger>
-                  <TabsTrigger value="week">Week</TabsTrigger>
-                  <TabsTrigger value="month">Month</TabsTrigger>
-                  <TabsTrigger value="6months">6 Months</TabsTrigger>
-                  <TabsTrigger value="year">Year</TabsTrigger>
-                  <TabsTrigger value="all">All Time</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto gap-0.5 p-0.5 sm:p-1">
+                  <TabsTrigger value="day" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Day</TabsTrigger>
+                  <TabsTrigger value="week" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Week</TabsTrigger>
+                  <TabsTrigger value="month" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Month</TabsTrigger>
+                  <TabsTrigger value="6months" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">6 Mo</TabsTrigger>
+                  <TabsTrigger value="year" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Year</TabsTrigger>
+                  <TabsTrigger value="all" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">All</TabsTrigger>
                 </TabsList>
                 <TabsContent value="day" className="mt-6">
                   <ValidatorList validators={newValidators} title="Validators with < 1 day of activity" />

@@ -542,6 +542,9 @@ const GovernanceFlow = () => {
   const [stageFilter, setStageFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'lifecycle' | 'all' | 'timeline' | 'learn'>('lifecycle');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [lifecyclePage, setLifecyclePage] = useState(1);
+  const [topicsPage, setTopicsPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
   
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
@@ -1231,7 +1234,12 @@ const GovernanceFlow = () => {
 
   const clearDateFilter = () => { setDateFrom(undefined); setDateTo(undefined); setDatePreset('all'); };
 
-  type TimelineEntry = 
+  useEffect(() => {
+    setLifecyclePage(1);
+    setTopicsPage(1);
+  }, [typeFilter, stageFilter, searchQuery, dateFrom, dateTo]);
+
+  type TimelineEntry =
     | { type: 'topic'; data: Topic; date: Date }
     | { type: 'vote-started'; data: VoteRequest; date: Date; cipRef: string | null }
     | { type: 'vote-ended'; data: VoteRequest; date: Date; cipRef: string | null; status: 'passed' | 'failed' | 'expired' };
@@ -1435,12 +1443,12 @@ const GovernanceFlow = () => {
             <p className="text-muted-foreground mt-1">Track CIPs, Featured Apps, and Validators through the governance process</p>
             {cachedAt && <p className="text-xs text-muted-foreground mt-1">Last updated: {new Date(cachedAt).toLocaleString()}</p>}
           </div>
-          <div className="flex gap-2 shrink-0">
-            <Button onClick={() => fetchData(false)} disabled={isLoading || isRefreshing} variant="outline" className="gap-2">
-              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />Load Cached
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={() => fetchData(false)} disabled={isLoading || isRefreshing} variant="outline" size="sm" className="gap-1.5 text-xs sm:text-sm">
+              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />Cached
             </Button>
-            <Button onClick={() => fetchData(true)} disabled={isLoading || isRefreshing} className="gap-2">
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />Refresh from Groups.io
+            <Button onClick={() => fetchData(true)} disabled={isLoading || isRefreshing} size="sm" className="gap-1.5 text-xs sm:text-sm">
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />Refresh
             </Button>
           </div>
         </div>
@@ -1525,24 +1533,26 @@ const GovernanceFlow = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Type:</span>
-            <div className="flex gap-1">
+          <div className="flex items-start gap-2">
+            <div className="flex items-center gap-1 shrink-0 pt-0.5">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs sm:text-sm text-muted-foreground">Type:</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
               {['all', 'cip', 'featured-app', 'validator', 'protocol-upgrade', 'outcome', 'other'].map(type => (
-                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-7 text-xs">
+                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-6 text-[10px] sm:text-xs px-1.5 sm:px-2">
                   {type === 'all' ? 'All' : TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.label || type}
                 </Button>
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Stage:</span>
-            <div className="flex gap-1">
+          <div className="flex items-start gap-2">
+            <span className="text-xs sm:text-sm text-muted-foreground shrink-0 pt-1">Stage:</span>
+            <div className="flex flex-wrap gap-1">
               {(() => {
                 const stagesToShow = typeFilter === 'all' ? [] : WORKFLOW_STAGES[typeFilter as keyof typeof WORKFLOW_STAGES] || [];
                 return ['all', ...stagesToShow].map(stage => (
-                  <Button key={stage} variant={stageFilter === stage ? 'default' : 'outline'} size="sm" onClick={() => setStageFilter(stage)} className="h-7 text-xs">
+                  <Button key={stage} variant={stageFilter === stage ? 'default' : 'outline'} size="sm" onClick={() => setStageFilter(stage)} className="h-7 text-xs px-2">
                     {stage === 'all' ? 'All' : STAGE_CONFIG[stage]?.label || stage}
                   </Button>
                 ));
@@ -1641,11 +1651,11 @@ const GovernanceFlow = () => {
 
         {/* View Toggle */}
         <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'lifecycle' | 'all' | 'timeline' | 'learn')}>
-          <TabsList>
-            <TabsTrigger value="lifecycle">Lifecycle ({groupedRegularItems.length + tbdItems.length})</TabsTrigger>
-            <TabsTrigger value="timeline">Timeline ({timelineData.length} months)</TabsTrigger>
-            <TabsTrigger value="all">All Topics ({filteredTopics.length})</TabsTrigger>
-            <TabsTrigger value="learn" className="gap-1"><Lightbulb className="h-3 w-3" />Learn</TabsTrigger>
+          <TabsList className="w-full sm:w-auto flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="lifecycle" className="text-xs sm:text-sm">Lifecycle ({groupedRegularItems.length + tbdItems.length})</TabsTrigger>
+            <TabsTrigger value="timeline" className="text-xs sm:text-sm">Timeline ({timelineData.length} mo)</TabsTrigger>
+            <TabsTrigger value="all" className="text-xs sm:text-sm">Topics ({filteredTopics.length})</TabsTrigger>
+            <TabsTrigger value="learn" className="text-xs sm:text-sm gap-1"><Lightbulb className="h-3 w-3" />Learn</TabsTrigger>
           </TabsList>
 
           {/* Lifecycle View */}
@@ -1663,10 +1673,9 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[calc(100vh-500px)] pr-4">
-                <div className="space-y-3">
+              <div className="space-y-3 min-w-0">
                   {/* Pending CIP Section */}
-                  {tbdItems.length > 0 && (
+                  {lifecyclePage === 1 && tbdItems.length > 0 && (
                     <Card className="border-amber-500/30 bg-amber-500/5">
                       <CardHeader className="pb-3 cursor-pointer" onClick={() => toggleExpand('cip-00xx-section')}>
                         <div className="flex items-center justify-between">
@@ -1691,8 +1700,8 @@ const GovernanceFlow = () => {
                     </Card>
                   )}
 
-                  {/* Grouped Items */}
-                  {groupedRegularItems.map((group) => {
+                  {/* Grouped Items (paginated) */}
+                  {groupedRegularItems.slice((lifecyclePage - 1) * ITEMS_PER_PAGE, lifecyclePage * ITEMS_PER_PAGE).map((group) => {
                     const groupId = `group-${group.primaryId.toLowerCase()}`;
                     const isExpanded = expandedIds.has(groupId);
                     const typeConfig = TYPE_CONFIG[group.type];
@@ -1847,8 +1856,29 @@ const GovernanceFlow = () => {
                       </Card>
                     );
                   })}
-                </div>
-              </ScrollArea>
+
+                  {/* Pagination */}
+                  {groupedRegularItems.length > ITEMS_PER_PAGE && (
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Showing {(lifecyclePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(lifecyclePage * ITEMS_PER_PAGE, groupedRegularItems.length)} of {groupedRegularItems.length}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setLifecyclePage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          disabled={lifecyclePage === 1}
+                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                        >Previous</button>
+                        <span className="text-xs text-muted-foreground">{lifecyclePage} / {Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}</span>
+                        <button
+                          onClick={() => { setLifecyclePage((p) => Math.min(Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          disabled={lifecyclePage >= Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}
+                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                        >Next</button>
+                      </div>
+                    </div>
+                  )}
+              </div>
             )}
           </TabsContent>
 
@@ -1974,9 +2004,29 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[600px]">
-                <div className="space-y-2 pr-4">{filteredTopics.map(topic => renderTopicCard(topic, true))}</div>
-              </ScrollArea>
+              <div className="space-y-2">
+                {filteredTopics.slice((topicsPage - 1) * ITEMS_PER_PAGE, topicsPage * ITEMS_PER_PAGE).map(topic => renderTopicCard(topic, true))}
+                {filteredTopics.length > ITEMS_PER_PAGE && (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Showing {(topicsPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(topicsPage * ITEMS_PER_PAGE, filteredTopics.length)} of {filteredTopics.length}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setTopicsPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        disabled={topicsPage === 1}
+                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                      >Previous</button>
+                      <span className="text-xs text-muted-foreground">{topicsPage} / {Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}</span>
+                      <button
+                        onClick={() => { setTopicsPage((p) => Math.min(Math.ceil(filteredTopics.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                        disabled={topicsPage >= Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}
+                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                      >Next</button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </TabsContent>
           

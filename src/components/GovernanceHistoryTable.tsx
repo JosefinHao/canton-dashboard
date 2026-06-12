@@ -50,12 +50,15 @@ const safeFormatDate = (dateStr: string | null | undefined, formatStr: string = 
   }
 };
 
+const PAGE_SIZE = 20;
+
 export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: GovernanceHistoryTableProps) {
   const [searchParams] = useSearchParams();
   const highlightedProposalId = searchParams.get("proposal");
   const proposalRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const { data: voteResults, isLoading, error } = useGovernanceVoteHistory(limit);
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (highlightedProposalId && !isLoading && voteResults) {
@@ -106,6 +109,13 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
     }
     return results;
   }, [voteResults, typeFilter, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [typeFilter, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const getOutcomeVariant = (outcome: ParsedVoteResult["outcome"]) => {
     switch (outcome) {
@@ -221,7 +231,8 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
             {searchQuery ? "No results match your search" : "No governance history found"}
           </p>
         ) : (
-          filtered.map((result, idx) => {
+          <>
+          {paginatedResults.map((result, idx) => {
             const proposalKey = result.trackingCid || `idx-${idx}`;
             const shortId = result.trackingCid?.slice(0, 12);
             const isHighlighted = highlightedProposalId && (
@@ -244,60 +255,84 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
                   isHighlighted && "ring-2 ring-pink-500 ring-offset-2 ring-offset-background"
                 )}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      {getOutcomeIcon(result.outcome)}
-                      <p className="text-sm font-semibold">{highlightMatch(result.actionTitle || "Unknown Action", searchQuery)}</p>
-                    </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getOutcomeIcon(result.outcome)}
+                    <p className="text-sm font-semibold flex-1 min-w-0">{highlightMatch(result.actionTitle || "Unknown Action", searchQuery)}</p>
+                    <Badge variant={getOutcomeVariant(result.outcome)} className="capitalize shrink-0">
+                      {result.outcome}
+                    </Badge>
+                  </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Completed At</p>
-                        <p className="text-sm">{safeFormatDate(result.completedAt)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Vote Before</p>
-                        <p className="text-sm">{safeFormatDate(result.voteBefore)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Votes</p>
-                        <p className="text-sm">
-                          <span className="text-green-500">{result.votesFor} for</span>
-                          {" / "}
-                          <span className="text-red-500">{result.votesAgainst} against</span>
-                        </p>
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Completed At</p>
+                      <p>{safeFormatDate(result.completedAt)}</p>
                     </div>
-
-                    <div className="p-3 rounded-lg bg-background/30 border border-border/30">
-                      <p className="text-xs text-muted-foreground mb-1 font-semibold">Reason</p>
-                      {result.reasonBody && (
-                        <p className="text-sm mb-1">{highlightMatch(result.reasonBody, searchQuery)}</p>
-                      )}
-                      {result.reasonUrl && (
-                        <a
-                          href={result.reasonUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline break-all"
-                        >
-                          {highlightMatch(result.reasonUrl, searchQuery)}
-                        </a>
-                      )}
-                      {!result.reasonBody && !result.reasonUrl && (
-                        <p className="text-sm text-muted-foreground italic">No reason provided</p>
-                      )}
+                    <div>
+                      <p className="text-xs text-muted-foreground">Vote Before</p>
+                      <p>{safeFormatDate(result.voteBefore)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Votes</p>
+                      <p>
+                        <span className="text-green-500">{result.votesFor} for</span>
+                        {" / "}
+                        <span className="text-red-500">{result.votesAgainst} against</span>
+                      </p>
                     </div>
                   </div>
 
-                  <Badge variant={getOutcomeVariant(result.outcome)} className="capitalize ml-4 shrink-0">
-                    {result.outcome}
-                  </Badge>
+                  <div className="p-2 sm:p-3 rounded-lg bg-background/30 border border-border/30">
+                    <p className="text-xs text-muted-foreground mb-1 font-semibold">Reason</p>
+                    {result.reasonBody && (
+                      <p className="text-xs sm:text-sm mb-1 break-words">{highlightMatch(result.reasonBody, searchQuery)}</p>
+                    )}
+                    {result.reasonUrl && (
+                      <a
+                        href={result.reasonUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs sm:text-sm text-primary hover:underline break-all"
+                      >
+                        {highlightMatch(result.reasonUrl, searchQuery)}
+                      </a>
+                    )}
+                    {!result.reasonBody && !result.reasonUrl && (
+                      <p className="text-xs sm:text-sm text-muted-foreground italic">No reason provided</p>
+                    )}
+                  </div>
                 </div>
               </Card>
             );
-          })
+          })}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+          </>
         )}
       </div>
     </div>

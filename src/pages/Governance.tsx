@@ -312,11 +312,11 @@ const Governance = () => {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <TabsList>
-              <TabsTrigger value="scanapi" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">
+            <TabsList className="w-full sm:w-auto">
+              <TabsTrigger value="scanapi" className="flex-1 sm:flex-initial text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">
                 Historical Governance
               </TabsTrigger>
-              <TabsTrigger value="active" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">
+              <TabsTrigger value="active" className="flex-1 sm:flex-initial text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">
                 Active Governance
               </TabsTrigger>
             </TabsList>

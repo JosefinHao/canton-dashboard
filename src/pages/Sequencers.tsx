@@ -112,45 +112,45 @@ export default function Sequencers() {
         {/* Sequencers by Domain */}
         <div className="space-y-4">
           {dsoSequencers.domainSequencers.map((domain, i) => (
-            <Card key={i}>
+            <Card key={i} className="overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="h-5 w-5" />
                   Domain
                 </CardTitle>
-                <CardDescription>
-                  <Badge variant="outline" className="font-mono text-xs">
+                <CardDescription className="min-w-0">
+                  <Badge variant="outline" className="font-mono text-xs max-w-full truncate inline-block">
                     {domain.domainId}
                   </Badge>
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid gap-3">
+              <CardContent className="px-3 sm:px-6">
+                <div className="grid gap-2">
                   {domain.sequencers.map((seq, j) => (
-                    <div 
-                      key={j} 
-                      className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border/50"
+                    <div
+                      key={j}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg border border-border/50 overflow-hidden"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 rounded-md bg-primary/10">
-                          <Server className="h-4 w-4 text-primary" />
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="p-1.5 rounded-md bg-primary/10 shrink-0">
+                          <Server className="h-3.5 w-3.5 text-primary" />
                         </div>
-                        <div>
-                          <p className="font-semibold">{seq.svName}</p>
-                          <Badge variant="secondary" className="text-xs mt-1">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-semibold truncate">{seq.svName}</p>
+                          <Badge variant="secondary" className="text-[10px] sm:text-xs mt-0.5">
                             Migration {seq.migrationId}
                           </Badge>
                         </div>
                       </div>
-                      <a 
-                        href={seq.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center gap-2 text-primary hover:underline font-mono text-sm"
+                      <a
+                        href={seq.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-primary hover:underline font-mono text-xs min-w-0"
                       >
-                        <span className="hidden md:inline truncate max-w-xs">{seq.url}</span>
+                        <span className="hidden md:inline truncate">{seq.url}</span>
                         <span className="md:hidden">View URL</span>
-                        <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                       </a>
                     </div>
                   ))}

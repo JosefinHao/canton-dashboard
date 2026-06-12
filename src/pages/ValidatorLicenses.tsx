@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Search, Award, Ticket, Code, Clock, Activity } from "lucide-react";
 import { PaginationControls } from "@/components/PaginationControls";
-import { DataSourcesFooter } from "@/components/DataSourcesFooter";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { useValidatorLicenses, useTopValidatorsByFaucets } from "@/hooks/use-canton-scan-api";
@@ -15,7 +15,7 @@ import { useValidatorLicenses, useTopValidatorsByFaucets } from "@/hooks/use-can
 const ValidatorLicenses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 100;
+  const pageSize = 20;
 
   const { data: licensesData, isLoading: licensesLoading } = useValidatorLicenses();
   const { data: faucetData, isLoading: faucetsLoading } = useTopValidatorsByFaucets(1000);
@@ -79,7 +79,7 @@ const ValidatorLicenses = () => {
           </Card>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-3 sm:p-6 overflow-hidden">
           <div className="mb-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -98,8 +98,8 @@ const ValidatorLicenses = () => {
 
           <Tabs defaultValue="licenses" className="w-full" onValueChange={() => setCurrentPage(1)}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="licenses" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Licenses ({filteredLicenses.length})</TabsTrigger>
-              <TabsTrigger value="faucets" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Faucet Activity ({filteredFaucets.length})</TabsTrigger>
+              <TabsTrigger value="licenses" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Licenses ({filteredLicenses.length})</TabsTrigger>
+              <TabsTrigger value="faucets" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Faucets ({filteredFaucets.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="licenses" className="space-y-3 mt-4">
@@ -121,15 +121,15 @@ const ValidatorLicenses = () => {
                     const metadata = license.payload?.metadata || license.metadata;
 
                     return (
-                      <Card key={idx} className="p-4 space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1 space-y-2">
-                            <div>
-                              <p className="text-sm font-semibold text-primary">Validator</p>
-                              <p className="text-xs font-mono break-all">{validator}</p>
-                            </div>
+                      <Card key={idx} className="p-3 sm:p-4 space-y-2 overflow-hidden">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold text-primary flex-1">Validator</p>
+                            <Badge variant="default" className="shrink-0">Active</Badge>
+                          </div>
+                          <p className="text-xs font-mono break-all">{validator}</p>
 
-                            <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                               <div>
                                 <p className="text-xs text-muted-foreground">Sponsor</p>
                                 <p className="font-mono text-xs break-all">{formatParty(sponsor)}</p>
@@ -163,7 +163,7 @@ const ValidatorLicenses = () => {
                             {metadata && (
                               <div className="pt-2 border-t">
                                 <p className="text-xs font-semibold mb-2">Metadata</p>
-                                <div className="grid grid-cols-2 gap-3 text-xs">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                   <div>
                                     <p className="text-muted-foreground">Version</p>
                                     <p className="font-medium">{metadata.version || "N/A"}</p>
@@ -198,8 +198,6 @@ const ValidatorLicenses = () => {
                                 </pre>
                               </CollapsibleContent>
                             </Collapsible>
-                          </div>
-                          <Badge variant="default">Active</Badge>
                         </div>
                       </Card>
                     );
@@ -226,17 +224,17 @@ const ValidatorLicenses = () => {
               ) : (
                 <>
                   {paginateData(filteredFaucets).map((faucet, idx: number) => (
-                    <Card key={idx} className="p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-success" />
-                          <p className="text-sm font-medium">Validator: {formatParty(faucet.validator)}</p>
-                        </div>
-                        <Badge variant="secondary">
-                          {faucet.numRoundsCollected} rounds collected
+                    <Card key={idx} className="p-3 sm:p-4 space-y-2 overflow-hidden">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Activity className="h-4 w-4 text-success shrink-0" />
+                        <p className="text-xs sm:text-sm font-medium truncate flex-1 min-w-0">
+                          {formatParty(faucet.validator)}
+                        </p>
+                        <Badge variant="secondary" className="shrink-0 text-xs">
+                          {faucet.numRoundsCollected} rounds
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <p className="text-muted-foreground">First Round</p>
                           <p className="font-medium">{faucet.firstCollectedInRound}</p>
@@ -267,12 +265,6 @@ const ValidatorLicenses = () => {
             </TabsContent>
           </Tabs>
         </Card>
-
-        <DataSourcesFooter
-          snapshotId={undefined}
-          templateSuffixes={[]}
-          isProcessing={false}
-        />
       </div>
     </DashboardLayout>
   );
