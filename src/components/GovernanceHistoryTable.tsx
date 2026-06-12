@@ -107,9 +107,12 @@ export function GovernanceHistoryTable({ limit = 500, searchQuery = "" }: Govern
         return terms.every((t) => blob.includes(t));
       });
     }
-    setCurrentPage(1);
     return results;
   }, [voteResults, typeFilter, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [typeFilter, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginatedResults = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
