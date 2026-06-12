@@ -98,8 +98,8 @@ const ValidatorLicenses = () => {
 
           <Tabs defaultValue="licenses" className="w-full" onValueChange={() => setCurrentPage(1)}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="licenses" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Licenses ({filteredLicenses.length})</TabsTrigger>
-              <TabsTrigger value="faucets" className="data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Faucet Activity ({filteredFaucets.length})</TabsTrigger>
+              <TabsTrigger value="licenses" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Licenses ({filteredLicenses.length})</TabsTrigger>
+              <TabsTrigger value="faucets" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Faucets ({filteredFaucets.length})</TabsTrigger>
             </TabsList>
 
             <TabsContent value="licenses" className="space-y-3 mt-4">
@@ -122,8 +122,8 @@ const ValidatorLicenses = () => {
 
                     return (
                       <Card key={idx} className="p-4 space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1 space-y-2">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="flex-1 min-w-0 space-y-2">
                             <div>
                               <p className="text-sm font-semibold text-primary">Validator</p>
                               <p className="text-xs font-mono break-all">{validator}</p>
@@ -199,7 +199,7 @@ const ValidatorLicenses = () => {
                               </CollapsibleContent>
                             </Collapsible>
                           </div>
-                          <Badge variant="default">Active</Badge>
+                          <Badge variant="default" className="shrink-0">Active</Badge>
                         </div>
                       </Card>
                     );
