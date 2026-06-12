@@ -196,9 +196,9 @@ const RewardDistributionChart = ({
           <Pie
             data={data}
             cx="50%"
-            cy={isSmall ? "40%" : "50%"}
-            innerRadius={isSmall ? 50 : 70}
-            outerRadius={isSmall ? 80 : 110}
+            cy={isSmall ? "45%" : "50%"}
+            innerRadius={isSmall ? 35 : 70}
+            outerRadius={isSmall ? 60 : 110}
             paddingAngle={3}
             dataKey="value"
           >
