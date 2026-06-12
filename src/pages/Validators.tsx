@@ -367,7 +367,7 @@ const Validators = () => {
               </div>
             </div>
 
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap self-end">
               <Button variant="outline" size="sm" onClick={() => refetch()} className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4" />
                 Refresh
