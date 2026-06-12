@@ -50,6 +50,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
+import { PaginationControls } from "@/components/PaginationControls";
 import { useToast } from "@/hooks/use-toast";
 import { getDuckDBApiUrl } from "@/lib/backend-config";
 import { cn } from "@/lib/utils";
@@ -1858,26 +1859,12 @@ const GovernanceFlow = () => {
                   })}
 
                   {/* Pagination */}
-                  {groupedRegularItems.length > ITEMS_PER_PAGE && (
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        Showing {(lifecyclePage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(lifecyclePage * ITEMS_PER_PAGE, groupedRegularItems.length)} of {groupedRegularItems.length}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => { setLifecyclePage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                          disabled={lifecyclePage === 1}
-                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                        >Previous</button>
-                        <span className="text-xs text-muted-foreground">{lifecyclePage} / {Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}</span>
-                        <button
-                          onClick={() => { setLifecyclePage((p) => Math.min(Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                          disabled={lifecyclePage >= Math.ceil(groupedRegularItems.length / ITEMS_PER_PAGE)}
-                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                        >Next</button>
-                      </div>
-                    </div>
-                  )}
+                  <PaginationControls
+                    currentPage={lifecyclePage}
+                    totalItems={groupedRegularItems.length}
+                    pageSize={ITEMS_PER_PAGE}
+                    onPageChange={setLifecyclePage}
+                  />
               </div>
             )}
           </TabsContent>
@@ -2006,26 +1993,12 @@ const GovernanceFlow = () => {
             ) : (
               <div className="space-y-2">
                 {filteredTopics.slice((topicsPage - 1) * ITEMS_PER_PAGE, topicsPage * ITEMS_PER_PAGE).map(topic => renderTopicCard(topic, true))}
-                {filteredTopics.length > ITEMS_PER_PAGE && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Showing {(topicsPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(topicsPage * ITEMS_PER_PAGE, filteredTopics.length)} of {filteredTopics.length}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => { setTopicsPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                        disabled={topicsPage === 1}
-                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                      >Previous</button>
-                      <span className="text-xs text-muted-foreground">{topicsPage} / {Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}</span>
-                      <button
-                        onClick={() => { setTopicsPage((p) => Math.min(Math.ceil(filteredTopics.length / ITEMS_PER_PAGE), p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                        disabled={topicsPage >= Math.ceil(filteredTopics.length / ITEMS_PER_PAGE)}
-                        className="px-3 py-1.5 rounded-md text-xs font-medium border border-border bg-card hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
-                      >Next</button>
-                    </div>
-                  </div>
-                )}
+                <PaginationControls
+                  currentPage={topicsPage}
+                  totalItems={filteredTopics.length}
+                  pageSize={ITEMS_PER_PAGE}
+                  onPageChange={setTopicsPage}
+                />
               </div>
             )}
           </TabsContent>
