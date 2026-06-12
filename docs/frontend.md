@@ -27,6 +27,8 @@ src/
 ├── index.css                # Canton design system (CSS variables, utility classes)
 ├── components/
 │   ├── DashboardLayout.tsx  # Shared page layout (header, nav, mobile drawer)
+│   ├── PaginationControls.tsx # Shared pagination component (used by all paginated pages)
+│   ├── GovernanceHistoryTable.tsx # Governance vote history table with search/filter
 │   ├── StatCard.tsx         # Reusable metric card
 │   ├── ErrorBoundary.tsx    # React error boundary with reload button
 │   ├── ConnectionStatusIndicator.tsx  # Backend health indicator (bottom-right)
@@ -154,13 +156,17 @@ The `DashboardViewer` page renders third-party charts from Sync Insights. Key im
 
 react-autoql is loaded dynamically (`import("react-autoql")`) to avoid bundling issues. The module-level `isAutoQLLoaded` flag prevents re-importing on subsequent navigations.
 
-### Desktop-Width Rendering on Mobile
+### Responsive Desktop / Mobile Rendering
 
-react-autoql charts must render at desktop proportions on mobile (with horizontal scroll). Two mechanisms enforce this:
+On desktop (viewport >= 1024px), charts render responsively at full container width with no horizontal scrolling. On mobile (< 1024px), charts render at fixed 1400px desktop proportions with horizontal scroll.
 
-1. **CSS override**: `react-autoql-overrides.css` overrides the library's `width: 100vw` on chart containers to `width: 100%`, so charts fill their grid tile (1400px) instead of the viewport.
+Two mechanisms enforce mobile rendering:
 
-2. **window.innerWidth override**: A `useLayoutEffect` patches `window.innerWidth` to return 1400 on mobile, so react-autoql's breakpoint system (`isMobile = window.innerWidth <= 992`) uses desktop thresholds. The override is cleaned up on unmount via `delete window.innerWidth`.
+1. **CSS override**: `react-autoql-overrides.css` overrides the library's `width: 100vw` on chart containers to `width: 100%`, so charts fill their grid tile instead of the viewport.
+
+2. **window.innerWidth override**: A `useLayoutEffect` patches `window.innerWidth` to return 1400 on mobile only (`isMobileRef`), so react-autoql's breakpoint system (`isMobile = window.innerWidth <= 992`) uses desktop thresholds. The override is cleaned up on unmount via `delete window.innerWidth`. On desktop, no override is applied — the library uses the real viewport width.
+
+3. **Conditional container sizing**: The chart container uses `width: 100%` on desktop and `width: 1400px; minWidth: 1400px` on mobile, wrapped in `overflow-x-auto` for horizontal scrolling.
 
 ### Theme Configuration
 
@@ -172,6 +178,33 @@ react-autoql theming is set via `configureTheme()` on module load:
 ### React StrictMode
 
 StrictMode is disabled in `main.tsx` because react-autoql performs direct DOM manipulation that breaks under double-rendering.
+
+## Shared Components
+
+### PaginationControls
+
+`src/components/PaginationControls.tsx` — shared pagination component used by all paginated pages.
+
+**Props**: `currentPage`, `totalItems`, `pageSize`, `onPageChange`
+
+**Behavior**:
+- Renders "Showing X–Y of Z" label on the left, Previous/Next buttons on the right
+- Automatically hides when total items fit on a single page (`totalPages <= 1`)
+- Responsive: stacks vertically on mobile, horizontal on desktop
+
+**Pages using PaginationControls**: GovernanceHistoryTable, GovernanceFlow (lifecycle + topics), ValidatorLicenses (licenses + faucets), Stats, Elections, Transfers, TransferCounters, Subscriptions, MemberTraffic, ExternalPartyRules, ANS
+
+All paginated views use a page size of 20 records.
+
+### GovernanceHistoryTable
+
+`src/components/GovernanceHistoryTable.tsx` — governance vote history with multi-term search, action type filtering, proposal deep-linking, and pagination.
+
+**Features**:
+- Comma-separated search terms with match highlighting (`<mark>` tags)
+- Action type filter buttons with per-type counts
+- URL parameter `?proposal=<id>` scrolls to and highlights a specific proposal
+- Stats row showing total/accepted/rejected/expired counts
 
 ## Environment Variables
 
@@ -269,4 +302,27 @@ export default function MyPage() {
 - All pages use responsive Tailwind classes (`text-2xl sm:text-3xl`, `grid-cols-1 md:grid-cols-2`, etc.)
 - Tables with many columns wrap in `overflow-x-auto` containers
 - The mobile nav drawer uses `modal={false}` on Radix Sheet with manual scroll lock management
-- Sync Insights dashboards render at 1400px fixed width with horizontal scroll on mobile
+- Fixed header uses `position: fixed` with solid `#0a0528` background (no `backdrop-filter`) and `will-change: transform` for GPU compositing
+- Cards use solid backgrounds (`bg-card`) without `backdrop-blur` to avoid mobile Safari stacking context issues
+- Heavy pages (500+ DOM elements) use pagination (20 items per page) to prevent mobile compositing overload
+
+### Pagination
+
+All paginated pages share the `PaginationControls` component for consistent styling:
+- "Showing X–Y of Z" range label
+- Plain Previous/Next buttons
+- Page counter (e.g., "3 / 12")
+- Separated by a `border-t` divider
+- Hidden when content fits on one page
+
+### z-index Stacking
+
+| Element | z-index | Notes |
+|---------|---------|-------|
+| Header | `z-[100]` | Fixed at top, solid background |
+| Mobile nav drawer (SheetContent) | `z-[110]` | Above header |
+| Popover/dropdown content | `z-[120]` | Above drawer |
+
+### SV Status Tables
+
+Service columns (mediator, scan, sequencer, sv) distribute width equally (80% of table divided evenly), with the Name/Env column using auto width. Data cells are center-aligned under their headers.
