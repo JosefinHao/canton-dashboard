@@ -118,8 +118,8 @@ export default function Sequencers() {
                   <Globe className="h-5 w-5" />
                   Domain
                 </CardTitle>
-                <CardDescription>
-                  <Badge variant="outline" className="font-mono text-xs">
+                <CardDescription className="min-w-0">
+                  <Badge variant="outline" className="font-mono text-xs max-w-full truncate inline-block">
                     {domain.domainId}
                   </Badge>
                 </CardDescription>
