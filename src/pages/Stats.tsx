@@ -352,8 +352,8 @@ const Stats = () => {
               })}
             </div>
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <p className="text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-border/50">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
                   {Math.min(currentPage * itemsPerPage, validators.length)} of {validators.length} validators
                 </p>
@@ -363,20 +363,22 @@ const Stats = () => {
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
+                    className="text-xs sm:text-sm"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Previous
+                    <span className="hidden sm:inline">Previous</span>
                   </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
+                  <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {currentPage} / {totalPages}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
+                    className="text-xs sm:text-sm"
                   >
-                    Next
+                    <span className="hidden sm:inline">Next</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
