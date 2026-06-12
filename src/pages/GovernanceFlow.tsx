@@ -1663,7 +1663,7 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[calc(100vh-500px)] pr-4">
+              <ScrollArea className="h-[calc(100vh-280px)] pr-4">
                 <div className="space-y-3">
                   {/* Pending CIP Section */}
                   {tbdItems.length > 0 && (
@@ -1974,7 +1974,7 @@ const GovernanceFlow = () => {
                 </CardContent>
               </Card>
             ) : (
-              <ScrollArea className="h-[600px]">
+              <ScrollArea className="h-[calc(100vh-280px)]">
                 <div className="space-y-2 pr-4">{filteredTopics.map(topic => renderTopicCard(topic, true))}</div>
               </ScrollArea>
             )}
