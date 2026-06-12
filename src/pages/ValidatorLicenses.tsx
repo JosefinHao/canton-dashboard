@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Search, Award, Ticket, Code, Clock, Activity } from "lucide-react";
 import { PaginationControls } from "@/components/PaginationControls";
-import { DataSourcesFooter } from "@/components/DataSourcesFooter";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { useValidatorLicenses, useTopValidatorsByFaucets } from "@/hooks/use-canton-scan-api";
@@ -265,12 +265,6 @@ const ValidatorLicenses = () => {
             </TabsContent>
           </Tabs>
         </Card>
-
-        <DataSourcesFooter
-          snapshotId={undefined}
-          templateSuffixes={[]}
-          isProcessing={false}
-        />
       </div>
     </DashboardLayout>
   );
