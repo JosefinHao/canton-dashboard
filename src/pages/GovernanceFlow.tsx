@@ -1641,11 +1641,11 @@ const GovernanceFlow = () => {
 
         {/* View Toggle */}
         <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'lifecycle' | 'all' | 'timeline' | 'learn')}>
-          <TabsList>
-            <TabsTrigger value="lifecycle">Lifecycle ({groupedRegularItems.length + tbdItems.length})</TabsTrigger>
-            <TabsTrigger value="timeline">Timeline ({timelineData.length} months)</TabsTrigger>
-            <TabsTrigger value="all">All Topics ({filteredTopics.length})</TabsTrigger>
-            <TabsTrigger value="learn" className="gap-1"><Lightbulb className="h-3 w-3" />Learn</TabsTrigger>
+          <TabsList className="w-full sm:w-auto flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="lifecycle" className="text-xs sm:text-sm">Lifecycle ({groupedRegularItems.length + tbdItems.length})</TabsTrigger>
+            <TabsTrigger value="timeline" className="text-xs sm:text-sm">Timeline ({timelineData.length} mo)</TabsTrigger>
+            <TabsTrigger value="all" className="text-xs sm:text-sm">Topics ({filteredTopics.length})</TabsTrigger>
+            <TabsTrigger value="learn" className="text-xs sm:text-sm gap-1"><Lightbulb className="h-3 w-3" />Learn</TabsTrigger>
           </TabsList>
 
           {/* Lifecycle View */}

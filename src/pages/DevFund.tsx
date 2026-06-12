@@ -66,7 +66,7 @@ const DevFund = () => {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Development Fund</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">Development Fund</h1>
               <p className="text-sm text-muted-foreground">Unclaimed development fund coupons on the Canton Network</p>
             </div>
           </div>

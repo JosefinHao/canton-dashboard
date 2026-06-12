@@ -338,7 +338,7 @@ const Validators = () => {
         <Card className="glass-card p-6">
           <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
             <div className="space-y-1">
-              <h2 className="text-2xl font-bold">Super Validators</h2>
+              <h2 className="text-xl sm:text-2xl font-bold">Super Validators</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 text-sm mt-4">
                 <div>
                   <span className="text-muted-foreground">Total Reward Weight:</span>

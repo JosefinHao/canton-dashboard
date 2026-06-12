@@ -324,21 +324,21 @@ export default function KaikoFeed() {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="cc-overview" className="gap-2">
-              <Coins className="h-4 w-4" />
+          <TabsList className="w-full sm:w-auto flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="cc-overview" className="text-xs sm:text-sm gap-1.5">
+              <Coins className="h-3.5 w-3.5" />
               CC Overview
             </TabsTrigger>
-            <TabsTrigger value="ohlcv" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
+            <TabsTrigger value="ohlcv" className="text-xs sm:text-sm gap-1.5">
+              <BarChart3 className="h-3.5 w-3.5" />
               OHLCV
             </TabsTrigger>
-            <TabsTrigger value="assets" className="gap-2">
-              <Activity className="h-4 w-4" />
-              Asset Metrics
+            <TabsTrigger value="assets" className="text-xs sm:text-sm gap-1.5">
+              <Activity className="h-3.5 w-3.5" />
+              Metrics
             </TabsTrigger>
-            <TabsTrigger value="exchanges" className="gap-2">
-              <Building2 className="h-4 w-4" />
+            <TabsTrigger value="exchanges" className="text-xs sm:text-sm gap-1.5">
+              <Building2 className="h-3.5 w-3.5" />
               Exchanges
             </TabsTrigger>
           </TabsList>
@@ -461,7 +461,7 @@ export default function KaikoFeed() {
             </Card>
 
             {status?.configured && (
-              <div className="grid gap-4 md:grid-cols-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                   title="Latest Close"
                   value={isLoading ? '...' : `$${formatPrice(latestCandle?.close)}`}
@@ -622,7 +622,7 @@ export default function KaikoFeed() {
             </Card>
 
             {status?.configured && latestMetric && (
-              <div className="grid gap-4 md:grid-cols-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                   title="Price (USD)"
                   value={
