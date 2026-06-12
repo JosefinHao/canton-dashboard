@@ -135,11 +135,10 @@
 @layer components {
   /* Card = foundation .canton-border-gradient: faint purple sheen, #634BA9 stroke, 20px */
   .glass-card {
-    @apply backdrop-blur-sm;
-    background: linear-gradient(180deg, rgba(135, 92, 255, 0.14) 0%, rgba(10, 5, 127, 0) 100%), rgba(3, 2, 16, 0.35);
+    background: linear-gradient(180deg, rgba(135, 92, 255, 0.14) 0%, rgba(10, 5, 127, 0) 100%), rgba(3, 2, 16, 0.85);
     border: 1px solid #634ba9;
     border-radius: 20px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   /* Canton hover: smooth 0.3s, border eases to yellow — no scale/pop */
