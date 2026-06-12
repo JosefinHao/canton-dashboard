@@ -1435,12 +1435,12 @@ const GovernanceFlow = () => {
             <p className="text-muted-foreground mt-1">Track CIPs, Featured Apps, and Validators through the governance process</p>
             {cachedAt && <p className="text-xs text-muted-foreground mt-1">Last updated: {new Date(cachedAt).toLocaleString()}</p>}
           </div>
-          <div className="flex gap-2 shrink-0">
-            <Button onClick={() => fetchData(false)} disabled={isLoading || isRefreshing} variant="outline" className="gap-2">
-              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />Load Cached
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={() => fetchData(false)} disabled={isLoading || isRefreshing} variant="outline" size="sm" className="gap-1.5 text-xs sm:text-sm">
+              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} />Cached
             </Button>
-            <Button onClick={() => fetchData(true)} disabled={isLoading || isRefreshing} className="gap-2">
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />Refresh from Groups.io
+            <Button onClick={() => fetchData(true)} disabled={isLoading || isRefreshing} size="sm" className="gap-1.5 text-xs sm:text-sm">
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />Refresh
             </Button>
           </div>
         </div>
@@ -1525,24 +1525,26 @@ const GovernanceFlow = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Type:</span>
-            <div className="flex gap-1">
+          <div className="flex items-start gap-2">
+            <div className="flex items-center gap-1 shrink-0 pt-0.5">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs sm:text-sm text-muted-foreground">Type:</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
               {['all', 'cip', 'featured-app', 'validator', 'protocol-upgrade', 'outcome', 'other'].map(type => (
-                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-7 text-xs">
+                <Button key={type} variant={typeFilter === type ? 'default' : 'outline'} size="sm" onClick={() => { setTypeFilter(type); setStageFilter('all'); }} className="h-7 text-xs px-2">
                   {type === 'all' ? 'All' : TYPE_CONFIG[type as keyof typeof TYPE_CONFIG]?.label || type}
                 </Button>
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Stage:</span>
-            <div className="flex gap-1">
+          <div className="flex items-start gap-2">
+            <span className="text-xs sm:text-sm text-muted-foreground shrink-0 pt-1">Stage:</span>
+            <div className="flex flex-wrap gap-1">
               {(() => {
                 const stagesToShow = typeFilter === 'all' ? [] : WORKFLOW_STAGES[typeFilter as keyof typeof WORKFLOW_STAGES] || [];
                 return ['all', ...stagesToShow].map(stage => (
-                  <Button key={stage} variant={stageFilter === stage ? 'default' : 'outline'} size="sm" onClick={() => setStageFilter(stage)} className="h-7 text-xs">
+                  <Button key={stage} variant={stageFilter === stage ? 'default' : 'outline'} size="sm" onClick={() => setStageFilter(stage)} className="h-7 text-xs px-2">
                     {stage === 'all' ? 'All' : STAGE_CONFIG[stage]?.label || stage}
                   </Button>
                 ));
