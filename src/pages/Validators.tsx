@@ -339,7 +339,7 @@ const Validators = () => {
           <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
             <div className="space-y-1">
               <h2 className="text-2xl font-bold">Super Validators</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 text-sm mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-2 text-sm mt-4">
                 <div>
                   <span className="text-muted-foreground">Total Reward Weight:</span>
                   <span className="ml-2 font-semibold text-foreground">
@@ -367,7 +367,7 @@ const Validators = () => {
               </div>
             </div>
 
-            <div className="flex gap-2 flex-shrink-0">
+            <div className="flex gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => refetch()} className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4" />
                 Refresh
@@ -385,7 +385,7 @@ const Validators = () => {
             ═══════════════════════════════════════════════════════════════ */}
         <Card className="glass-card overflow-hidden">
           {/* Tab Toggle */}
-          <div className="p-4 border-b border-border flex items-center gap-2">
+          <div className="p-4 border-b border-border flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setSvTab("standalone")}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
