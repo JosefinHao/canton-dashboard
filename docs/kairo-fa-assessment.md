@@ -8,7 +8,7 @@
    <br><sub>Source: `events_parsed` — distinct party IDs ending in `::12205162445638c3f71c9942b74360134b4ebc953b5bea2c25adc99bff130bffd060` across `signatories`, `acting_parties`, `witness_parties`, `observers` columns</sub>
 
 2. **362,456 receiverless transfers across all entity wallets.** Every `AmuletRules_Transfer` event where an entity wallet is the sender has zero receivers — `JSON_VALUE(payload, '$.transfer.receivers[0].party')` is NULL on all 362,456 transfers, independently confirmed as `receivers: []` via Scan API (Section 2).
-   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.sender')` matching namespace key, `JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL`; Scan API `GET /v0/activities` — `transfer.receivers: []`</sub>
+   <br><sub>Source: `events_parsed` — `choice = 'AmuletRules_Transfer'`, `JSON_VALUE(payload, '$.transfer.sender')` matching namespace key, `JSON_VALUE(payload, '$.transfer.receivers[0].party') IS NULL`; Scan API `POST /v0/activities` — `transfer.receivers: []`</sub>
 
 3. **These transfers generated 19,405,516 CC in FA rewards.** Only `kairo-mainnet` earned AppRewardCoupons. 732,710 coupons, all tagged `featured = true`, zero unfeatured (Section 3).
    <br><sub>Source: Scan API `GET /v0/top-providers-by-app-rewards?round=98727`; `events_parsed` — `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.provider')` matching namespace key</sub>
@@ -68,7 +68,7 @@ The on-chain vote reason for Kairo's FA grant states:
 
 On the Canton Network, a party ID has the format `name::fingerprint`. The fingerprint is the SHA-256 hash of the namespace root public key. Parties sharing the same fingerprint were created under the same root key, meaning the root key holder retains administrative control over all parties in that namespace ([source](https://docs.daml.com/canton/usermanual/identity_management.html)).
 
-**Balances** (Scan API `holdings/summary`, June 3, 2026):
+**Balances** (Scan API `POST /v0/holdings/summary`, June 3, 2026):
 
 | Wallet | Balance (CC) |
 |--------|-------------|
@@ -78,7 +78,7 @@ On the Canton Network, a party ID has the format `name::fingerprint`. The finger
 | `kairo-dex-lp-2` | 55,171 |
 | **Total** | **3,510,098** |
 
-DEX and sanctum wallets returned null from Scan API `round-party-totals` (rounds 98,830–98,874, queried June 4, 2026), indicating zero cumulative rewards and zero traffic purchases for those wallets.
+DEX and sanctum wallets returned null from Scan API `POST /v0/round-party-totals` (rounds 98,830–98,874, queried June 4, 2026), indicating zero cumulative rewards and zero traffic purchases for those wallets.
 
 ## 2. Transfer Pattern
 
@@ -103,13 +103,11 @@ DEX and sanctum wallets returned null from Scan API `round-party-totals` (rounds
 
 Every transfer has:
 - **Sender** (`$.transfer.sender`): entity wallet's own party ID
-- **Receivers** (`$.transfer.receivers`): NULL
-- **Output amount** (`$.summary.outputAmuletAmount`): NULL
-- **Sender fee** (`$.summary.senderChangeFee`): 0
+- **Receivers** (`$.transfer.receivers[0].party`): NULL
 
 ### 2.1 Independent Verification via Scan API
 
-The receiverless transfer pattern was independently confirmed via Scan API (`/v0/activities`) on June 3, 2026. Raw response for a Kairo transfer at round 98,729:
+The receiverless transfer pattern was independently confirmed via Scan API (`POST /v0/activities`) on June 3, 2026. Raw response for a Kairo transfer at round 98,729:
 
 ```json
 {
@@ -153,13 +151,13 @@ For comparison, a transfer from a different app in the same round:
 | Source | Scope | Result |
 |--------|-------|--------|
 | BigQuery | 100% of 362,456 entity sender transfers | All receivers NULL |
-| Scan API (`/v0/activities`) | Live sample, June 3, 2026 | `receivers: []` |
+| Scan API (`POST /v0/activities`) | Live sample, June 3, 2026 | `receivers: []` |
 
-As of June 4, 2026, zero entity transfers appear in the latest 1,000 network-wide activities (Scan API `/v0/activities`).
+As of June 4, 2026, zero entity transfers appear in the latest 1,000 network-wide activities (Scan API `POST /v0/activities`).
 
 ## 3. Reward Generation
 
-**Total credited CC: 19,405,516** (Scan API, `top-providers-by-app-rewards` and `round-party-totals` at round 98,727).
+**Total credited CC: 19,405,516** (Scan API `GET /v0/top-providers-by-app-rewards` and `POST /v0/round-party-totals` at round 98,727).
 
 Only `kairo-mainnet` earned AppRewardCoupons across the entity. No other entity wallet appears as a reward coupon provider (`events_parsed`, `template_id` containing `AppRewardCoupon`, `event_type = 'created'`, `JSON_VALUE(payload, '$.provider')` — only `kairo-mainnet::1220516244...` returned).
 
@@ -187,7 +185,7 @@ Monthly coupon breakdown (`events_parsed`):
 
 ## 4. Traffic-to-Reward Correlation
 
-`angelhack-mainnet-1` is the only entity wallet purchasing traffic. `kairo-mainnet` has zero traffic purchases (Scan API `round-party-totals`).
+`angelhack-mainnet-1` is the only entity wallet purchasing traffic. `kairo-mainnet` has zero traffic purchases (Scan API `POST /v0/round-party-totals`).
 
 Traffic is purchased via `AmuletRules_BuyMemberTraffic`. Each purchase buys traffic for the shared participant node. The `trafficAmount` is in sequencer bytes. The inputs include `InputAmulet`, `InputSvRewardCoupon`, and `InputValidatorRewardCoupon` (`events_parsed`, sample payload from March 15, 2026).
 
@@ -279,11 +277,11 @@ All transfers across all wallets and all weeks are 100% receiverless.
 
 | Wallet | Source | Cumulative CC | Source |
 |--------|--------|--------------|--------|
-| `kairo-mainnet` | App rewards | 19,405,516 | Scan API `top-providers-by-app-rewards`, round 98,727 |
-| `kairo-mainnet` | Validator rewards | 0 | Scan API `round-party-totals` |
-| `kairo-mainnet` | Traffic purchased | 0 | Scan API `round-party-totals` |
-| `angelhack-mainnet-1` | Validator rewards | 3,521,811 | Scan API `round-party-totals` |
-| `angelhack-mainnet-1` | Traffic CC spent | 17,666,162 | Scan API `round-party-totals` |
+| `kairo-mainnet` | App rewards | 19,405,516 | Scan API `GET /v0/top-providers-by-app-rewards`, round 98,727 |
+| `kairo-mainnet` | Validator rewards | 0 | Scan API `POST /v0/round-party-totals` |
+| `kairo-mainnet` | Traffic purchased | 0 | Scan API `POST /v0/round-party-totals` |
+| `angelhack-mainnet-1` | Validator rewards | 3,521,811 | Scan API `POST /v0/round-party-totals` |
+| `angelhack-mainnet-1` | Traffic CC spent | 17,666,162 | Scan API `POST /v0/round-party-totals` |
 
 ### 7.2 Outflows from kairo-mainnet
 
@@ -318,9 +316,9 @@ The transfer reason field for the February 8 transfer contains `"E2182132FA527DD
 
 | Metric | CC | Source |
 |--------|-----|--------|
-| Cumulative FA rewards credited (kairo-mainnet) | 19,405,516 | Scan API, round 98,727 |
-| Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | Scan API, round 98,727 |
-| Current balance across 4 wallets | 3,510,098 | Scan API, June 3, 2026 |
+| Cumulative FA rewards credited (kairo-mainnet) | 19,405,516 | `GET /v0/top-providers-by-app-rewards`, round 98,727 |
+| Cumulative validator rewards (angelhack-mainnet-1) | 3,521,811 | `POST /v0/round-party-totals`, round 98,727 |
+| Current balance across 4 wallets | 3,510,098 | `POST /v0/holdings/summary`, June 3, 2026 |
 
 ---
 
