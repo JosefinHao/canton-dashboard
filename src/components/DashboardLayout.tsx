@@ -275,7 +275,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen">
       {/* Header */}
       <header
-        className="sticky top-0 z-[100]"
+        className="fixed top-0 left-0 right-0 z-[100]"
         style={{
           background: "#0a0528",
         }}
@@ -300,6 +300,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         </div>
       </header>
+      {/* Spacer for fixed header */}
+      <div className="h-14 md:h-[72px]" />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 md:px-6 py-4 md:py-8">

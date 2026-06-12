@@ -538,13 +538,13 @@ const Stats = () => {
               </div>
             ) : (
               <Tabs defaultValue="day" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto">
-                  <TabsTrigger value="day" className="text-[10px] sm:text-sm px-1">Day</TabsTrigger>
-                  <TabsTrigger value="week" className="text-[10px] sm:text-sm px-1">Week</TabsTrigger>
-                  <TabsTrigger value="month" className="text-[10px] sm:text-sm px-1">Month</TabsTrigger>
-                  <TabsTrigger value="6months" className="text-[10px] sm:text-sm px-1">6 Mo</TabsTrigger>
-                  <TabsTrigger value="year" className="text-[10px] sm:text-sm px-1">Year</TabsTrigger>
-                  <TabsTrigger value="all" className="text-[10px] sm:text-sm px-1">All</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-auto gap-0.5 p-0.5 sm:p-1">
+                  <TabsTrigger value="day" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Day</TabsTrigger>
+                  <TabsTrigger value="week" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Week</TabsTrigger>
+                  <TabsTrigger value="month" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Month</TabsTrigger>
+                  <TabsTrigger value="6months" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">6 Mo</TabsTrigger>
+                  <TabsTrigger value="year" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">Year</TabsTrigger>
+                  <TabsTrigger value="all" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">All</TabsTrigger>
                 </TabsList>
                 <TabsContent value="day" className="mt-6">
                   <ValidatorList validators={newValidators} title="Validators with < 1 day of activity" />
