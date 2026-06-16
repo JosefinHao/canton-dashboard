@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -12,13 +12,6 @@ export default function Sequencers() {
     queryKey: ["dsoSequencers"],
     queryFn: () => scanApi.fetchDsoSequencers(),
   });
-
-  const totalSequencers = dsoSequencers?.domainSequencers?.reduce(
-    (acc, domain) => acc + (domain.sequencers?.length || 0),
-    0
-  ) || 0;
-
-  const totalDomains = dsoSequencers?.domainSequencers?.length || 0;
 
   if (isLoading) {
     return (
@@ -73,43 +66,7 @@ export default function Sequencers() {
           </p>
         </div>
 
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Total Synchronizers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-primary" />
-                <p className="text-2xl sm:text-3xl font-bold">{totalDomains}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Total Sequencers</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <Server className="h-5 w-5 text-primary" />
-                <p className="text-2xl sm:text-3xl font-bold">{totalSequencers}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Avg per Synchronizer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl sm:text-3xl font-bold">
-                {totalDomains > 0 ? (totalSequencers / totalDomains).toFixed(1) : "—"}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sequencers by Domain */}
+        {/* Sequencers by Synchronizer */}
         <div className="space-y-4">
           {dsoSequencers.domainSequencers.map((domain, i) => (
             <Card key={i} className="overflow-hidden">
