@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Users, Calendar, Download } from "lucide-react";
+import { Activity, TrendingUp, Users, Calendar, Download, Loader2 } from "lucide-react";
 import { PaginationControls } from "@/components/PaginationControls";
 import { useQuery } from "@tanstack/react-query";
 import { scanApi } from "@/lib/api-client";
@@ -375,6 +375,15 @@ const Stats = () => {
             Export CSV
           </Button>
         </div>
+
+        {validatorsLoading && (
+          <Card className="glass-card">
+            <div className="flex items-center justify-center gap-3 p-6">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Loading validator data from Canton Network...</p>
+            </div>
+          </Card>
+        )}
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
