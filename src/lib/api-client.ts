@@ -950,11 +950,24 @@ export const scanApi = {
    *  COMPOSITE / CONVENIENCE METHODS
    * ========================================================== */
 
-  // fetchTopValidators: maps faucets to expected format
+  // fetchTopValidators: get all validators via licenses, then fetch faucet data
   async fetchTopValidators(): Promise<GetTopValidatorsByValidatorRewardsResponse> {
-    const data = await this.fetchTopValidatorsByFaucets(1000);
+    const licenses = await this.fetchValidatorLicenses(undefined, 1000);
+    const validatorIds = licenses.validator_licenses.map(
+      (l) => l.payload.validator,
+    );
+    if (validatorIds.length === 0) {
+      return { validatorsAndRewards: [] };
+    }
+    const batchSize = 50;
+    const allFaucets: ValidatorFaucetInfo[] = [];
+    for (let i = 0; i < validatorIds.length; i += batchSize) {
+      const batch = validatorIds.slice(i, i + batchSize);
+      const data = await this.fetchValidatorLiveness(batch);
+      allFaucets.push(...(data.validatorsReceivedFaucets || []));
+    }
     return {
-      validatorsAndRewards: (data.validatorsByReceivedFaucets || []).map((v) => ({
+      validatorsAndRewards: allFaucets.map((v) => ({
         provider: v.validator,
         rewards: String(v.numRoundsCollected),
         firstCollectedInRound: v.firstCollectedInRound,
