@@ -33,21 +33,29 @@ gcloud compute ssh your-vm-name --zone=us-central1-f
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs git
 
-# 3. Clone and setup
-git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/app
-cd ~/app/server && npm install
-cd ~/app/scripts/ingest && npm install
+# 3. Clone production and staging repos (separate clones prevent branch conflicts)
+git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/governance-dashboard-v1
+git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/governance-dashboard-v1-staging
 
-# 4. Create data directories
+# 4. Install dependencies
+cd ~/governance-dashboard-v1/server && npm install
+cd ~/governance-dashboard-v1/scripts/ingest && npm install
+cd ~/governance-dashboard-v1-staging/server && npm install
+
+# 5. Create data directories
 mkdir -p ~/ledger_data/raw ~/ledger_data/cursors ~/ledger_data/logs
 ```
 
+> **Important:** Production (`~/governance-dashboard-v1/`) must always stay on `main`.
+> Use the staging clone (`~/governance-dashboard-v1-staging/`) for feature branches.
+> See [`deploy/README_DEPLOY.md`](../deploy/README_DEPLOY.md) for details.
+
 ## Environment Configuration
 
-### Server (`~/app/server/.env`)
+### Server (`~/governance-dashboard-v1/server/.env`)
 
 ```bash
-cat > ~/app/server/.env << 'EOF'
+cat > ~/governance-dashboard-v1/server/.env << 'EOF'
 PORT=3001
 DATA_DIR=/home/YOUR_USERNAME/ledger_data
 CURSOR_DIR=/home/YOUR_USERNAME/ledger_data/cursors
@@ -59,12 +67,15 @@ LOG_LEVEL=info
 # KAIKO_API_KEY=your_key
 # OPENAI_API_KEY=your_key
 EOF
+
+# Copy to staging clone
+cp ~/governance-dashboard-v1/server/.env ~/governance-dashboard-v1-staging/server/.env
 ```
 
-### Ingestion Scripts (`~/app/scripts/ingest/.env`)
+### Ingestion Scripts (`~/governance-dashboard-v1/scripts/ingest/.env`)
 
 ```bash
-cat > ~/app/scripts/ingest/.env << 'EOF'
+cat > ~/governance-dashboard-v1/scripts/ingest/.env << 'EOF'
 SCAN_URL=https://scan.sv-1.global.canton.network.sync.global/api/scan
 DATA_DIR=/home/YOUR_USERNAME/ledger_data
 CURSOR_DIR=/home/YOUR_USERNAME/ledger_data/cursors
@@ -85,9 +96,13 @@ PM2 provides auto-restart, monitoring, log management, and zero-downtime reloads
 # Install PM2 globally
 npm install -g pm2
 
-# Start the server
-cd ~/app/server
+# Start production backend (port 3001)
+cd ~/governance-dashboard-v1
 pm2 start ecosystem.config.cjs --env production
+
+# Start staging backend (port 3002) from the staging clone
+cd ~/governance-dashboard-v1-staging/server
+pm2 start ecosystem.staging.config.cjs
 
 # Enable auto-start on boot
 pm2 startup
@@ -100,7 +115,6 @@ pm2 logs duckdb-api
 pm2 monit
 ```
 
-See `server/ecosystem.config.cjs` for production config and `server/ecosystem.staging.config.cjs` for staging.
 See [`deploy/README_DEPLOY.md`](../deploy/README_DEPLOY.md) for PM2 commands and the staging workflow.
 
 ### Option B: Systemd
@@ -209,21 +223,33 @@ sudo ufw allow 3001/tcp
 
 The frontend is a Vite + React SPA deployed as static files behind nginx. No direct API URLs are configured in the frontend — all API calls use relative paths (`/api/...`) and nginx proxies them to the backend.
 
-### Production build
+### Production build (from production clone)
 
 ```bash
 cd ~/governance-dashboard-v1
-npm install
-npx vite build
-sudo cp -r dist/* /var/www/html/
+git checkout main && git pull origin main
+./deploy/deploy-frontend.sh --production
 ```
 
-### Staging build (at /staging/ subpath)
+### Staging build (from staging clone, at /staging/ subpath)
 
 ```bash
-VITE_BASE_PATH=/staging VITE_BASE=/staging/ npx vite build
-sudo rm -rf /var/www/staging/assets/
-sudo cp -r dist/* /var/www/staging/
+cd ~/governance-dashboard-v1-staging
+git fetch origin && git checkout <your-branch>
+./deploy/deploy-frontend.sh --staging
+```
+
+### Manual builds (if not using the deploy script)
+
+```bash
+# Production
+cd ~/governance-dashboard-v1 && npm install && npx vite build
+sudo cp -r dist/* /var/www/html/
+
+# Staging
+cd ~/governance-dashboard-v1-staging && npm install
+VITE_BASE_PATH=/staging npx vite build --base=/staging/
+cp -r dist/* /var/www/staging/
 ```
 
 | Env Variable | Purpose | Production | Staging |

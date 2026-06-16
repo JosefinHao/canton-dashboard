@@ -250,23 +250,30 @@ node api/scan-proxy.js   # or use PM2
 
 See `deploy/README_DEPLOY.md` for full deployment instructions.
 
+Production and staging use **separate git clones** on the server to prevent
+branch checkouts from affecting production when PM2 restarts.
+
 Quick reference:
 
 ```bash
-# Deploy to staging
-./deploy/deploy-frontend.sh --staging
+# Deploy to production (from ~/governance-dashboard-v1, always on main)
+cd ~/governance-dashboard-v1
+git pull origin main
+./deploy/deploy-frontend.sh --production
 
-# Deploy to production
-./deploy/deploy-frontend.sh
+# Deploy to staging (from ~/governance-dashboard-v1-staging, any branch)
+cd ~/governance-dashboard-v1-staging
+git fetch origin && git checkout <your-branch>
+./deploy/deploy-frontend.sh --staging
 ```
 
 Architecture:
 ```
 nginx (80/443)
   ├── /            → /var/www/html/          (production frontend)
-  ├── /api/        → localhost:3001          (production backend)
+  ├── /api/        → localhost:3001          (production backend, ~/governance-dashboard-v1/)
   ├── /staging/    → /var/www/staging/       (staging frontend)
-  └── /staging/api/→ localhost:3002          (staging backend)
+  └── /staging/api/→ localhost:3002          (staging backend, ~/governance-dashboard-v1-staging/)
 ```
 
 ## Key Patterns

@@ -2,21 +2,34 @@
 
 PM2 is a production process manager that provides auto-restart, monitoring, and log management.
 
+Production and staging run from **separate git clones** to prevent branch
+checkouts from accidentally swapping production code on PM2 restart.
+
+| Process | Clone | Port |
+|---------|-------|------|
+| `duckdb-api` | `~/governance-dashboard-v1/` (always `main`) | 3001 |
+| `duckdb-api-staging` | `~/governance-dashboard-v1-staging/` (any branch) | 3002 |
+
 ## Quick Start
 
 ```bash
 # Install PM2 globally
 npm install -g pm2
 
-# Start the server with PM2
-cd server
+# Start production backend
+cd ~/governance-dashboard-v1
 pm2 start ecosystem.config.cjs --env production
+
+# Start staging backend (from the staging clone)
+cd ~/governance-dashboard-v1-staging/server
+pm2 start ecosystem.staging.config.cjs
 
 # Check status
 pm2 status
 
 # View logs
 pm2 logs duckdb-api
+pm2 logs duckdb-api-staging
 
 # Monitor in real-time
 pm2 monit
