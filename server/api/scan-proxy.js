@@ -360,15 +360,16 @@ router.get('/_all-validator-faucets', async (req, res) => {
     // Scan API caps the request URI at 2048 chars; each encoded validator_ids
     // param is ~110 chars, so keep batches to 15 (~1750 chars + base URL).
     const batchSize = 15;
-    const validatorsReceivedFaucets = [];
+    const batches = [];
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize);
       const qs = batch.map((id) => `validator_ids=${encodeURIComponent(id)}`).join('&');
-      const data = await scanApiGet(`v0/validators/validator-faucets?${qs}`);
-      if (data?.validatorsReceivedFaucets) {
-        validatorsReceivedFaucets.push(...data.validatorsReceivedFaucets);
-      }
+      batches.push(scanApiGet(`v0/validators/validator-faucets?${qs}`));
     }
+    const results = await Promise.all(batches);
+    const validatorsReceivedFaucets = results.flatMap(
+      (data) => data?.validatorsReceivedFaucets || [],
+    );
 
     console.log(`[Scan Proxy] Aggregated faucets for ${validatorsReceivedFaucets.length}/${ids.length} validators`);
     const result = { validatorsReceivedFaucets };
