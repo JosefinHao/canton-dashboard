@@ -1048,9 +1048,9 @@ describe('SCAN API Client', () => {
     describe('fetchTopValidators', () => {
       it('should map faucets response to rewards format', async () => {
         mockFetch.mockResolvedValueOnce(mockSuccess({
-          validatorsByReceivedFaucets: [
-            { validator: 'v1', numRoundsCollected: 50, firstCollectedInRound: 1 },
-            { validator: 'v2', numRoundsCollected: 30, firstCollectedInRound: 10 },
+          validatorsReceivedFaucets: [
+            { validator: 'v1', numRoundsCollected: 50, numRoundsMissed: 0, firstCollectedInRound: 1, lastCollectedInRound: 50 },
+            { validator: 'v2', numRoundsCollected: 30, numRoundsMissed: 2, firstCollectedInRound: 10, lastCollectedInRound: 40 },
           ],
         }));
 

@@ -3,26 +3,22 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Search, Award, Ticket, Code, Clock, Activity } from "lucide-react";
+import { Search, Award, Code, Clock } from "lucide-react";
 import { PaginationControls } from "@/components/PaginationControls";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { useValidatorLicenses, useTopValidatorsByFaucets } from "@/hooks/use-canton-scan-api";
+import { useValidatorLicenses } from "@/hooks/use-canton-scan-api";
 
 const ValidatorLicenses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
 
-  const { data: licensesData, isLoading: licensesLoading } = useValidatorLicenses();
-  const { data: faucetData, isLoading: faucetsLoading } = useTopValidatorsByFaucets(1000);
+  const { data: licensesData, isLoading } = useValidatorLicenses();
 
   const licenses = licensesData || [];
-  const faucets = faucetData || [];
-  const isLoading = licensesLoading || faucetsLoading;
 
   const formatParty = (party: string) => {
     if (!party || party.length <= 30) return party || "Unknown";
@@ -39,11 +35,6 @@ const ValidatorLicenses = () => {
     );
   });
 
-  const filteredFaucets = faucets.filter((f) => {
-    if (!searchTerm) return true;
-    return f.validator?.toLowerCase().includes(searchTerm.toLowerCase());
-  });
-
   const paginateData = (data: any[]) => {
     return data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   };
@@ -54,30 +45,19 @@ const ValidatorLicenses = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Award className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl sm:text-3xl font-bold">Validator Licenses & Faucets</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Validator Licenses</h1>
           </div>
-          <p className="text-muted-foreground">View active validator licenses and faucet activity on the network.</p>
+          <p className="text-muted-foreground">View active validator licenses on the network.</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="p-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Active Licenses</h3>
-            {isLoading ? (
-              <Skeleton className="h-8 w-24" />
-            ) : (
-              <p className="text-2xl font-bold">{licenses.length}</p>
-            )}
-          </Card>
-
-          <Card className="p-6">
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">Validators with Faucets</h3>
-            {isLoading ? (
-              <Skeleton className="h-8 w-24" />
-            ) : (
-              <p className="text-2xl font-bold">{faucets.length}</p>
-            )}
-          </Card>
-        </div>
+        <Card className="p-6">
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Active Licenses</h3>
+          {isLoading ? (
+            <Skeleton className="h-8 w-24" />
+          ) : (
+            <p className="text-2xl font-bold">{licenses.length}</p>
+          )}
+        </Card>
 
         <Card className="p-3 sm:p-6 overflow-hidden">
           <div className="mb-4">
@@ -96,13 +76,7 @@ const ValidatorLicenses = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="licenses" className="w-full" onValueChange={() => setCurrentPage(1)}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="licenses" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Licenses ({filteredLicenses.length})</TabsTrigger>
-              <TabsTrigger value="faucets" className="text-xs sm:text-sm data-[state=active]:bg-[#F3FF97] data-[state=active]:text-[#030206]">Faucets ({filteredFaucets.length})</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="licenses" className="space-y-3 mt-4">
+          <div className="space-y-3 mt-4">
               {isLoading ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
@@ -210,60 +184,7 @@ const ValidatorLicenses = () => {
                   />
                 </>
               )}
-            </TabsContent>
-
-            <TabsContent value="faucets" className="space-y-3 mt-4">
-              {isLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-24 w-full" />
-                  ))}
-                </div>
-              ) : filteredFaucets.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No faucet activity found</p>
-              ) : (
-                <>
-                  {paginateData(filteredFaucets).map((faucet, idx: number) => (
-                    <Card key={idx} className="p-3 sm:p-4 space-y-2 overflow-hidden">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Activity className="h-4 w-4 text-success shrink-0" />
-                        <p className="text-xs sm:text-sm font-medium truncate flex-1 min-w-0">
-                          {formatParty(faucet.validator)}
-                        </p>
-                        <Badge variant="secondary" className="shrink-0 text-xs">
-                          {faucet.numRoundsCollected} rounds
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <p className="text-muted-foreground">First Round</p>
-                          <p className="font-medium">{faucet.firstCollectedInRound}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Last Round</p>
-                          <p className="font-medium">{faucet.lastCollectedInRound}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Collected</p>
-                          <p className="font-medium text-success">{faucet.numRoundsCollected}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Missed</p>
-                          <p className="font-medium text-destructive">{faucet.numRoundsMissed}</p>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                  <PaginationControls
-                    currentPage={currentPage}
-                    totalItems={filteredFaucets.length}
-                    pageSize={pageSize}
-                    onPageChange={setCurrentPage}
-                  />
-                </>
-              )}
-            </TabsContent>
-          </Tabs>
+          </div>
         </Card>
       </div>
     </DashboardLayout>

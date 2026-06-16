@@ -347,7 +347,7 @@ const Validators = () => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Operators:</span>
+                  <span className="text-muted-foreground">Nodes:</span>
                   <span className="ml-2 font-semibold text-foreground">
                     {displayModel.standaloneOperators.length}
                   </span>
@@ -395,7 +395,7 @@ const Validators = () => {
               }`}
             >
               <Building2 className="w-4 h-4" />
-              Operators
+              Nodes
               <span className={`ml-1 px-1.5 py-0.5 rounded text-xs font-bold ${
                 svTab === "standalone" ? "bg-white/20" : "bg-muted"
               }`}>
@@ -424,15 +424,15 @@ const Validators = () => {
           {svTab === "standalone" && (
             <>
               <div className="px-6 pt-4 pb-2">
-                <h3 className="text-lg font-bold">Operators</h3>
+                <h3 className="text-lg font-bold">Nodes</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  The {displayModel.standaloneOperators.length} operators running their own validator infrastructure.
+                  The {displayModel.standaloneOperators.length} nodes running their own validator infrastructure.
                 </p>
               </div>
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead>Operator</TableHead>
+                    <TableHead>Node</TableHead>
                     <TableHead className="text-right">Reward Weight</TableHead>
                     <TableHead className="text-center">Hosted Super Validators</TableHead>
                   </TableRow>

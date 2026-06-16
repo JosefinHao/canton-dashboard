@@ -93,12 +93,12 @@ export function useValidatorLicenses(limit: number = 1000) {
 }
 
 // ============ Top Validators ============
-export function useTopValidatorsByFaucets(limit: number = 1000) {
+export function useTopValidatorsByFaucets() {
   return useQuery({
-    queryKey: ["scan-api", "top-validators-by-faucets", limit],
+    queryKey: ["scan-api", "all-validator-faucets"],
     queryFn: async () => {
-      const response = await scanApi.fetchTopValidatorsByFaucets(limit);
-      return response.validatorsByReceivedFaucets || [];
+      const response = await scanApi.fetchAllValidatorFaucets();
+      return response.validatorsReceivedFaucets || [];
     },
     staleTime: 60 * 1000,
   });
