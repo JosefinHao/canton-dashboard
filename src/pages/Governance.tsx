@@ -258,13 +258,13 @@ const Governance = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="glass-card p-6">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-muted-foreground">Super Validators</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">Super Validator Nodes</h3>
               <Users className="h-5 w-5 text-primary" />
             </div>
             {!svCount ? <Skeleton className="h-10 w-full" /> : (
               <>
                 <p className="text-2xl sm:text-3xl font-bold text-primary mb-1">{svCount}</p>
-                <p className="text-xs text-muted-foreground">Active SVs</p>
+                <p className="text-xs text-muted-foreground">Active nodes</p>
               </>
             )}
           </Card>
