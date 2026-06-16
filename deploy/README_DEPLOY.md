@@ -17,11 +17,13 @@ Browser ─► nginx (port 80/443)
 
 | Component | Production | Staging |
 |-----------|-----------|--------|
+| Repo clone | `~/governance-dashboard-v1/` | `~/governance-dashboard-v1-staging/` |
 | Frontend | `/var/www/html/` | `/var/www/staging/` |
 | Backend | PM2 `duckdb-api` on port 3001 | PM2 `duckdb-api-staging` on port 3002 |
 | URL | `dashboard.canton.foundation/` | `dashboard.canton.foundation/staging/` |
 
-Staging runs its own backend so server-side changes can be tested without affecting production.
+Production and staging use **separate git clones** so that checking out a branch
+for staging can never affect what production runs if PM2 restarts.
 
 ## Prerequisites
 
@@ -32,16 +34,21 @@ Staging runs its own backend so server-side changes can be tested without affect
 
 ## Quick Deploy (Recommended)
 
-Use the deploy script for both staging and production:
+**Production** (always from the production clone on `main`):
 
 ```bash
 cd ~/governance-dashboard-v1
+git checkout main && git pull origin main
+./deploy/deploy-frontend.sh --production
+```
 
-# Deploy to staging (preview before going live)
+**Staging** (from the staging clone on any branch):
+
+```bash
+cd ~/governance-dashboard-v1-staging
+git fetch origin
+git checkout <your-branch>
 ./deploy/deploy-frontend.sh --staging
-
-# Deploy to production
-./deploy/deploy-frontend.sh
 ```
 
 The script handles dependencies, build flags, backups, and permissions automatically.
@@ -53,7 +60,7 @@ If you need to deploy manually:
 **Production:**
 ```bash
 cd ~/governance-dashboard-v1
-git checkout main && git pull
+git checkout main && git pull origin main
 npm install
 npx vite build
 sudo cp -r dist/* /var/www/html/
@@ -61,7 +68,7 @@ sudo cp -r dist/* /var/www/html/
 
 **Staging:**
 ```bash
-cd ~/governance-dashboard-v1
+cd ~/governance-dashboard-v1-staging
 git checkout <your-branch>
 npm install
 VITE_BASE_PATH=/staging npx vite build --base=/staging/
@@ -72,25 +79,46 @@ cp -r dist/* /var/www/staging/
 
 The backend only needs restarting when server-side code changes (files in `server/`):
 
+**Production** (from production clone):
 ```bash
 cd ~/governance-dashboard-v1/server
 npm install
-
-# Production
 pm2 restart duckdb-api
+```
 
-# Staging
+**Staging** (from staging clone):
+```bash
+cd ~/governance-dashboard-v1-staging/server
+npm install
 pm2 restart duckdb-api-staging
 ```
 
 Frontend-only changes do NOT require a backend restart.
 
+## Important: Keep Clones Separate
+
+- **Never** check out a feature branch in `~/governance-dashboard-v1/`. It should always be on `main`.
+- **Always** use `~/governance-dashboard-v1-staging/` for feature branches and staging deploys.
+- If PM2 restarts the production backend (crash, reboot, OOM), it loads code from `~/governance-dashboard-v1/`. If that clone is on a feature branch, production will break.
+
 ## Development Workflow
 
 1. Make changes on a feature branch
-2. Deploy to staging: `./deploy/deploy-frontend.sh --staging`
+2. Deploy to staging from the staging clone:
+   ```bash
+   cd ~/governance-dashboard-v1-staging
+   git fetch origin && git checkout <your-branch>
+   ./deploy/deploy-frontend.sh --staging
+   cd server && npm install && pm2 restart duckdb-api-staging  # if server/ changed
+   ```
 3. Preview at `https://dashboard.canton.foundation/staging/`
-4. If happy, merge to main and deploy: `./deploy/deploy-frontend.sh`
+4. If happy, merge to main and deploy production:
+   ```bash
+   cd ~/governance-dashboard-v1
+   git pull origin main
+   ./deploy/deploy-frontend.sh --production
+   cd server && npm install && pm2 restart duckdb-api  # if server/ changed
+   ```
 5. If not, iterate on the branch and redeploy staging
 
 ## Initial Server Setup
@@ -126,16 +154,38 @@ sudo chown -R www-data:www-data /var/www/html
 sudo chmod -R 755 /var/www/html /var/www/staging
 ```
 
-### 4. Start backend
+### 4. Clone repos (production + staging)
+
+Production and staging use separate clones to prevent branch checkouts from
+affecting the running production backend.
 
 ```bash
-cd ~/governance-dashboard-v1/server
+# Production clone (always stays on main)
+git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/governance-dashboard-v1
+cd ~/governance-dashboard-v1/server && npm install
+
+# Staging clone (can be on any branch)
+git clone https://github.com/cf-internal/governance-dashboard-v1.git ~/governance-dashboard-v1-staging
+cd ~/governance-dashboard-v1-staging/server && npm install
+
+# Copy server .env to both
+cp ~/governance-dashboard-v1/server/.env ~/governance-dashboard-v1-staging/server/.env
+```
+
+### 5. Start backends
+
+```bash
+# Production backend (port 3001)
+cd ~/governance-dashboard-v1
 pm2 start ecosystem.config.cjs --env production
+
+# Staging backend (port 3002)
+cd ~/governance-dashboard-v1-staging/server
+pm2 start ecosystem.staging.config.cjs
+
 pm2 save
 pm2 startup   # enables auto-start on VM reboot
 ```
-
-The `ecosystem.config.cjs` uses `--env-file=../scripts/ingest/.env` to load the correct DuckDB path.
 
 ### 5. Enable HTTPS (Recommended)
 
@@ -172,12 +222,12 @@ PM2 auto-starts on boot via systemd (configured with `pm2 startup` + `pm2 save`)
 
 ### Staging backend
 
-The staging backend runs on port 3002 (nginx routes `/staging/api/` there).
+The staging backend runs on port 3002 from the staging clone (nginx routes `/staging/api/` there).
 
 ```bash
-# Start staging backend from a feature branch
-cd ~/governance-dashboard-v1/server
-pm2 start ecosystem.config.cjs --only duckdb-api-staging
+# Start staging backend
+cd ~/governance-dashboard-v1-staging/server
+pm2 start ecosystem.staging.config.cjs
 
 # View staging logs
 pm2 logs duckdb-api-staging --lines 20 --nostream
