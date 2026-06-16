@@ -300,6 +300,86 @@ router.get('/_sv-dso-status', async (req, res) => {
 });
 
 /**
+ * GET a path from the current Scan API endpoint, rotating to the next healthy
+ * endpoint on 5xx/429/403 or network failure. Returns parsed JSON.
+ */
+async function scanApiGet(pathAndQuery) {
+  let lastError = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const endpoint = getCurrentEndpoint();
+    const hostname = extractHostname(endpoint.url);
+    const dispatcher = hostname ? createDispatcher(hostname) : undefined;
+    const url = `${endpoint.url}/${pathAndQuery}`;
+    try {
+      const resp = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/json', ...(hostname ? { Host: hostname } : {}) },
+        ...(dispatcher ? { dispatcher } : {}),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (resp.status >= 500 || resp.status === 429 || resp.status === 403) {
+        recordFailure(endpoint.url, new Error(`HTTP ${resp.status}`));
+        rotateToNextHealthy();
+        lastError = new Error(`Scan API returned ${resp.status}`);
+        continue;
+      }
+      const text = await readBodyWithLimit(resp, MAX_PROXY_RESPONSE_BYTES);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${text.slice(0, 200)}`);
+      recordSuccess(endpoint.url);
+      return JSON.parse(text);
+    } catch (err) {
+      recordFailure(endpoint.url, err);
+      rotateToNextHealthy();
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('All Scan API endpoints failed');
+}
+
+// Server-side aggregation cache for validator faucet data
+let validatorFaucetsCache = null;
+let validatorFaucetsCacheTime = 0;
+const VALIDATOR_FAUCETS_TTL = 60_000;
+
+// GET /_all-validator-faucets - faucet/liveness data for ALL validators.
+// Replaces the removed /v0/top-validators-by-validator-faucets endpoint.
+// Fetches validator licenses, then batches validator-faucets lookups
+// server-side so the browser makes a single request (avoids nginx URL-length
+// limits and the per-IP rate limiter).
+router.get('/_all-validator-faucets', async (req, res) => {
+  try {
+    if (validatorFaucetsCache && Date.now() - validatorFaucetsCacheTime < VALIDATOR_FAUCETS_TTL) {
+      return res.json(validatorFaucetsCache);
+    }
+
+    const licenses = await scanApiGet('v0/admin/validator/licenses?limit=1000');
+    const ids = (licenses.validator_licenses || [])
+      .map((l) => l?.payload?.validator)
+      .filter(Boolean);
+
+    const batchSize = 30;
+    const validatorsReceivedFaucets = [];
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const batch = ids.slice(i, i + batchSize);
+      const qs = batch.map((id) => `validator_ids=${encodeURIComponent(id)}`).join('&');
+      const data = await scanApiGet(`v0/validators/validator-faucets?${qs}`);
+      if (data?.validatorsReceivedFaucets) {
+        validatorsReceivedFaucets.push(...data.validatorsReceivedFaucets);
+      }
+    }
+
+    console.log(`[Scan Proxy] Aggregated faucets for ${validatorsReceivedFaucets.length}/${ids.length} validators`);
+    const result = { validatorsReceivedFaucets };
+    validatorFaucetsCache = result;
+    validatorFaucetsCacheTime = Date.now();
+    res.json(result);
+  } catch (err) {
+    console.error('[Scan Proxy] all-validator-faucets error:', err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+/**
  * Best-of-all-SVs handler for dev fund coupons.
  * Queries all healthy endpoints in parallel, returns the largest result set.
  */

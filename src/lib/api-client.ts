@@ -950,24 +950,17 @@ export const scanApi = {
    *  COMPOSITE / CONVENIENCE METHODS
    * ========================================================== */
 
-  // fetchTopValidators: get all validators via licenses, then fetch faucet data
+  // GET /_all-validator-faucets - server-aggregated faucet data for all validators
+  // (backend batches the lookups to avoid nginx URL-length / rate limits)
+  async fetchAllValidatorFaucets(): Promise<ValidatorLivenessResponse> {
+    return scanGet("/_all-validator-faucets");
+  },
+
+  // fetchTopValidators: maps aggregated faucet data to the expected format
   async fetchTopValidators(): Promise<GetTopValidatorsByValidatorRewardsResponse> {
-    const licenses = await this.fetchValidatorLicenses(undefined, 1000);
-    const validatorIds = licenses.validator_licenses.map(
-      (l) => l.payload.validator,
-    );
-    if (validatorIds.length === 0) {
-      return { validatorsAndRewards: [] };
-    }
-    const batchSize = 20;
-    const allFaucets: ValidatorFaucetInfo[] = [];
-    for (let i = 0; i < validatorIds.length; i += batchSize) {
-      const batch = validatorIds.slice(i, i + batchSize);
-      const data = await this.fetchValidatorLiveness(batch);
-      allFaucets.push(...(data.validatorsReceivedFaucets || []));
-    }
+    const data = await this.fetchAllValidatorFaucets();
     return {
-      validatorsAndRewards: allFaucets.map((v) => ({
+      validatorsAndRewards: (data.validatorsReceivedFaucets || []).map((v) => ({
         provider: v.validator,
         rewards: String(v.numRoundsCollected),
         firstCollectedInRound: v.firstCollectedInRound,

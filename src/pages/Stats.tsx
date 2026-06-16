@@ -160,13 +160,9 @@ const Stats = () => {
 
   // Fetch validator liveness data for health/uptime metrics
   const { data: validatorLivenessData } = useQuery({
-    queryKey: ["validatorLiveness", validatorsList.slice(0, 50).map((v) => v.provider)],
-    queryFn: async () => {
-      const validatorIds = validatorsList.slice(0, 50).map((v) => v.provider);
-      if (validatorIds.length === 0) return null;
-      return scanApi.fetchValidatorLiveness(validatorIds);
-    },
-    enabled: validatorsList.length > 0,
+    queryKey: ["allValidatorFaucets"],
+    queryFn: () => scanApi.fetchAllValidatorFaucets(),
+    staleTime: 60_000,
     retry: 1,
   });
 
