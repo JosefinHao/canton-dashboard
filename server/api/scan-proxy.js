@@ -357,7 +357,9 @@ router.get('/_all-validator-faucets', async (req, res) => {
       .map((l) => l?.payload?.validator)
       .filter(Boolean);
 
-    const batchSize = 30;
+    // Scan API caps the request URI at 2048 chars; each encoded validator_ids
+    // param is ~110 chars, so keep batches to 15 (~1750 chars + base URL).
+    const batchSize = 15;
     const validatorsReceivedFaucets = [];
     for (let i = 0; i < ids.length; i += batchSize) {
       const batch = ids.slice(i, i + batchSize);
