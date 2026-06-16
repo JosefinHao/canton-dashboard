@@ -959,7 +959,7 @@ export const scanApi = {
     if (validatorIds.length === 0) {
       return { validatorsAndRewards: [] };
     }
-    const batchSize = 50;
+    const batchSize = 5;
     const allFaucets: ValidatorFaucetInfo[] = [];
     for (let i = 0; i < validatorIds.length; i += batchSize) {
       const batch = validatorIds.slice(i, i + batchSize);
