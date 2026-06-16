@@ -84,33 +84,30 @@ const Stats = () => {
   // Get SV participant IDs to exclude them from regular validator counts
   const svParticipantIds = new Set(configData?.superValidators.map((sv) => sv.address) || []);
 
-  // Filter validators by join period based on rounds collected (excluding SVs)
+  // Non-SV validators that have collected at least one round (actually onboarded)
   const recentValidators = validatorsList.filter((v) => {
     const roundsCollected = parseFloat(v.rewards);
     return roundsCollected > 0 && !svParticipantIds.has(v.provider);
   });
 
-  // Categorize validators by activity duration
-  const newValidators = recentValidators.filter((v) => parseFloat(v.rewards) < roundsPerDay);
-  const weeklyValidators = recentValidators.filter((v) => {
-    const rounds = parseFloat(v.rewards);
-    return rounds < roundsPerDay * 7 && rounds >= roundsPerDay;
-  });
-  const monthlyValidators = recentValidators.filter((v) => {
-    const rounds = parseFloat(v.rewards);
-    return rounds < roundsPerDay * 30 && rounds >= roundsPerDay * 7;
-  });
-  const sixMonthValidators = recentValidators.filter((v) => {
-    const rounds = parseFloat(v.rewards);
-    return rounds < roundsPerDay * 180 && rounds >= roundsPerDay * 30;
-  });
-  const yearlyValidators = recentValidators.filter((v) => {
-    const rounds = parseFloat(v.rewards);
-    return rounds < roundsPerDay * 365 && rounds >= roundsPerDay * 180;
-  });
-  const allTimeValidators = validatorsList.filter(
-  (v) => !svParticipantIds.has(v.provider)
-);
+  // Categorize validators by WHEN they joined — i.e. the round of their first
+  // faucet collection (firstCollectedInRound), NOT how many rounds they've
+  // collected. A higher firstCollectedInRound means a more recent join.
+  const joinedRound = (v: (typeof recentValidators)[number]) => v.firstCollectedInRound ?? 0;
+  const newValidators = recentValidators.filter((v) => joinedRound(v) >= oneDayAgo);
+  const weeklyValidators = recentValidators.filter(
+    (v) => joinedRound(v) >= oneWeekAgo && joinedRound(v) < oneDayAgo,
+  );
+  const monthlyValidators = recentValidators.filter(
+    (v) => joinedRound(v) >= oneMonthAgo && joinedRound(v) < oneWeekAgo,
+  );
+  const sixMonthValidators = recentValidators.filter(
+    (v) => joinedRound(v) >= sixMonthsAgo && joinedRound(v) < oneMonthAgo,
+  );
+  const yearlyValidators = recentValidators.filter(
+    (v) => joinedRound(v) >= oneYearAgo && joinedRound(v) < sixMonthsAgo,
+  );
+  const allTimeValidators = validatorsList.filter((v) => !svParticipantIds.has(v.provider));
 
   // Calculate monthly join data for all time since network launch
   const getMonthlyJoinData = () => {
@@ -173,7 +170,10 @@ const Stats = () => {
       {
         collected: v.numRoundsCollected,
         missed: v.numRoundsMissed,
-        uptime: (v.numRoundsCollected / (v.numRoundsCollected + v.numRoundsMissed)) * 100,
+        uptime:
+          v.numRoundsCollected + v.numRoundsMissed > 0
+            ? (v.numRoundsCollected / (v.numRoundsCollected + v.numRoundsMissed)) * 100
+            : null,
       },
     ]),
   );
@@ -517,24 +517,24 @@ const Stats = () => {
                   <TabsTrigger value="all" className="!whitespace-normal text-[10px] sm:text-sm !px-1 py-1.5">All</TabsTrigger>
                 </TabsList>
                 <TabsContent value="day" className="mt-6">
-                  <ValidatorList validators={newValidators} title="Validators with < 1 day of activity" />
+                  <ValidatorList validators={newValidators} title="Joined in the last 24 hours" />
                 </TabsContent>
                 <TabsContent value="week" className="mt-6">
                   <ValidatorList
                     validators={[...newValidators, ...weeklyValidators]}
-                    title="Validators with < 7 days of activity"
+                    title="Joined in the last 7 days"
                   />
                 </TabsContent>
                 <TabsContent value="month" className="mt-6">
                   <ValidatorList
                     validators={[...newValidators, ...weeklyValidators, ...monthlyValidators]}
-                    title="Validators with < 30 days of activity"
+                    title="Joined in the last 30 days"
                   />
                 </TabsContent>
                 <TabsContent value="6months" className="mt-6">
                   <ValidatorList
                     validators={[...newValidators, ...weeklyValidators, ...monthlyValidators, ...sixMonthValidators]}
-                    title="Validators with < 6 months of activity"
+                    title="Joined in the last 6 months"
                   />
                 </TabsContent>
                 <TabsContent value="year" className="mt-6">
@@ -546,7 +546,7 @@ const Stats = () => {
                       ...sixMonthValidators,
                       ...yearlyValidators,
                     ]}
-                    title="Validators with < 1 year of activity"
+                    title="Joined in the last year"
                   />
                 </TabsContent>
                 <TabsContent value="all" className="mt-6">
