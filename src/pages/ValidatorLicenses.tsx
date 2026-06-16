@@ -45,9 +45,9 @@ const ValidatorLicenses = () => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Award className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl sm:text-3xl font-bold">Validator Licenses & Faucets</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Validator Licenses</h1>
           </div>
-          <p className="text-muted-foreground">View active validator licenses and faucet activity on the network.</p>
+          <p className="text-muted-foreground">View active validator licenses on the network.</p>
         </div>
 
         <Card className="p-6">

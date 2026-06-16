@@ -93,7 +93,7 @@ export function useValidatorLicenses(limit: number = 1000) {
 }
 
 // ============ Top Validators ============
-export function useTopValidatorsByFaucets(limit: number = 1000) {
+export function useTopValidatorsByFaucets() {
   return useQuery({
     queryKey: ["scan-api", "all-validator-faucets"],
     queryFn: async () => {

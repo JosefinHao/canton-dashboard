@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Activity, TrendingUp, Users, Calendar, Download, Loader2 } from "lucide-react";
+import { TrendingUp, Users, Calendar, Download, Loader2 } from "lucide-react";
 import { PaginationControls } from "@/components/PaginationControls";
 import { useQuery } from "@tanstack/react-query";
 import { scanApi } from "@/lib/api-client";
@@ -30,11 +30,23 @@ const Stats = () => {
     queryFn: () => fetchConfigData(),
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
   });
-  const { data: validators, isLoading: validatorsLoading } = useQuery({
+  const { data: validatorBundle, isLoading: validatorsLoading } = useQuery({
     queryKey: ["topValidators"],
-    queryFn: () => scanApi.fetchTopValidators(),
+    queryFn: async () => {
+      const raw = await scanApi.fetchAllValidatorFaucets();
+      const faucets = raw.validatorsReceivedFaucets || [];
+      return {
+        validatorsAndRewards: faucets.map((v) => ({
+          provider: v.validator,
+          rewards: String(v.numRoundsCollected),
+          firstCollectedInRound: v.firstCollectedInRound,
+        })),
+        faucets,
+      };
+    },
     retry: 1,
   });
+  const validators = validatorBundle ? { validatorsAndRewards: validatorBundle.validatorsAndRewards } : undefined;
 
   const { data: latestRound } = useQuery({
     queryKey: ["latestRound"],
@@ -155,17 +167,9 @@ const Stats = () => {
 
   const { toast } = useToast();
 
-  // Fetch validator liveness data for health/uptime metrics
-  const { data: validatorLivenessData } = useQuery({
-    queryKey: ["allValidatorFaucets"],
-    queryFn: () => scanApi.fetchAllValidatorFaucets(),
-    staleTime: 60_000,
-    retry: 1,
-  });
-
-  // Create a map of validator health data
+  // Create a map of validator health data from the already-fetched faucet data
   const validatorHealthMap = new Map(
-    (validatorLivenessData?.validatorsReceivedFaucets || []).map((v) => [
+    (validatorBundle?.faucets || []).map((v) => [
       v.validator,
       {
         collected: v.numRoundsCollected,

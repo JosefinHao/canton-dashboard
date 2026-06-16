@@ -432,7 +432,7 @@ const Validators = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
-                    <TableHead>Operator</TableHead>
+                    <TableHead>Node</TableHead>
                     <TableHead className="text-right">Reward Weight</TableHead>
                     <TableHead className="text-center">Hosted Super Validators</TableHead>
                   </TableRow>

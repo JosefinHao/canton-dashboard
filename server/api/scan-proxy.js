@@ -366,10 +366,14 @@ router.get('/_all-validator-faucets', async (req, res) => {
       const qs = batch.map((id) => `validator_ids=${encodeURIComponent(id)}`).join('&');
       batches.push(scanApiGet(`v0/validators/validator-faucets?${qs}`));
     }
-    const results = await Promise.all(batches);
-    const validatorsReceivedFaucets = results.flatMap(
-      (data) => data?.validatorsReceivedFaucets || [],
+    const settled = await Promise.allSettled(batches);
+    const validatorsReceivedFaucets = settled.flatMap((r) =>
+      r.status === 'fulfilled' ? (r.value?.validatorsReceivedFaucets || []) : [],
     );
+    const failedBatches = settled.filter((r) => r.status === 'rejected').length;
+    if (failedBatches > 0) {
+      console.warn(`[Scan Proxy] ${failedBatches}/${settled.length} validator-faucets batches failed`);
+    }
 
     console.log(`[Scan Proxy] Aggregated faucets for ${validatorsReceivedFaucets.length}/${ids.length} validators`);
     const result = { validatorsReceivedFaucets };
