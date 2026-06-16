@@ -413,7 +413,16 @@ async function proxyRequest(req, res, method) {
     const endpoint = getCurrentEndpoint();
     
     // Build full URL: endpoint.url already ends with /api/scan
-    const queryString = new URLSearchParams(req.query).toString();
+    // URLSearchParams(obj) mangles arrays (joins with comma), so expand them
+    const qp = new URLSearchParams();
+    for (const [key, value] of Object.entries(req.query)) {
+      if (Array.isArray(value)) {
+        for (const v of value) qp.append(key, v);
+      } else {
+        qp.append(key, value);
+      }
+    }
+    const queryString = qp.toString();
     const baseUrl = path.startsWith("registry/") ? endpoint.url.replace(/\/api\/scan$/, "") : endpoint.url;
     const scanUrl = queryString 
       ? `${baseUrl}/${path}?${queryString}`
