@@ -43,10 +43,10 @@ export default function Sequencers() {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <Server className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl sm:text-3xl font-bold">DSO Sequencers</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Global Synchronizer Sequencers</h1>
             </div>
             <p className="text-muted-foreground">
-              Domain sequencer configuration across the network
+              Sequencer configuration across the network
             </p>
           </div>
           <Alert>
@@ -66,10 +66,10 @@ export default function Sequencers() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Server className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl sm:text-3xl font-bold">DSO Sequencers</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">Global Synchronizer Sequencers</h1>
           </div>
           <p className="text-muted-foreground">
-            Domain sequencer configuration across the network
+            Sequencer configuration across the network
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function Sequencers() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Total Domains</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Total Synchronizers</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ export default function Sequencers() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Avg per Domain</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Avg per Synchronizer</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl sm:text-3xl font-bold">
@@ -116,7 +116,7 @@ export default function Sequencers() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="h-5 w-5" />
-                  Domain
+                  Synchronizer
                 </CardTitle>
                 <CardDescription className="min-w-0">
                   <Badge variant="outline" className="font-mono text-xs max-w-full truncate inline-block">
