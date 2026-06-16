@@ -24,7 +24,6 @@ import TrafficStatus from "./pages/TrafficStatus";
 import Sequencers from "./pages/Sequencers";
 
 // Rewards & Pricing
-import Rewards from "./pages/Rewards";
 import PriceVotes from "./pages/PriceVotes";
 import KaikoFeed from "./pages/KaikoFeed";
 
@@ -120,8 +119,7 @@ const App = () => (
             <Route path="/traffic-status" element={<TrafficStatus />} />
             <Route path="/sequencers" element={<Sequencers />} />
             
-            {/* Rewards & Pricing */}
-            <Route path="/rewards" element={<div className="p-8 text-muted-foreground">This page is coming soon.</div>} />
+            {/* Pricing */}
             <Route path="/price-votes" element={<PriceVotes />} />
             <Route path="/kaiko-feed" element={<KaikoFeed />} />
             
